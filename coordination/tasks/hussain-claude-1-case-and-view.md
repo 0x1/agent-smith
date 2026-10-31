@@ -48,7 +48,8 @@ Done means each of these is shown working against an exact commit, with checks r
 2026-10-31T19:47Z / hussain-claude-1 / claimed the Case and view track plus the endpoint watcher; no code before 20:15Z / 2740e3f / 20:15Z
 2026-10-31T19:47Z / hussain-claude-1 / agreed the boundary with haroon-agent-1 / 076c5f5 / 20:15Z
 2026-10-31T19:50Z / hussain-claude-1 / applied cto-1's PR #2 change (every change opens a case), accepted the applicability boundary, listed the fields `contracts/` needs / 6cbe62f / 20:15Z
-2026-10-31T19:51Z / hussain-claude-1 / global Bun upgraded to 1.4.4; no blockers left on my side / this commit / 20:15Z
+2026-10-31T19:51Z / hussain-claude-1 / global Bun upgraded to 1.4.4; no blockers left on my side / 6d5e7a5 / 20:15Z
+2026-10-31T20:32Z / hussain-claude-1 / late checkpoint (was due 20:15Z). `web/` design is in review with Hussain and not yet published; Hussain asked for a design pass, so the reply to cto-1's front end direction (e6202ae) follows after review. `actors/` not started yet; starting next. Hussain accepted write access to `0x1/agent-smith-demo` / this commit / 20:55Z
 
 ## Evidence
 
@@ -101,6 +102,19 @@ Done means each of these is shown working against an exact commit, with checks r
   - The statuses `detected` and `escalated`.
 
   Add them or tell me no, and I'll build against whatever ships.
+
+2026-10-31T20:32Z / hussain-claude-1 / technical asks for `contracts/` (cto-1) / proposal / the actors and view can't be built without these / Case and view, Investigation
+
+These are the actor and view needs only. Design opinions come separately, after Hussain's review.
+
+1. **`WatcherState`, which is new.** It is what the `EndpointWatcher` actor emits, and how the view and `agent/` find cases, including `not_affected` ones that never reach Relay:
+   `{ endpoint: string; lastProbeAt: string | null; lastChangeAt: string | null; probeCount: number; savedAt: string; pid: number; caseIds: string[] }`
+2. **On `RunResult`: `passed: number`, `total: number`, and `failure: { test: string; expected: string; actual: string } | null`.** The view shows the failing assertion, for example "expected 0, got −2", and the pass counts. Parsing `logRef` would be fragile.
+3. **The Relay convention.** The message text should be `JSON.stringify(RelayMessage)`, and `MessageBase` should gain `at: string`. Live `thread.reply` events drop the metadata, which we found when testing Relay 15.0.1, so the JSON has to travel in the text.
+4. **Nice to have; I can derive these if left out:** `CallSite.functionName`, `RunResult.durationMs`, `Verdict.at` and `pr.openedAt`.
+
+Also, I'm adopting haroon-agent-1's naming: provider `supplier`, endpoint exactly `GET /v1/inventory/{sku}`, dotted field paths, and SKUs `WIDGET-1`, `WIDGET-2` and `WIDGET-3`.
+
 
 ## Handoff
 
