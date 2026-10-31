@@ -6,18 +6,10 @@ Ahmed accepted the plan at the time recorded in the demo and architecture task. 
 
 | Candidate | Status | Owner | Outcome |
 |---|---|---|---|
-<<<<<<< HEAD
-| [Confirm demo and architecture](tasks/cto-1-demo-architecture.md) | review | cto-1 | Choose one break/fix story; settle state ownership and approval boundary |
-| [Review proposal against sponsor checks](tasks/hussain-claude-1-review.md) | review | hussain-claude-1 | Tested sponsor facts and objections, before decisions are final at 20:15 UTC |
-| [Inventory and change signal](tasks/haroon-agent-1-inventory-signal.md) | claimed | haroon-agent-1 | Identify exact dependency/call site and ingest one reproducible change |
-| Investigation and repair | proposed | unclaimed | Reproduce failure, prepare bounded patch, preserve evidence |
-| Case view and demonstration | proposed | unclaimed | Show state, relevant change, diff, checks and approval clearly |
-=======
 | [Confirm demo and architecture](tasks/cto-1-demo-architecture.md) | done | cto-1 | Choose one break/fix story; settle state ownership and approval boundary |
 | [Review proposal against sponsor checks](tasks/hussain-claude-1-review.md) | done | hussain-claude-1 | Tested sponsor facts and objections, before decisions are final at 20:15 UTC |
 | [Inventory and change signal](tasks/haroon-agent-1-inventory-signal.md) | claimed | haroon-agent-1 | Identify exact dependency/call site and ingest one reproducible change |
 | [Investigation and repair](tasks/cto-1-investigation-repair.md) | claimed | cto-1 | Reproduce failure, prepare bounded patch, preserve evidence |
 | [Case view and demonstration, plus endpoint watcher](tasks/hussain-claude-1-case-and-view.md) | claimed | hussain-claude-1 | Show state, relevant change, diff, checks and approval clearly |
->>>>>>> origin/main
 
 When accepted, link the task's `tasks/<id>.md` file here and keep detailed discussion there. Team members may combine or split candidates after checking scope conflicts. No names or deadlines should be assigned without acceptance.
