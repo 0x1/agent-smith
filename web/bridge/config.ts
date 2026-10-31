@@ -3,6 +3,7 @@ import { join, resolve } from "node:path";
 
 const env = process.env;
 const agentDir = resolve(import.meta.dir, env.AGENT_DIR ?? "../../agent");
+const repoRoot = resolve(import.meta.dir, "../..");
 
 export const config = {
   port: Number(env.PORT ?? 7300),
@@ -28,6 +29,11 @@ export const config = {
     url: env.SUPPLIER_URL ?? "http://127.0.0.1:7200",
     samplePath: env.SUPPLIER_SAMPLE ?? "/v1/inventory/WIDGET-1",
     pollMs: 2000,
+  },
+  inventory: {
+    // The one connected demo repo. Same default as agent/: a sibling checkout.
+    repoDir: resolve(env.TARGET_REPO_DIR ?? join(repoRoot, "../agent-smith-demo")),
+    repo: env.TARGET_REPO ?? "0x1/agent-smith-demo",
   },
   // A source that keeps failing for this long is reported as down, not connecting.
   downAfterMs: 5000,

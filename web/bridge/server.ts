@@ -5,6 +5,7 @@
 //   GET  /api/health             per-source state
 //   POST /api/presenter/version  {version} → supplier-mock /admin/version
 //   POST /api/presenter/probe    EndpointWatcher.probeNow()
+//   GET  /api/inventory          the real inventory scan() of TARGET_REPO_DIR
 import { join, normalize } from "node:path";
 import { config } from "./config.ts";
 import { Hub, log } from "./hub.ts";
@@ -48,6 +49,23 @@ async function staticFile(pathname: string): Promise<Response> {
   return (await index.exists()) ? new Response(index) : new Response("Run `pnpm build` first.", { status: 503 });
 }
 
+const INVENTORY_MODULE = "../../inventory/index.ts";
+
+// Runs the deterministic scan from inventory/. Loaded lazily, so a missing
+// dependency there only fails this route, never the live stream.
+async function inventory(): Promise<Response> {
+  const { repoDir, repo } = config.inventory;
+  try {
+    // inventory/ has its own dependencies, so the bridge doesn't typecheck through it.
+    const { scan } = (await import(INVENTORY_MODULE)) as { scan: (dir: string, opts: { repo: string; commit: string | null }) => object };
+    const head = Bun.spawnSync(["git", "-C", repoDir, "rev-parse", "HEAD"]);
+    const commit = head.exitCode === 0 ? head.stdout.toString().trim() : null;
+    return json({ ...scan(repoDir, { repo, commit }), repoDir });
+  } catch (err) {
+    return json({ error: `inventory scan failed for ${repoDir}: ${String(err).slice(0, 200)}` }, 503);
+  }
+}
+
 async function routes(req: Request): Promise<Response> {
   const { pathname } = new URL(req.url);
   const post = req.method === "POST";
@@ -63,6 +81,7 @@ async function routes(req: Request): Promise<Response> {
       (err) => json({ error: `watcher not reachable: ${String(err)}` }, 502),
     );
   }
+  if (pathname === "/api/inventory") return inventory();
   if (pathname.startsWith("/api/")) return json({ error: "not found" }, 404);
   return staticFile(pathname);
 }
