@@ -1,16 +1,37 @@
 {
   "name": "Agent Smith",
   "pitch": "When an API you depend on changes, a team of agents finds the code it breaks, proves the break, and hands you a tested fix to approve.",
-  "chips": ["Watches your APIs", "Proves the break", "Hands you a tested fix"],
-  "outro": { "line": "Built on Terse Durable Actors and Agent Relay", "sub": "Ahmed · Haroon · Hussain" },
-  "colors": {
-    "background": "#fff8ec",
-    "foreground": "#121319",
-    "muted": "#5b6270",
-    "accent": "#3b35e8",
-    "accentInk": "#2a24b8",
-    "highlight": "#d7f75b",
-    "pastels": ["#c7b8ff", "#8fe3bf", "#ffd65a", "#8dd0fa"]
+  "chips": [
+    "Watches your APIs",
+    "Proves the break",
+    "Hands you a tested fix"
+  ],
+  "outro": {
+    "line": "Built on Terse Durable Actors and Agent Relay",
+    "sub": "Ahmed · Haroon · Hussain"
   },
-  "forbid": ["magic", "magically", "revolutionary", "seamless", "seamlessly", "effortless", "game-changing", "instantly"]
+  "colors": {
+    "background": "#f7f4ee",
+    "foreground": "#1d1f24",
+    "muted": "#6b707a",
+    "accent": "#3f5a7a",
+    "accentInk": "#3f5a7a",
+    "highlight": "#d9e2ec",
+    "pastels": [
+      "#e2ddd2",
+      "#d9e2ec",
+      "#e4f1e8",
+      "#f1ede5"
+    ]
+  },
+  "forbid": [
+    "magic",
+    "magically",
+    "revolutionary",
+    "seamless",
+    "seamlessly",
+    "effortless",
+    "game-changing",
+    "instantly"
+  ]
 }
