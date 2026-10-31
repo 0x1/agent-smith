@@ -85,7 +85,7 @@ function TeamFit() {
       <ul>
         <li><span className="state ok">✓ Today</span> Fixes arrive as a normal pull request.</li>
         <li><span className="state ok">✓ Today</span> Agents hand off over Agent Relay.</li>
-        <li><span className="state next">Next</span> Your Claude Code or Codex agent joins in.</li>
+        <li><span className="state next">Next</span> Your Claude Code or Codex agent joins in. Not built yet.</li>
       </ul>
     </section>
   );

@@ -104,7 +104,7 @@ export function CaseView({ c, msgs, others, relayLive, relaySince }: { c: LiveCa
           <p className="dek">Your supplier changed how it reports {plain(c.change.fieldPath)}.</p>
         </div>
         <ReviewButton c={c} />
-        {approved && <p className="approved ok">✓ Approved by {c.approval.by}. Nothing merged.</p>}
+        {approved && <p className="approved ok">✓ Approved by {c.approval.by} · nothing merged or deployed</p>}
       </header>
       <StepStack steps={st} onPick={(step) => { setPicked(step.key); setOpen(true); }} />
       {bad && <p className="notice">{bad.say || bad.reason}</p>}
