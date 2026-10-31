@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { AGENT_NAMES, type RelayMessage } from "../../../contracts/relay.ts";
 import type { RelayEntry } from "../../shared/stream.ts";
-import { rejectedNow, splitDeliberate, steps } from "./model.ts";
+import { activeCase, rejectedNow, splitDeliberate, steps } from "./model.ts";
 import type { LiveCase } from "./types.ts";
 
 const caseId = "demo.supplier.stock";
@@ -106,5 +106,30 @@ describe("the deliberately bad patch", () => {
 
   test("is not a real rejection, even while the real case is still investigating", () => {
     expect(rejectedNow(kase(), [proposed(1), ...bad])).toBeNull();
+  });
+});
+
+describe("activeCase", () => {
+  // One v2 flip opens stock (breaking), then warehouse and restock_eta, all at `detected`.
+  const detected = (field: string, kind: "breaking" | "added", added: string[] = []) =>
+    kase({ caseId: field, status: "detected", verdict: null,
+      change: { ...kase().change, changeKind: kind, fieldPath: field,
+        shapeDiff: { removed: kind === "breaking" ? [field] : [], added: kind === "added" ? [field] : added, retyped: [] } } });
+  const state = (cases: LiveCase[]) =>
+    ({ watcher: { caseIds: cases.map((c) => c.caseId) }, cases: Object.fromEntries(cases.map((c) => [c.caseId, c])) }) as unknown as Parameters<typeof activeCase>[0];
+
+  test("leads with the replaced field (stock -> inventory) while every case is still detected", () => {
+    const s = state([detected("stock", "breaking", ["inventory", "inventory.on_hand", "inventory.reserved"]), detected("warehouse", "breaking"), detected("restock_eta", "added")]);
+    expect(activeCase(s)?.caseId).toBe("stock");
+  });
+
+  test("prefers the case agent/ found affecting the app", () => {
+    const stock = kase({ caseId: "stock", status: "investigating" });
+    const s = state([stock, kase({ caseId: "warehouse", status: "not_affected", verdict: { result: "not_affected", evidence: [], at: T } }), detected("restock_eta", "added")]);
+    expect(activeCase(s)?.caseId).toBe("stock");
+  });
+
+  test("falls back to the newest open case", () => {
+    expect(activeCase(state([detected("restock_eta", "added")]))?.caseId).toBe("restock_eta");
   });
 });
