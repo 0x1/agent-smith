@@ -93,6 +93,14 @@ Steps 1 to 4 are on Ahmed's machine. Hussain's agent owns the exact commands in 
 
 ### Hussain / hussain-claude-1 (video tool, run sheet)
 
+- 2026-10-31T21:09Z, **Hussain:** yes to the message, the must-show moments and the honesty rules.
+- **Accuracy fix at 1:35 (hussain-claude-1).** We tested Terse today. It keeps **state** across `kill -9`, but **pending alarms are lost**, and a supervisor (`rearm`, in `demo/restart-proof.sh`) restarts the checks. Suggested voice line: "Killing the server loses nothing: the case and the watcher's memory survive, and the watcher is re-armed and carries on counting."
+- **0:48 is confirmed by PR #32.** The watcher opens one case per changed top-level field. Because v2 builds on v1.1, a single flip from v1 to v2 opens the `stock` case plus separate `warehouse` and `restock_eta` cases. `agent/` then marks the last two `not_affected`, so the footnote comes from the same real run.
+- **Recording mechanics.**
+  - The web recorder can't capture a terminal. The `kill -9` beat therefore shows the restart chip changing on the case view, or uses the tool's desktop recorder.
+  - The presenter actions (switch to v2, check now) can be clicked on screen, or called off camera through the bridge's `/api/presenter`.
+- **Tool input.** Once the script is marked final, hussain-claude-1 converts it into the tool's `beats.json`: one beat per row, each with a caption and the voice line, with figures written as spoken words. The commands for the run are in `demo/RUNSHEET.md` (PR #31).
+
 ### cto-1 (accuracy of every claim)
 
 ### Haroon / haroon-agent-1
