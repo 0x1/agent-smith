@@ -3,7 +3,7 @@
 import type { RunResult } from "../../../contracts/case.ts";
 import { AGENT_NAMES, type RelayMessage, type VerificationResult } from "../../../contracts/relay.ts";
 import type { RelayEntry } from "../../shared/stream.ts";
-import { clock, firstSentence } from "./format.ts";
+import { clock } from "./format.ts";
 import type { LiveCase, LiveState } from "./types.ts";
 
 export type StepKey = "noticed" | "checked" | "fixed" | "proved" | "you";
@@ -88,6 +88,23 @@ export function splitDeliberate(msgs: RelayEntry[]): { real: RelayEntry[]; delib
   return { real, deliberate };
 }
 
+// Relay keeps its whole history, and case IDs repeat across rehearsals. Keep only
+// this run's messages, and only the latest labelled bad patch.
+export function thisRun(c: LiveCase, msgs: RelayEntry[]): RelayEntry[] {
+  const start = c.signals[0]?.at ?? "";
+  const run = msgs.filter((m) => m.at >= start);
+  const { real, deliberate } = splitDeliberate(run);
+  const lastProposal = deliberate.filter((m) => m.parsed?.type === "repair.proposed").at(-1);
+  return [...real, ...deliberate.filter((m) => !lastProposal || m.at >= lastProposal.at)].sort((x, y) => x.at.localeCompare(y.at));
+}
+
+// The labelled bad patch's rejection, for the notice under the stepper.
+export function deliberateRejection(msgs: RelayEntry[]): VerificationResult | null {
+  const verdicts = parsedOf(splitDeliberate(msgs).deliberate, "verification.result");
+  const v = last(verdicts);
+  return v?.decision === "reject" ? v : null;
+}
+
 // True only when a real verifier rejection is the latest word on this case.
 export function rejectedNow(c: LiveCase, all: RelayEntry[]): VerificationResult | null {
   if (c.status !== "investigating") return null;
@@ -155,8 +172,7 @@ export function steps(c: LiveCase, all: RelayEntry[]): Step[] {
 
   const noticed: Step = {
     key: "noticed", name: STEP_NAMES.noticed, state: state.noticed,
-    // Plain words only: the summary names field paths, so it goes to the evidence.
-    what: firstSentence(c.explanation) || c.change.summary,
+    what: `The supplier changed ${c.change.fieldPath}.`,
     when: clock(c.signals[0]?.at),
     detail: [
       `${c.change.provider} · ${c.change.endpoint} · ${c.change.changeKind}`,
@@ -217,7 +233,7 @@ export function steps(c: LiveCase, all: RelayEntry[]): Step[] {
     key: "you", name: STEP_NAMES.you, state: state.you,
     what: youWhat,
     when: clock(approval.at || c.pr?.openedAt),
-    detail: c.pr ? `${c.pr.url}\nbase ${c.baseCommit.slice(0, 7)} → head ${c.headCommit.slice(0, 7)}` : "",
+    detail: c.pr ? `${c.pr.url}\nbased on ${c.baseCommit.slice(0, 7)}` : "",
   };
 
   return [noticed, checked, fixed, proved, you];

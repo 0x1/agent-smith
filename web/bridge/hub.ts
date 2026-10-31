@@ -59,6 +59,13 @@ export class Hub {
     return out;
   }
 
+  // After a demo reset. Relay history stays, because the page filters it by run.
+  clearRun() {
+    this.watcher = null;
+    this.cases.clear();
+    this.restart = null;
+  }
+
   setStatus(source: SourceName, state: SourceStatus["state"], detail?: string) {
     const cur = this.sources[source];
     if (cur.state === state && cur.detail === detail) return;
