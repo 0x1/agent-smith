@@ -1,35 +1,12 @@
 // Page state, fed only by the bridge's SSE stream (or, behind `?fixture=1`, by
 // fixture events with the same shape).
 import { useEffect, useReducer, useState } from "react";
-import type { Case, WatcherState } from "../../../contracts/case.ts";
-import type { RelayEntry, Restart, SourceName, SourceStatus, StreamEvent, SupplierSample } from "../../shared/stream.ts";
+import type { StreamEvent } from "../../shared/stream.ts";
+import type { LiveState } from "./types.ts";
 
-// Mirrors `Proof` on `cto-1/wire-watcher`. Delete this and import `Case` directly
-// once that branch merges and `Case.proof` exists on main.
-export interface Proof {
-  sku: string;
-  onHand: number;
-  reserved: number;
-  result: number;
-  expected: number;
-}
-export type LiveCase = Case & { proof?: Proof | null };
+export type Action = { type: "event"; event: StreamEvent } | { type: "bridge"; state: LiveState["bridge"] } | { type: "reset" };
 
-export interface LiveState {
-  bridge: "live" | "connecting";
-  openedAt: string;
-  sources: Record<SourceName, SourceStatus | null>;
-  watcher: WatcherState | null;
-  cases: Record<string, LiveCase>;
-  versions: Record<string, number>;
-  messages: RelayEntry[];
-  restart: Restart | null;
-  sample: SupplierSample | null;
-}
-
-type Action = { type: "event"; event: StreamEvent } | { type: "bridge"; state: LiveState["bridge"] } | { type: "reset" };
-
-function initial(): LiveState {
+export function initial(): LiveState {
   return {
     bridge: "connecting",
     openedAt: new Date().toISOString(),
@@ -43,7 +20,7 @@ function initial(): LiveState {
   };
 }
 
-function reduce(s: LiveState, a: Action): LiveState {
+export function reduce(s: LiveState, a: Action): LiveState {
   if (a.type === "bridge") return { ...s, bridge: a.state };
   if (a.type === "reset") return { ...initial(), bridge: s.bridge, openedAt: s.openedAt };
   const e = a.event;
@@ -69,12 +46,13 @@ function reduce(s: LiveState, a: Action): LiveState {
   }
 }
 
-export const FIXTURE = new URLSearchParams(location.search).get("fixture") === "1";
+// Fixture mode is opt-in per page load and never switches on by itself.
+export const isFixture = () => typeof location !== "undefined" && new URLSearchParams(location.search).get("fixture") === "1";
 
 export function useLive(): LiveState {
   const [state, dispatch] = useReducer(reduce, undefined, initial);
   useEffect(() => {
-    if (FIXTURE) {
+    if (isFixture()) {
       // Fixture data is a separate chunk, loaded only when asked for.
       let stop = () => {};
       import("./fixture.ts").then((m) => {
@@ -104,10 +82,4 @@ export function useNow(): number {
     return () => clearInterval(t);
   }, []);
   return now;
-}
-
-export function clock(iso: string | null | undefined): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : d.toTimeString().slice(0, 8);
 }

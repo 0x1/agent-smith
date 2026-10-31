@@ -3,7 +3,8 @@
 import type { RunResult } from "../../../contracts/case.ts";
 import { AGENT_NAMES, type RelayMessage, type VerificationResult } from "../../../contracts/relay.ts";
 import type { RelayEntry } from "../../shared/stream.ts";
-import { clock, type LiveCase, type LiveState } from "./live.ts";
+import { clock, firstSentence } from "./format.ts";
+import type { LiveCase, LiveState } from "./types.ts";
 
 export type StepKey = "noticed" | "checked" | "fixed" | "proved" | "you";
 export type StepState = "done" | "now" | "bad" | "later";
@@ -123,10 +124,12 @@ export function steps(c: LiveCase, msgs: RelayEntry[]): Step[] {
 
   const noticed: Step = {
     key: "noticed", name: STEP_NAMES.noticed, state: state.noticed,
-    what: c.change.summary,
+    // Plain words only: the summary names field paths, so it goes to the evidence.
+    what: firstSentence(c.explanation) || c.change.summary,
     when: clock(c.signals[0]?.at),
     detail: [
       `${c.change.provider} · ${c.change.endpoint} · ${c.change.changeKind}`,
+      c.change.summary,
       ...d.removed.map((f) => `- ${f}`),
       ...d.added.map((f) => `+ ${f}`),
       ...d.retyped.map((f) => `~ ${f}`),
