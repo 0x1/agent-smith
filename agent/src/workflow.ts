@@ -7,6 +7,7 @@ import { getRelay } from "./relay.ts";
 import { runRepair, TEST_COMMAND } from "./repair.ts";
 import { patchCase } from "./case-store.ts";
 import { openSandbox, type Sandbox } from "./sandbox.ts";
+import { toRunResult } from "./test-output.ts";
 import { startVerifierAgent, waitForVerdict } from "./verifier-agent.ts";
 
 const MAX_ATTEMPTS = 2;
@@ -38,7 +39,8 @@ const checkApplicability = createStep({
     const { change, repoDir, repo } = inputData;
     const caseId = makeCaseId(repo, change.provider, change.endpoint, change.fieldPath);
     const inventory = scan(repoDir, { repo, commit: inputData.commit });
-    const { verdict, callSite } = applicability(change, inventory);
+    const { verdict: found, callSite } = applicability(change, inventory);
+    const verdict = { ...found, at: new Date().toISOString() };
     const affected = verdict.result === "affected";
     await patchCase(caseId, {
       verdict,
@@ -62,6 +64,7 @@ const reproduce = createStep({
     const { affected: _, ...rest } = inputData;
     const sandbox = await openSandbox(rest.repoDir, rest.commit);
     sandboxes.set(rest.caseId, sandbox);
+    const started = Date.now();
     const r = await sandbox.run(TEST_COMMAND);
     if (r.exitCode === 0) {
       await sandbox.destroy();
@@ -69,7 +72,7 @@ const reproduce = createStep({
       throw new Error("The test passes against the new supplier, so the failure did not reproduce.");
     }
     await patchCase(rest.caseId, {
-      before: { commit: rest.commit, command: TEST_COMMAND, exitCode: r.exitCode ?? -1, logRef: (r.stdout + r.stderr).slice(-2000) },
+      before: toRunResult(rest.commit, TEST_COMMAND, r, Date.now() - started),
     });
     return rest;
   },
@@ -101,7 +104,15 @@ const verification = createStep({
     await startVerifierAgent();
     const { caseId, attempt, diff, repoDir, commit } = inputData;
     const pending = waitForVerdict(caseId, attempt);
-    await relay.post(relay.repair, { type: "repair.proposed", caseId, attempt, headCommit: commit, diffRef: diff }, `I have a fix for ${caseId}. Please verify it.`);
+    await relay.post(relay.repair, {
+      type: "repair.proposed",
+      caseId,
+      attempt,
+      headCommit: commit,
+      diffRef: diff,
+      at: new Date().toISOString(),
+      say: "I have a fix. The tests pass here. Please check it independently.",
+    });
     const { decision, reason, after, regression } = await pending;
     await patchCase(caseId, {
       status: decision === "accept" ? "repaired" : "investigating",
@@ -130,7 +141,14 @@ const openPr = createStep({
     if (!accepted) {
       const relay = await getRelay();
       const reason = feedback ?? "The repair was not accepted.";
-      await relay.post(relay.observer, { type: "escalation.needed", caseId, attempt, reason }, `I could not fix ${caseId} safely. A person should look.`);
+      await relay.post(relay.observer, {
+        type: "escalation.needed",
+        caseId,
+        attempt,
+        reason,
+        at: new Date().toISOString(),
+        say: "I could not fix this safely. A person should look.",
+      });
       await patchCase(caseId, { status: "escalated", headline: "This one needs a person.", explanation: reason });
       return { caseId, outcome: "escalated" };
     }
@@ -145,7 +163,7 @@ const openPr = createStep({
     });
     await patchCase(caseId, {
       status: "awaiting_approval",
-      pr,
+      pr: { ...pr, openedAt: new Date().toISOString() },
       headline: "The fix is ready for your review.",
       approval: { state: "pending", by: "", at: "" },
     });

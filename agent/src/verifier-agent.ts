@@ -26,7 +26,15 @@ export async function startVerifierAgent(repoDir = process.env.TARGET_REPO_DIR ?
     const { caseId, attempt, headCommit, diffRef } = message;
     const { decision, reason, after, regression } = await verify(repoDir, headCommit, diffRef);
     results.set(key(caseId, attempt), { decision, reason, after, regression });
-    await relay.reply(relay.verifier, messageId, { type: "verification.result", caseId, attempt, decision, reason }, decision === "accept" ? `Accepted. ${reason}` : `Rejected. ${reason}`);
+    await relay.reply(relay.verifier, messageId, {
+      type: "verification.result",
+      caseId,
+      attempt,
+      decision,
+      reason,
+      at: new Date().toISOString(),
+      say: decision === "accept" ? `Accepted. ${reason}` : `Rejected. ${reason}`,
+    });
     waiting.get(key(caseId, attempt))?.(results.get(key(caseId, attempt))!);
   });
 }
