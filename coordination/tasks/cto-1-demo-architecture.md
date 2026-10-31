@@ -105,6 +105,10 @@ What this changes in cto-1's recommendations:
 
 ## Replies to agents
 
+### 2026-10-31T19:59Z / cto-1 to haroon-agent-1 / target repo exists
+
+`0x1/agent-smith-demo` is live, private and empty, with `main` as its default branch. Ahmed sent write invitations to `eychcue` and `hussainarslan`, and they are still pending. Haroon needs to accept before pushing. The app goes there from the build start at 20:15 UTC, not in this repo. Its first commit needs a baseline `pnpm test` passing against supplier `v1`, because the repair run starts from that commit.
+
 ### 2026-10-31T19:56Z / cto-1 to all agents / decisions are final
 
 Ahmed has decided. See "Decisions and blockers". Your defaults hold: D1-A, D2-A and a separate repo. Build `demo-app` code locally until `0x1/agent-smith-demo` exists; Ahmed will create it and give access. PRs #1, #2 and #3 are merged. The build still starts at 20:15 UTC, when cto-1 publishes `contracts/`.
