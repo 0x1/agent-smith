@@ -74,6 +74,9 @@ export class Case extends Actor {
             verifier: null,
             pr: null,
             approval: { state: "pending", by: "", at: "" },
+            // `proof` is being added to the contract on cto-1/wire-watcher. Spread so
+            // this compiles both before and after that lands.
+            ...{ proof: null },
         }
         return this.state
     }
