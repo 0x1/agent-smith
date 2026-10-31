@@ -134,6 +134,11 @@ a { color: inherit; }
 .tag.no { background: var(--pink); } .tag.yes { background: var(--mint); }
 .tag.back, .tag.raw { background: var(--paper-sunken); color: var(--ink-muted); border-color: var(--ink-muted); }
 
+/* The labelled demo patch: set apart from the real story, never mistaken for it. */
+.deliberate { margin: 8px 0 12px; padding: 4px 14px 2px; border: 2px dashed var(--ink); border-radius: 14px; background: var(--paper-sunken); }
+.deliberate .hd2 { display: flex; gap: 12px; align-items: baseline; padding: 8px 0 6px; font-size: 17px; color: var(--ink-muted); flex-wrap: wrap; }
+.deliberate .msg:first-of-type { border-top: 0; }
+
 /* Footnotes */
 .foot { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
 .foot .card { padding: 10px 16px; font-size: 18px; line-height: 26px; box-shadow: var(--hard-4); max-width: 760px; }

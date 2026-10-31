@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { AGENT_NAMES, type RelayMessage } from "../../../contracts/relay.ts";
 import type { RelayEntry } from "../../shared/stream.ts";
-import { rejectedNow, steps } from "./model.ts";
+import { rejectedNow, splitDeliberate, steps } from "./model.ts";
 import type { LiveCase } from "./types.ts";
 
 const caseId = "demo.supplier.stock";
@@ -78,5 +78,33 @@ describe("plain, real text", () => {
     const c = kase({ status: "approved", approval: { state: "approved", by: "hussainarslan", at: T } });
     const you = steps(c, []).find((s) => s.key === "you");
     expect(you?.what).toBe("Approved by hussainarslan · nothing merged or deployed");
+  });
+});
+
+// The exchange `agent/src/bad-patch.ts` sends: same case ID, its own attempt, labelled in `say`.
+describe("the deliberately bad patch", () => {
+  const bad = [
+    msg({ type: "repair.proposed", attempt: 99, headCommit: "ddddddd", diffRef: "", say: "Deliberately bad patch, for this demo: it forgets that stock can't go below zero. Can the verifier catch it?" }),
+    msg({ type: "verification.result", attempt: 99, decision: "reject", reason: "should be 0, but the fix returned -2", say: "Deliberately bad patch: rejected. should be 0, but the fix returned -2" }),
+  ];
+  const real = [proposed(1), verdict(1, "accept")];
+
+  test("is split out of the real conversation", () => {
+    const { real: r, deliberate } = splitDeliberate([...real, ...bad]);
+    expect(r).toEqual(real);
+    expect(deliberate).toEqual(bad);
+  });
+
+  test("never changes the real story", () => {
+    for (const status of ["investigating", "repaired", "awaiting_approval", "approved"] as const) {
+      const c = kase({ status, after: run(1, 1), regression: run(2, 2) });
+      const withBad = steps(c, [...real, ...bad]);
+      expect(withBad).toEqual(steps(c, real));
+      expect(withBad.map((s) => s.what).join(" ")).not.toContain("Deliberately");
+    }
+  });
+
+  test("is not a real rejection, even while the real case is still investigating", () => {
+    expect(rejectedNow(kase(), [proposed(1), ...bad])).toBeNull();
   });
 });

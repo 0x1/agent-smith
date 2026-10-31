@@ -1,17 +1,25 @@
+import type { RelayMessage as Message } from "../../../../contracts/relay.ts";
 import type { RelayEntry } from "../../../shared/stream.ts";
 import { clock } from "../format.ts";
-import { roleOf, sentBackAttempts, type Role } from "../model.ts";
+import { roleOf, sentBackAttempts, splitDeliberate, type Role } from "../model.ts";
 
-const PEOPLE: Record<Role, [string, string, string]> = {
-  observer: ["W", "Watcher", "Fixer"],
-  repair: ["F", "Fixer", "Verifier"],
-  verifier: ["V", "Verifier", "Fixer"],
-  other: ["?", "", ""],
+const TO: Record<Message["type"], string> = {
+  "repair.requested": "Fixer",
+  "repair.proposed": "Verifier",
+  "verification.result": "Fixer",
+  "escalation.needed": "you",
+};
+
+const PEOPLE: Record<Role, [string, string]> = {
+  observer: ["W", "Watcher"],
+  repair: ["F", "Fixer"],
+  verifier: ["V", "Verifier"],
+  other: ["?", ""],
 };
 
 export function RelayMessage({ m, sentBack }: { m: RelayEntry; sentBack: Set<number> }) {
   const role = roleOf(m);
-  const [letter, who, to] = PEOPLE[role];
+  const [letter, who] = PEOPLE[role];
   const p = m.parsed;
   if (!p) {
     return (
@@ -24,6 +32,8 @@ export function RelayMessage({ m, sentBack }: { m: RelayEntry; sentBack: Set<num
       </div>
     );
   }
+  // Who it's for follows from what it is, whoever posted it.
+  const to = TO[p.type];
   const rejected = p.type === "verification.result" && p.decision === "reject";
   const gone = p.type === "repair.proposed" && sentBack.has(p.attempt);
   let tag = null;
@@ -41,12 +51,11 @@ export function RelayMessage({ m, sentBack }: { m: RelayEntry; sentBack: Set<num
   );
 }
 
-// The agents' conversation for one case, grouped by attempt. Rejected attempts stay visible.
-export function RelayThread({ msgs, live, since }: { msgs: RelayEntry[]; live: boolean; since: string }) {
+function Attempts({ msgs }: { msgs: RelayEntry[] }) {
   const sentBack = sentBackAttempts(msgs);
+  const multi = new Set(msgs.map((m) => m.parsed?.attempt).filter((a) => a !== undefined && a > 0)).size > 1;
   const rows: React.ReactNode[] = [];
   let attempt: number | null = null;
-  const multi = new Set(msgs.map((m) => m.parsed?.attempt).filter((a) => a !== undefined && a > 0)).size > 1;
   for (const m of msgs) {
     const a = m.parsed?.attempt;
     if (multi && a !== undefined && a > 0 && a !== attempt) {
@@ -55,11 +64,28 @@ export function RelayThread({ msgs, live, since }: { msgs: RelayEntry[]; live: b
     }
     rows.push(<RelayMessage key={m.id} m={m} sentBack={sentBack} />);
   }
+  return <>{rows}</>;
+}
+
+// The labelled demo patch, kept apart from the real repair. The `say` text shows verbatim.
+function Deliberate({ msgs }: { msgs: RelayEntry[] }) {
+  return (
+    <div className="deliberate enter">
+      <div className="hd2"><span className="tag no">Deliberately bad patch</span><span>a labelled test of the verifier, not the real repair</span></div>
+      <Attempts msgs={msgs} />
+    </div>
+  );
+}
+
+// The agents' conversation for one case, grouped by attempt. Rejected attempts stay visible.
+export function RelayThread({ msgs, live, since }: { msgs: RelayEntry[]; live: boolean; since: string }) {
+  const { real, deliberate } = splitDeliberate(msgs);
   return (
     <div className="card chat">
       <div className="hd"><b>Agent Relay</b><span>the agents, talking</span></div>
       {!live && <p className="empty no">✕ No live data from Agent Relay since {since}.</p>}
-      {rows.length ? rows : live && <p className="empty">The agents' conversation appears here as it happens.</p>}
+      {real.length ? <Attempts msgs={real} /> : live && <p className="empty">The agents' conversation appears here as it happens.</p>}
+      {deliberate.length > 0 && <Deliberate msgs={deliberate} />}
     </div>
   );
 }
