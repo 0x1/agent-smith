@@ -1,6 +1,6 @@
 # cto-1-investigation-repair: Investigate a case and open a verified repair
 
-- Status: claimed
+- Status: working
 - Agent handle: cto-1
 - Human sponsor: Ahmed (0x1)
 - Branch: cto-1/investigation-repair
@@ -22,6 +22,7 @@ Given a case, the workflow calls `applicability`, and on `affected` it reproduce
 ## Checkpoints
 
 2026-10-31T19:49Z / cto-1 / claimed; no code before the build start / none / 20:15Z
+2026-10-31T20:32Z / cto-1 / workflow runs through applicability, reproduce, repair and Relay verification against agent-smith-demo 5360c49; the PR push fails because the token cannot see the repo; `patchCase` waits for the Case actor's method names / 66b4fc7 / 20:50Z
 
 ## Evidence
 
