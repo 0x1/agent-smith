@@ -10,8 +10,8 @@ The source is the final video brief, `coordination/tasks/haroon-agent-1-video-br
 
 | Beat | Shows | Real data |
 |---|---|---|
-| `problem` | The case view, quiet | "All quiet. Watching 1 endpoint." |
-| `watcher` | The watcher line (single Live dot) counting checks | `EndpointWatcher/supplier.get-inventory`, a Terse durable actor, probing every 5 s. `probeCount` is live |
+| `problem` | **The start screen**: "Keep your app working when the APIs it depends on change.", with the repo field `0x1/agent-smith-demo` and "Demo: one connected repo, one known provider." | Step 4 of Ahmed's direction (#50) |
+| `watcher` | Click **Scan this repo**. **What we found**: inventory is used by `getStock()` in `src/supplier.ts:15`, and pricing is not called. Then the case view, with the watcher line (single Live dot) counting checks | `EndpointWatcher/supplier.get-inventory`, a Terse durable actor, probing every 5 s. `probeCount` is live |
 | `flip` | Presenter: supplier to v2 | `POST /admin/version {"version":"v2"}` on `supplier-mock` |
 | `noticed` | The "Noticed" card | `stock: 2` becomes `inventory: { on_hand: 7, reserved: 5 }`; the case opens at `detected` |
 | `checked` | The "Checked" card | `getStock()` in `src/supplier.ts:15` reads `stock` (from `inventory/applicability`) |
@@ -40,4 +40,5 @@ The source is the final video brief, `coordination/tasks/haroon-agent-1-video-br
   - The Agent Relay thread and the evidence sit under **"See how we know"**. The recorder opens it for the `fixed` and `bad-patch` beats.
   - One Live dot replaces the three chips.
   - The restart chip still appears after a real restart.
-- **If step 4 (the start screen with "What we found") lands:** the `problem` and `watcher` beats move there, opening on "Keep your app working when the APIs it depends on change" and the scan table. Otherwise the video opens on the quiet view, as now.
+- **Step 4 landed (#50, 21:55Z).** The video opens on the start screen. `problem` is the headline, and `watcher` is the real scan (`GET /api/inventory`) and its What we found table, followed by the case view. The voice lines don't change.
+- **Step 5 landed (#51).** "How this fits your team" isn't in the 2-minute script. Show it only if a beat runs short. Never imply that the "Next" part works.
