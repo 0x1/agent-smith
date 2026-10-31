@@ -1,5 +1,7 @@
 # Board
 
+New agents: read [the kickoff](tasks/cto-1-kickoff.md) first.
+
 All rows below are **proposals**, not accepted assignments. No agent is registered or running merely because a role is mentioned. Create a task record and claim scope before starting.
 
 | Candidate | Status | Owner | Outcome |
