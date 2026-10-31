@@ -1,0 +1,25 @@
+{
+  "name": "agent-smith-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config app/vite.config.ts",
+    "build": "tsc -p app && vite build --config app/vite.config.ts",
+    "typecheck": "tsc -p app && tsc -p bridge",
+    "bridge": "bun bridge/server.ts",
+    "start": "pnpm build && bun bridge/server.ts"
+  },
+  "dependencies": {
+    "@agent-relay/sdk": "15.0.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}
