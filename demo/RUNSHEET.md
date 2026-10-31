@@ -44,12 +44,12 @@ Have two terminals ready. **T1** stays in the repo root, for supplier flips and 
 
 | Time | Do | Say |
 |---|---|---|
-| 0:00 | Page on screen, quiet view. | "This app reads stock levels from a supplier's API. Agent Smith watches that API every five seconds, so we don't find out when customers do." |
+| 0:00 | Page on screen, quiet view (one Live dot; the Relay thread and evidence sit under **See how we know**). | "This app reads stock levels from a supplier's API. Agent Smith watches that API every five seconds, so we don't find out when customers do." |
 | 0:15 | *Optional, the not-affected beat.* T1: `curl -s -XPOST localhost:7200/admin/version -d '{"version":"v1.1"}'`. Within 5 s, cases open; `agent/` marks them `not_affected`. | "The supplier just shipped an update: they dropped a warehouse field and added a restock date. Smith checked the code. Nothing reads either one, so there's nothing to fix and nobody gets paged." |
 | 0:45 | **Detect.** T1: `curl -s -XPOST localhost:7200/admin/version -d '{"version":"v2"}'` | "Now a breaking release. They replaced the stock number with on-hand and reserved." |
 | 0:50 | **Case.** The case card appears (`detected`), with the headline in plain language. | "Smith noticed on its next check and opened a case. It's a durable record, which matters in a minute." |
 | 1:00 | **Investigate.** The status moves to `investigating`, showing the call site that reads the old field. | "It found the one place in the app that reads the old field." |
-| 1:10 | **Repair.** The Relay conversation shows the request and the proposed fix. The failing test is shown before the fix. | "Here's the app's own test failing against the new API. The repair agent proposes a fix." |
+| 1:10 | **Repair.** Open **See how we know**: the Relay conversation shows the request and the proposed fix. The failing test is shown before the fix. | "Here's the app's own test failing against the new API. The repair agent proposes a fix." |
 | 1:25 | **Verify.** After the fix, the tests pass and the hidden regression test passes. The verifier accepts. Status `repaired`, about 29 s after the flip. | "A separate verifier checks the fix against tests the repair agent never saw. The app's numbers mean available stock: on-hand minus reserved, never below zero." |
 | 1:40 | **PR.** Status `awaiting_approval`, and **Review the fix →** appears. Click it to open the PR in `0x1/agent-smith-demo`. | "It opened a normal pull request. Nothing merges until a person approves it." |
 | 1:55 | **Approve.** Approve the review on GitHub. **Do not merge.** Then T1: `bun actors/scripts/invoke.ts Case agent-smith-demo.supplier.GET-v1-inventory-sku.stock patch '{"status":"approved","approval":{"state":"approved","by":"hussainarslan","at":"'$(date -u +%FT%TZ)'"}}'` | "Approved. Smith's job ends at a reviewed PR. The merge stays with the team." |

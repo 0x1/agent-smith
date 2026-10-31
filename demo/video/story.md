@@ -11,16 +11,16 @@ The source is the final video brief, `coordination/tasks/haroon-agent-1-video-br
 | Beat | Shows | Real data |
 |---|---|---|
 | `problem` | The case view, quiet | "All quiet. Watching 1 endpoint." |
-| `watcher` | The watcher chip counting | `EndpointWatcher/supplier.get-inventory`, a Terse durable actor, probing every 5 s. `probeCount` is live |
+| `watcher` | The watcher line (single Live dot) counting checks | `EndpointWatcher/supplier.get-inventory`, a Terse durable actor, probing every 5 s. `probeCount` is live |
 | `flip` | Presenter: supplier to v2 | `POST /admin/version {"version":"v2"}` on `supplier-mock` |
 | `noticed` | The "Noticed" card | `stock: 2` becomes `inventory: { on_hand: 7, reserved: 5 }`; the case opens at `detected` |
 | `checked` | The "Checked" card | `getStock()` in `src/supplier.ts:15` reads `stock` (from `inventory/applicability`) |
 | `not-affected` | Footnotes from the same v2 flip | `warehouse` removed and `restock_eta` added, each its own case marked `not_affected` (PR #32) |
-| `fixed` | The "Fixed" card and the Agent Relay thread | Fixer, then verifier, on `agent-smith-repairs`. The verifier owns the tests |
+| `fixed` | The "Fixed" step, then **open "See how we know"** to show the Agent Relay thread | Fixer, then verifier, on `agent-smith-repairs`. The verifier owns the tests |
 | `proved` | The "Proved" card | `Case.proof`: 7 − 5 = 2. `pnpm test` fails before and passes after. Hidden checks: `regression.passed` of `regression.total` (2 of 2 today) |
-| `bad-patch` | **Conditional.** A deliberately bad patch, labelled on screen, in the **Agent Relay conversation** | The verifier's message carries the numbers: "should be 0, but the fix returned -2". Its `say` begins "Deliberately bad patch". **The case's proof block doesn't change**, because the bad patch never touches the case |
+| `bad-patch` | **Conditional.** A deliberately bad patch, labelled on screen, in the **Agent Relay conversation** under "See how we know" | The verifier's message carries the numbers: "should be 0, but the fix returned -2". Its `say` begins "Deliberately bad patch". **The case's proof block doesn't change**, because the bad patch never touches the case |
 | `approve` | The "You" card | Haroon or Hussain clicks Approve on the real PR; Ahmed can't, because it opens under his login. The case reads "Approved by … · nothing merged or deployed". **Verify before recording:** this needs PR #36 merged and a test approval on `agent-smith-demo` #2. If it isn't verified, show only the PR's Approve click |
-| `restart` | The watcher chip after `demo/restart-proof.sh` | `kill -9`, then a new pid. State survives, alarms are re-armed by `rearm`, and `probeCount` keeps rising |
+| `restart` | The restart chip ("Restarted the watcher at … · pid … → …", shown for a while after a real restart) after `demo/restart-proof.sh` | `kill -9`, then a new pid. State survives, alarms are re-armed by `rearm`, and `probeCount` keeps rising |
 | `close` | The case view, approved | Closing line |
 
 ## Conditional beat
@@ -33,6 +33,11 @@ The source is the final video brief, `coordination/tasks/haroon-agent-1-video-br
 - **No staged failures.** The real repair passes on the first try, which cto-1 measured at 5 of 5 attempts. The only rejection is the labelled bad patch.
 - **After recording:** close the fix PR in `agent-smith-demo` and don't merge it. Then run `demo/reset.sh` before the live demo.
 
-## Pending
+## Screen changes from Ahmed's front-end direction (4ec6924)
 
-Ahmed's front-end direction (4ec6924) changes the screens. Once step 2 (the one-column view, PR #47) lands, the beats are re-checked against the new view, and the opening moves to the start screen if step 4 lands.
+- **Step 2 (one-column view, #47) is checked.**
+  - The steps read as a quiet timeline.
+  - The Agent Relay thread and the evidence sit under **"See how we know"**. The recorder opens it for the `fixed` and `bad-patch` beats.
+  - One Live dot replaces the three chips.
+  - The restart chip still appears after a real restart.
+- **If step 4 (the start screen with "What we found") lands:** the `problem` and `watcher` beats move there, opening on "Keep your app working when the APIs it depends on change" and the scan table. Otherwise the video opens on the quiet view, as now.
