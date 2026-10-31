@@ -42,12 +42,20 @@ export interface Signal {
 export interface Verdict {
   result: "affected" | "not_affected";
   evidence: string[];
+  at?: string;
 }
 
 export interface CallSite {
   path: string;
   line: number;
+  functionName?: string;
   fieldsRead: string[];
+}
+
+export interface TestFailure {
+  test: string;
+  expected: string;
+  actual: string;
 }
 
 export interface RunResult {
@@ -55,6 +63,10 @@ export interface RunResult {
   command: string;
   exitCode: number;
   logRef: string;
+  passed: number;
+  total: number;
+  failure: TestFailure | null;
+  durationMs: number;
 }
 
 export interface VerifierDecision {
@@ -88,8 +100,20 @@ export interface Case {
   // Hidden tests. These stay separate from the before and after runs.
   regression: RunResult | null;
   verifier: VerifierDecision | null;
-  pr: { number: number; url: string } | null;
+  pr: { number: number; url: string; openedAt: string } | null;
   approval: Approval;
+}
+
+// What the EndpointWatcher actor emits. `caseIds` is how `web/` and `agent/` find
+// cases, including `not_affected` ones that never reach Relay.
+export interface WatcherState {
+  endpoint: string;
+  lastProbeAt: string | null;
+  lastChangeAt: string | null;
+  probeCount: number;
+  savedAt: string;
+  pid: number;
+  caseIds: string[];
 }
 
 const CASE_ID_PATTERN = /^[A-Za-z0-9._-]+$/;

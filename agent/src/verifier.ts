@@ -3,6 +3,7 @@ import { join } from "node:path";
 import type { RunResult } from "../../contracts/case.ts";
 import { TEST_COMMAND } from "./repair.ts";
 import { openSandbox } from "./sandbox.ts";
+import { toRunResult } from "./test-output.ts";
 
 export interface Verification {
   decision: "accept" | "reject";
@@ -31,14 +32,16 @@ export async function verify(repoDir: string, commit: string, diff: string): Pro
     const applied = await sandbox.run("git apply .patch.diff && rm .patch.diff");
     if (applied.exitCode !== 0) return { decision: "reject", reason: "The patch does not apply cleanly.", after: null, regression: null };
 
+    const visibleStarted = Date.now();
     const visible = await sandbox.run(TEST_COMMAND);
-    const after = { commit, command: TEST_COMMAND, exitCode: visible.exitCode ?? -1, logRef: (visible.stdout + visible.stderr).slice(-2000) };
+    const after = toRunResult(commit, TEST_COMMAND, visible, Date.now() - visibleStarted);
     if (visible.exitCode !== 0) return { decision: "reject", reason: "The visible tests still fail.", after, regression: null };
 
     await sandbox.writeFile("test/hidden.test.ts", readFileSync(HIDDEN, "utf8"));
     const hiddenCommand = "SUPPLIER_VERSION=v2 pnpm exec tsx --test test/hidden.test.ts";
+    const hiddenStarted = Date.now();
     const hidden = await sandbox.run(hiddenCommand);
-    const regression = { commit, command: "hidden regression tests", exitCode: hidden.exitCode ?? -1, logRef: (hidden.stdout + hidden.stderr).slice(-2000) };
+    const regression = toRunResult(commit, "hidden regression tests", hidden, Date.now() - hiddenStarted);
     if (hidden.exitCode !== 0) return { decision: "reject", reason: "A regression test the repair could not see failed.", after, regression };
 
     return { decision: "accept", reason: "Visible and hidden tests pass.", after, regression };
