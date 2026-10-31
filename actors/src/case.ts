@@ -97,6 +97,17 @@ export class Case extends Actor {
         return { attached: true, state: this.state }
     }
 
+    // Forget the case and every seen event, so the next create() starts fresh at
+    // `detected` with attempt 0. Used between demo runs: case IDs are
+    // deterministic, so without this a rehearsal case comes back already approved.
+    async reset(): Promise<{ caseId: string; wasStatus: string | null }> {
+        const wasStatus = this.state?.status ?? null
+        this.#ensureTables()
+        this.db.exec("DELETE FROM seen_events")
+        this.state = null
+        return { caseId: this.id, wasStatus }
+    }
+
     async read(): Promise<CaseRecord | null> {
         return this.state
     }

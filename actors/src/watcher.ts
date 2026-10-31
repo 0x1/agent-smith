@@ -78,13 +78,18 @@ export class EndpointWatcher extends Actor {
         return this.state
     }
 
-    // Forget the saved structure and the case list, for demo reruns. Cases
-    // themselves are not deleted. The next probe saves a new baseline.
-    async reset(): Promise<WatcherView> {
+    // Clean slate for a demo rerun: resets every case this watcher opened, plus
+    // any `extraCaseIds` (for cases opened before Case.reset existed), then
+    // forgets the saved structure and the case list. The next probe saves a new
+    // baseline, and the same change opens its case again at `detected`.
+    async reset(extraCaseIds: string[] = []): Promise<WatcherView & { resetCases: { caseId: string; wasStatus: string | null }[] }> {
+        const ids = [...new Set([...this.state.caseIds, ...extraCaseIds])]
+        const resetCases = []
+        for (const id of ids) resetCases.push(await Case.get(id).reset())
         this.baseline = null
         this.#save({ shape: null, history: [], caseIds: [], lastChangeAt: null, lastError: null })
         this.#ensureAlarm()
-        return this.state
+        return { ...this.state, resetCases }
     }
 
     async probeNow(): Promise<WatcherView> {

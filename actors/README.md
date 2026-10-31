@@ -30,10 +30,11 @@ Checks: `bun run --bun check` (typecheck) and `bun test` (shape flattening and c
 | | `patch(partial)` | Shallow merge of top-level keys, returns the new state. `caseId` can't change. |
 | | `addSignal(signal)` | Exact repeat `eventId` is ignored (`{attached:false}`). |
 | | `read()`, `get()` | The full `Case`, or `null`. |
+| | `reset()` | Clears `state` to `null` and empties `seen_events`, so the next `create()` starts at `detected`, attempt 0. |
 | `EndpointWatcher/supplier.get-inventory` | `watch(baseUrl, sku, everyMs=5000)` | Saves config and arms the alarm. |
 | | `probeNow()` | Probes immediately. |
 | | `read()`, `getState()` | `WatcherState` plus `watching`, `shape`, `history`, `lastError`, `nextProbeAt`. |
-| | `reset()` | Forgets the baseline and `caseIds` for a demo rerun. Cases stay. |
+| | `reset(extraCaseIds?)` | Demo rerun: calls `Case.reset()` on every id in `caseIds` plus `extraCaseIds`, then forgets the baseline and `caseIds`. Returns `resetCases`. |
 | | `stop()` | Cancels the alarm. |
 
 Every detected change opens a case, `added` included; `agent/` decides `affected` or `not_affected`. A removed or retyped path is `breaking`. One case per detected change, keyed on the shallowest broken path (or the shallowest added path).
@@ -58,6 +59,10 @@ curl -s -X POST http://127.0.0.1:7100/v1/projects/local/actors/Case/$CASE_ID/inv
 
 - First frame: `{"type":"state","version":n,"state":{"state":{...}}}`
 - After that: `{"type":"state_update","version":n,"changes":{"state":{...}}}`
+
+## Clean slate between runs
+
+`demo/reset.sh` resets every case through the watcher, stops the servers, deletes `actors/.durable-actors/` (all local actor state), restarts, rearms and sets the supplier to v1.
 
 ## Restart
 
