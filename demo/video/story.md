@@ -42,3 +42,10 @@ The source is the final video brief, `coordination/tasks/haroon-agent-1-video-br
   - The restart chip still appears after a real restart.
 - **Step 4 landed (#50, 21:55Z).** The video opens on the start screen. `problem` is the headline, and `watcher` is the real scan (`GET /api/inventory`) and its What we found table, followed by the case view. The voice lines don't change.
 - **Step 5 landed (#51).** "How this fits your team" isn't in the 2-minute script. Show it only if a beat runs short. Never imply that the "Next" part works.
+
+## Ahmed's latest wording (cto-1 on PR #55, 22:49Z)
+
+- The landing step is **Find dependencies**: Agent Smith finds every dependency an app relies on. "Demo: one connected repo, one known provider" stays visible, and is the subtitle on the first chapter card.
+- The active steps read **Noticing, Checking, Fixing, Proving, Your turn**. The chapter titles now follow them: Find dependencies · Noticing and checking · Fixing and proving · Your turn · Durable.
+- "**Mock supplier**" is said once, in the `flip` beat.
+- Only `problem` changed its voice line, to match the new landing step. Every other line is the team's final script.
