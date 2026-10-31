@@ -8,6 +8,14 @@ import { isLive, sinceText, WatcherChip } from "./components/WatcherChip.tsx";
 import { isFixture, useLive, useNow } from "./live.ts";
 import { activeCase, caseMessages, notAffected, unstructured } from "./model.ts";
 
+const SPONSORS = [
+  ["Terse", "terse.png"],
+  ["Agent Relay", "agentrelay.svg"],
+  ["Mastra", "mastra.png"],
+  ["Freestyle", "freestyle.png"],
+  ["OpenAI", ""],
+];
+
 export function App() {
   const [demo, setDemo] = useState(() => window.location.hash === "#demo" || isFixture());
   useEffect(() => {
@@ -38,7 +46,9 @@ export function App() {
       {demo ? <><WatcherChip s={s} now={now} />{body}</> : <Landing onDemo={() => { window.location.hash = "demo"; }} />}
       <footer className="built">
         <span>Built with</span>
-        {["Terse", "Agent Relay", "Mastra", "Freestyle", "OpenAI"].map((name) => <b key={name}>{name}</b>)}
+        {SPONSORS.map(([name, logo]) => (
+          <b key={name}>{logo && <img src={`/logos/${logo}`} alt="" />}{name}</b>
+        ))}
       </footer>
     </div>
   );

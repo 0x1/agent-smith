@@ -79,7 +79,7 @@ a { color: inherit; }
 .st { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .st::before { content: ''; position: absolute; top: 15px; left: -50%; right: 50%; height: 1px; background: var(--line-strong); }
 .st:first-child::before { display: none; }
-.st button { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
+.st button { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
 .st button:disabled { cursor: default; }
 .st button:not(:disabled):hover .lb { text-decoration: underline; text-underline-offset: 4px; }
 .st .tip { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 6px; z-index: 30; width: max-content; max-width: 320px; padding: 8px 12px; background: var(--ink); color: var(--card); border-radius: 8px; font-size: 15px; line-height: 21px; visibility: hidden; }
@@ -193,7 +193,9 @@ details.raw { margin-top: 14px; }
 .act .note { color: var(--ink-muted); font-size: 15px; }
 
 .built { position: fixed; left: 56px; right: 56px; bottom: 12px; display: flex; gap: 22px; align-items: baseline; color: var(--ink-muted); font-size: 14px; }
-.built b { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink-soft); }
+.built { align-items: center; }
+.built b { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink-soft); }
+.built img { height: 22px; width: 22px; object-fit: contain; border-radius: 4px; }
 
 /* Older proof styles stay out of the main view. */
 .win { position: relative; margin-top: 18px; }
