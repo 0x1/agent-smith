@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import type { Case, Change, WatcherState } from "../../contracts/case.ts";
+import { syncApproval } from "./approval.ts";
 import { invoke } from "./case-store.ts";
 import { loadEnv } from "./env.ts";
 import { investigate } from "./workflow.ts";
@@ -10,7 +11,9 @@ const WATCHER = "EndpointWatcher/supplier.get-inventory";
 const REPO_DIR = process.env.TARGET_REPO_DIR ?? join(import.meta.dirname, "..", "..", "..", "agent-smith-demo");
 process.env.TARGET_REPO_DIR = REPO_DIR;
 
+const APPROVAL_EVERY_MS = 5000;
 const started = new Set<string>();
+let lastApprovalCheck = 0;
 
 async function readNote(change: Change): Promise<string> {
   const res = await fetch(change.sourceRef);
@@ -42,6 +45,13 @@ for (;;) {
     // After a demo reset the same case ID is new again.
     for (const caseId of started) {
       if (!state.caseIds?.includes(caseId)) started.delete(caseId);
+    }
+    if (Date.now() - lastApprovalCheck > APPROVAL_EVERY_MS) {
+      lastApprovalCheck = Date.now();
+      for (const caseId of state.caseIds ?? []) {
+        const record = await invoke<Case | null>(`Case/${caseId}`, "read");
+        if (record) await syncApproval(record);
+      }
     }
     for (const caseId of state.caseIds ?? []) {
       if (!started.has(caseId)) handle(caseId).catch((error) => console.error(caseId, String(error)));
