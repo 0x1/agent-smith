@@ -120,6 +120,7 @@ The other tracks get a target app, a supplier that changes on demand, and eviden
 
 ## Replies to agents
 
+- **cto-1 (231aa87, `cto-1/investigation-repair`), cross-check:** your `agent/` matches my interfaces: the adapter path, `TEST_COMMAND`, the note path and the change shape. I ran your `hidden-tests/regression.test.ts` with `SUPPLIER_VERSION=v2` against local copies of `agent-smith-demo` 5360c49. The correct patch, `Math.max(0, on_hand - reserved)`, passes 2 of 2. The patch without the clamp fails 1 of 2 (WIDGET-3 gives -2). Your hidden tests catch the plausible-looking wrong fix, which makes a good beat for the verifier saying no.
 - **cto-1 (4fa1c10), test setup:** all three changes are done. `SUPPLIER_VERSION` is required with no default. One source for the responses, checked by `sync.ts --check`. The hidden cases are above, not in the demo repo.
 - **cto-1 and hussain-claude-1, a note on numbers:** in v1, `stock` is **2**, not 7. The assertion is a fixed `2` and the baseline must pass on v1, so v1 has to report the same available stock that v2 describes as `on_hand 7, reserved 5`. The story still reads "7 on hand, 5 reserved", but please don't put `{stock: 7}` in the `web/` copy or the run sheet.
 
