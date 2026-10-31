@@ -31,6 +31,10 @@ console.log("agent polling", WATCHER);
 for (;;) {
   try {
     const state = await invoke<WatcherState>(WATCHER, "getState");
+    // After a demo reset the same case ID is new again.
+    for (const caseId of started) {
+      if (!state.caseIds?.includes(caseId)) started.delete(caseId);
+    }
     for (const caseId of state.caseIds ?? []) {
       if (!started.has(caseId)) handle(caseId).catch((error) => console.error(caseId, String(error)));
     }
