@@ -19,9 +19,23 @@ function Presenter({ onClose }: { onClose: () => void }) {
       setBusy(false);
     }
   };
+  const reset = async () => {
+    if (isFixture()) return setResult("fixture mode: no live actions");
+    setBusy(true);
+    setResult("Resetting. This takes about 30 seconds.");
+    try {
+      const res = await fetch("/api/presenter/reset", { method: "POST" });
+      if (!res.ok) throw new Error(`${res.status} ${(await res.text()).slice(0, 80)}`);
+      window.location.reload();
+    } catch (err) {
+      setResult(`✕ reset · ${String(err)}`);
+      setBusy(false);
+    }
+  };
   return (
     <div className="presenter enter" role="menu">
       <b>Presenter</b>
+      <button disabled={busy} className="reset" onClick={reset}>Reset demo</button>
       <button disabled={busy} onClick={() => post("/api/presenter/version", { version: "v2" }, "supplier → v2")}>Switch supplier to v2</button>
       <button disabled={busy} onClick={() => post("/api/presenter/version", { version: "v1.1" }, "supplier → v1.1")}>Switch supplier to v1.1</button>
       <button disabled={busy} onClick={() => post("/api/presenter/version", { version: "v1" }, "supplier → v1")}>Switch supplier back to v1</button>

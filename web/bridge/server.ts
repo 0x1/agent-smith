@@ -5,8 +5,9 @@
 //   GET  /api/health             per-source state
 //   POST /api/presenter/version  {version} → supplier-mock /admin/version
 //   POST /api/presenter/probe    EndpointWatcher.probeNow()
+//   POST /api/presenter/reset    close rehearsal PRs, run demo/reset.sh, clear the last run
 //   GET  /api/inventory          the real inventory scan() of TARGET_REPO_DIR
-import { join, normalize } from "node:path";
+import { join, normalize, resolve } from "node:path";
 import { config } from "./config.ts";
 import { Hub, log } from "./hub.ts";
 import { startRelay } from "./relay.ts";
@@ -14,6 +15,26 @@ import { pollSupplier, setSupplierVersion } from "./supplier.ts";
 import { invoke, startTerse } from "./terse.ts";
 
 const hub = new Hub();
+const repoRoot = resolve(import.meta.dir, "../..");
+const DEMO_REPO = process.env.TARGET_REPO ?? "0x1/agent-smith-demo";
+
+async function run(cmd: string[]): Promise<{ code: number; out: string }> {
+  const proc = Bun.spawn(cmd, { cwd: repoRoot, stdin: "ignore", stdout: "pipe", stderr: "pipe" });
+  const out = await new Response(proc.stdout).text();
+  return { code: await proc.exited, out };
+}
+
+// Closes rehearsal fix PRs without merging them, resets the stack, and clears this
+// bridge's copy of the last run so nothing old shows on the next one.
+async function resetDemo(): Promise<Response> {
+  const listed = await run(["gh", "pr", "list", "--repo", DEMO_REPO, "--state", "open", "--json", "number", "--jq", ".[].number"]);
+  const open = listed.out.split("\n").filter(Boolean);
+  for (const n of open) await run(["gh", "pr", "close", n, "--repo", DEMO_REPO, "--comment", "Rehearsal PR, closed by Reset demo. Not merged."]);
+  const reset = await run(["bash", "demo/reset.sh"]);
+  if (reset.code !== 0) return json({ error: "demo/reset.sh failed", closed: open }, 500);
+  hub.clearRun();
+  return json({ ok: true, closed: open });
+}
 const json = (body: unknown, status = 200) => Response.json(body, { status });
 
 function stream(): Response {
@@ -82,6 +103,7 @@ async function routes(req: Request): Promise<Response> {
     );
   }
   if (pathname === "/api/inventory") return inventory();
+  if (pathname === "/api/presenter/reset" && post) return resetDemo();
   if (pathname.startsWith("/api/")) return json({ error: "not found" }, 404);
   return staticFile(pathname);
 }

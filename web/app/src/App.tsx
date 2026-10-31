@@ -9,11 +9,11 @@ import { isFixture, useLive, useNow } from "./live.ts";
 import { activeCase, caseMessages, notAffected, unstructured } from "./model.ts";
 
 const SPONSORS = [
-  ["Terse", "terse.png"],
-  ["Agent Relay", "agentrelay.svg"],
-  ["Mastra", "mastra.png"],
-  ["Freestyle", "freestyle.png"],
-  ["OpenAI", "openai.png"],
+  ["Terse", "terse.png", "https://www.useterse.ai/"],
+  ["Agent Relay", "agentrelay.svg", "https://agentrelay.com/"],
+  ["Mastra", "mastra.png", "https://mastra.ai/"],
+  ["Freestyle", "freestyle.png", "https://www.freestyle.sh/"],
+  ["OpenAI", "openai.png", "https://openai.com/"],
 ];
 
 export function App() {
@@ -46,8 +46,8 @@ export function App() {
       {demo ? <><WatcherChip s={s} now={now} />{body}</> : <Landing />}
       <footer className="built">
         <span>Built with</span>
-        {SPONSORS.map(([name, logo]) => (
-          <b key={name}>{logo && <img src={`/logos/${logo}`} alt="" />}{name}</b>
+        {SPONSORS.map(([name, logo, url]) => (
+          <a key={name} href={url} target="_blank" rel="noreferrer"><img src={`/logos/${logo}`} alt="" />{name}</a>
         ))}
       </footer>
     </div>

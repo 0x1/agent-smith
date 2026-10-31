@@ -208,8 +208,12 @@ details.raw { margin-top: 14px; }
 
 .built { position: fixed; left: 56px; right: 56px; bottom: 12px; display: flex; gap: 22px; align-items: baseline; color: var(--ink-muted); font-size: 14px; }
 .built { align-items: center; justify-content: flex-end; }
-.built b { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--ink-soft); }
-.built img { height: 28px; width: 28px; object-fit: contain; border-radius: 4px; mix-blend-mode: multiply; }
+.built { gap: 10px; }
+.built span { margin-right: 6px; font-size: 15px; }
+.built a { display: inline-flex; align-items: center; gap: 9px; padding: 6px 16px 6px 10px; background: var(--card); border: 1px solid var(--line-strong); border-radius: 999px; font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--ink-soft); text-decoration: none; transition: border-color .12s, color .12s; }
+.built a:hover { border-color: var(--ink); color: var(--ink); }
+.built a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.built img { height: 28px; width: 28px; object-fit: contain; border-radius: 4px; }
 
 /* Older proof styles stay out of the main view. */
 .win { position: relative; margin-top: 18px; }
@@ -280,4 +284,5 @@ details > summary::-webkit-details-marker { display: none; }
 .presenter b { padding: 4px 12px; font-family: var(--font-display); font-weight: 700; }
 .presenter button { text-align: left; padding: 8px 12px; border-radius: 10px; }
 .presenter button:hover { background: var(--sunken); }
+.presenter .reset { color: var(--danger); font-weight: 600; }
 .presenter .res { font-family: var(--font-mono); font-size: 15px; color: var(--ink-muted); padding: 4px 12px; }
