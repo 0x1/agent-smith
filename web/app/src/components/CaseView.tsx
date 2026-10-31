@@ -14,6 +14,11 @@ function leaves(paths: string[]): string[] {
   return paths.filter((p) => !paths.some((q) => q.startsWith(`${p}.`)));
 }
 
+// A diff reduced to the lines that changed.
+function changedLines(diff: string): string {
+  return diff.split("\n").filter((line) => /^[-+](?![-+])/.test(line)).join("\n") || diff;
+}
+
 const fmt = (n: number) => (n < 0 ? `−${Math.abs(n)}` : String(n));
 
 function Sell({ proof }: { proof: Proof }) {
@@ -119,10 +124,10 @@ export function CaseView({ c, msgs, others, relayLive, relaySince }: { c: LiveCa
             <section className="panel step-detail">
               <h2>{step.name}</h2>
               <p>{step.what}</p>
-              {step.detail && <pre>{step.detail}</pre>}
+              {step.detail && <pre>{step.key === "fixed" ? changedLines(step.detail) : step.detail}</pre>}
             </section>
           )}
-          <RelayThread msgs={run} live={relayLive} since={relaySince} />
+          {(!step || step.key === "fixed" || step.key === "proved") && <RelayThread msgs={run} live={relayLive} since={relaySince} />}
           <Evidence steps={st} />
         </Drawer>
       )}

@@ -233,7 +233,7 @@ export function steps(c: LiveCase, all: RelayEntry[]): Step[] {
     key: "you", name: STEP_NAMES.you, state: state.you,
     what: youWhat,
     when: clock(approval.at || c.pr?.openedAt),
-    detail: c.pr ? `${c.pr.url}\nbase ${c.baseCommit.slice(0, 7)} → head ${c.headCommit.slice(0, 7)}` : "",
+    detail: c.pr ? `${c.pr.url}\nbased on ${c.baseCommit.slice(0, 7)}` : "",
   };
 
   return [noticed, checked, fixed, proved, you];
