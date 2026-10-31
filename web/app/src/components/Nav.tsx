@@ -32,17 +32,19 @@ function Presenter({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function Nav({ onHow }: { onHow: () => void }) {
+export function Nav({ demo, onHow }: { demo: boolean; onHow: () => void }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="nav">
       <div className="logo"><span className="mark" aria-hidden>✱</span>Agent Smith</div>
-      <div className="navr">
-        <span>Controlled demo · mock supplier · nothing deploys</span>
-        <button className="btn" onClick={onHow}>How it works</button>
-        <button className="btn" onClick={() => setOpen((o) => !o)} aria-expanded={open}>Presenter ▾</button>
-        {open && <Presenter onClose={() => setOpen(false)} />}
-      </div>
+      {demo && (
+        <div className="navr">
+          <span>Controlled demo · mock supplier · nothing deploys</span>
+          <button className="btn" onClick={onHow}>How it works</button>
+          <button className="btn" onClick={() => setOpen((o) => !o)} aria-expanded={open}>Presenter ▾</button>
+          {open && <Presenter onClose={() => setOpen(false)} />}
+        </div>
+      )}
     </div>
   );
 }

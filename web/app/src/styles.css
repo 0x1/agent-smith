@@ -126,18 +126,50 @@ a { color: inherit; }
 .drawer .evidence { max-width: none; font-size: 13px; line-height: 20px; }
 details.raw { margin-top: 14px; }
 
-.landing { margin-top: 18px; }
-.hero .h { font-size: 44px; line-height: 50px; text-wrap: pretty; }
-.flow { list-style: none; padding: 0; margin-top: 26px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
-.flow li { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
-.flow li::after { content: ''; position: absolute; top: 28px; left: 66px; right: -6px; height: 1px; background: var(--line-strong); }
-.flow li:last-child::after { display: none; }
-.flow-ic { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--card); border: 1px solid var(--line-strong); color: var(--accent); }
-.flow b { font-weight: 650; font-size: 18px; line-height: 24px; margin-top: 4px; }
-.flow-sub { font-size: 15px; line-height: 21px; color: var(--ink-muted); }
-.how-modal { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(1240px, 92vw); background: var(--page); border: 1px solid var(--line-strong); border-radius: 14px; padding: 26px 30px 32px; z-index: 51; }
-.try { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--ink-muted); }
-.start { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); align-items: start; }
+/* Landing: one line across the page. It breaks where the API changes and is repaired after. */
+.lp { min-height: calc(100vh - 150px); display: flex; flex-direction: column; justify-content: center; }
+.lp-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 48px; }
+.lp-top h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(44px, 5.4vw, 92px); line-height: 1.04; letter-spacing: -0.03em; max-width: 17ch; }
+.lp-top .lime { flex-shrink: 0; }
+.wire { display: block; width: 100%; height: auto; margin-top: 44px; overflow: visible; }
+.seg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.seg .base { stroke: var(--line-strong); stroke-width: 1.5; }
+.seg .ink { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.1s ease-in-out; }
+.seg.drawn .ink { stroke-dashoffset: 0; }
+.seg .head { stroke: var(--line-strong); stroke-width: 2; transition: stroke .3s 1s; }
+.seg.drawn .head { stroke: var(--accent); }
+.seg.s2 .ink, .seg.s2.drawn .head { stroke: var(--danger); }
+.seg.s3 .ink, .seg.s3.drawn .head, .seg.s4 .ink, .seg.s4.drawn .head { stroke: var(--positive); }
+.node { cursor: pointer; }
+.node circle { fill: var(--card); stroke: var(--line-strong); stroke-width: 1.5; transition: fill .4s, stroke .4s; }
+.node svg { stroke: var(--ink-muted); transition: stroke .4s; }
+.node.past circle { stroke: var(--accent); }
+.node.past svg { stroke: var(--accent); }
+.node.on circle { fill: var(--accent); stroke: var(--accent); }
+.node.on svg { stroke: var(--card); }
+.broke { font: 600 15px var(--font-sans); fill: var(--danger); opacity: 0; transition: opacity .4s .6s; }
+.broke.show { opacity: 1; }
+.lp-steps { list-style: none; padding: 0; margin-top: 6px; display: grid; grid-template-columns: repeat(6, 1fr); text-align: center; }
+.lp-steps button { font-size: clamp(16px, 1.4vw, 21px); font-weight: 500; color: var(--ink-muted); transition: color .3s; }
+.lp-steps button.on { color: var(--ink); font-weight: 650; }
+.lp-steps button:focus-visible, .lp-top .lime:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.lp-say { margin: 34px auto 0; max-width: 34em; min-height: 2.6em; text-align: center; font-size: clamp(21px, 2vw, 30px); line-height: 1.3; letter-spacing: -0.01em; color: var(--ink-soft); animation: say .45s ease-out both; }
+@keyframes say { from { opacity: 0; } }
+@media (max-width: 760px) {
+  .lp-top { flex-direction: column; align-items: flex-start; }
+  .lp-steps { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seg .ink, .seg .head, .node circle, .node svg, .broke { transition: none; }
+  .lp-say { animation: none; }
+}
+
+.start { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; margin-top: 22px; align-items: start; }
+.start .h { font-size: 30px; line-height: 36px; }
+.waiting { grid-column: 1 / -1; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; }
+.waiting .small { margin-top: 0; }
+.waiting .stepper { margin-top: 14px; }
+.waiting .tip { display: none; }
 .scan { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; align-items: center; }
 .scan .repo { font: 500 16px var(--font-mono); padding: 11px 14px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--card); color: var(--ink); flex: 1 1 100%; min-width: 0; }
 .scan .lime { font-size: 18px; padding: 11px 20px; white-space: nowrap; }

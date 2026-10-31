@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { STEP_NAMES, type Step, type StepKey } from "../model.ts";
 import type { LiveWatcher } from "../types.ts";
-import { HowItWorks } from "./HowItWorks.tsx";
+import { StepStack } from "./StepStack.tsx";
 
 // The shape of GET /api/inventory: the real scan() of the one connected demo repo.
 interface CallSite { path: string; line: number; functionName?: string; fieldsRead: string[] }
@@ -31,14 +32,9 @@ export function StartScreen({ watcher, now, others }: { watcher: LiveWatcher | n
   };
   const last = watcher?.lastProbeAt ? Math.max(0, Math.round((now - Date.parse(watcher.lastProbeAt)) / 1000)) : null;
   return (
-    <div className="landing">
-      <div className="hero">
-        <h1 className="h enter">Keep your app working when the APIs it depends on change.</h1>
-      </div>
-      <HowItWorks />
-      <div className="start">
+    <div className="start">
       <div className="start-left">
-        <h2 className="try">Try it on the demo repo</h2>
+        <h1 className="h">Try it on the demo repo</h1>
         <div className="scan">
           <input className="repo" value={REPO} readOnly aria-label="Connected repo" />
           <button className="lime" onClick={run} disabled={busy}>{busy ? "Scanning…" : "Scan this repo"}</button>
@@ -72,10 +68,16 @@ export function StartScreen({ watcher, now, others }: { watcher: LiveWatcher | n
         </section>
       </div>
       <TeamFit />
+      <div className="waiting">
+        <p className="small">{inv ? "Watching. These fill in as soon as the API changes." : "Scan first. Then these fill in when the API changes."}</p>
+        <StepStack steps={WAITING} onPick={() => {}} />
       </div>
     </div>
   );
 }
+
+// The process before anything has happened, so the next screen is no surprise.
+const WAITING: Step[] = (Object.keys(STEP_NAMES) as StepKey[]).map((key) => ({ key, name: STEP_NAMES[key], state: "later", what: "", when: "", detail: "" }));
 
 // How this fits a team. "Next" is marked as not built: it must never read as working.
 function TeamFit() {

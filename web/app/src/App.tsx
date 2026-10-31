@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CaseView } from "./components/CaseView.tsx";
-import { HowItWorksModal } from "./components/HowItWorks.tsx";
+import { Landing } from "./components/Landing.tsx";
 import { Headline } from "./components/Headline.tsx";
 import { Nav } from "./components/Nav.tsx";
 import { StartScreen } from "./components/StartScreen.tsx";
@@ -9,7 +9,12 @@ import { isFixture, useLive, useNow } from "./live.ts";
 import { activeCase, caseMessages, notAffected, unstructured } from "./model.ts";
 
 export function App() {
-  const [how, setHow] = useState(false);
+  const [demo, setDemo] = useState(() => window.location.hash === "#demo" || isFixture());
+  useEffect(() => {
+    const sync = () => setDemo(window.location.hash === "#demo" || isFixture());
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
   const s = useLive();
   const now = useNow();
   const c = activeCase(s);
@@ -29,10 +34,8 @@ export function App() {
   return (
     <div className="page">
       {isFixture() && <div className="fixture-banner">FIXTURE DATA · not live · remove ?fixture=1 for the real demo</div>}
-      <Nav onHow={() => setHow(true)} />
-      <WatcherChip s={s} now={now} />
-      {body}
-      {how && <HowItWorksModal onClose={() => setHow(false)} />}
+      <Nav demo={demo} onHow={() => { window.location.hash = ""; }} />
+      {demo ? <><WatcherChip s={s} now={now} />{body}</> : <Landing onDemo={() => { window.location.hash = "demo"; }} />}
       <footer className="built">
         <span>Built with</span>
         {["Terse", "Agent Relay", "Mastra", "Freestyle", "OpenAI"].map((name) => <b key={name}>{name}</b>)}
