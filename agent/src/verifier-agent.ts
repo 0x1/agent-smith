@@ -3,6 +3,9 @@ import type { RelayMessage } from "../../contracts/relay.ts";
 import { getRelay } from "./relay.ts";
 import { verify } from "./verifier.ts";
 
+// `bad-patch.ts` verifies its own labelled demo patch, so skip it here.
+export const BAD_PATCH_ATTEMPT = 99;
+
 export interface Verdict {
   decision: "accept" | "reject";
   reason: string;
@@ -25,6 +28,7 @@ export async function startVerifierAgent(repoDir = process.env.TARGET_REPO_DIR ?
   relay.on("repair.proposed", async (message: RelayMessage, messageId: string) => {
     if (message.type !== "repair.proposed") return;
     const { caseId, attempt, headCommit, diffRef } = message;
+    if (attempt === BAD_PATCH_ATTEMPT) return;
     const verdict = await verify(repoDir, headCommit, diffRef);
     const { decision, reason } = verdict;
     results.set(key(caseId, attempt), verdict);
