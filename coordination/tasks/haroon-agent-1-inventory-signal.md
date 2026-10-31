@@ -1,6 +1,6 @@
 # haroon-agent-1-inventory-signal: Inventory and change signal
 
-- Status: claimed
+- Status: working
 - Agent handle: haroon-agent-1
 - Human sponsor: Haroon (GitHub `eychcue`)
 - Branch: haroon-agent-1/inventory-signal
@@ -9,7 +9,7 @@
 - Claimed at (UTC): 2026-10-31T19:48Z
 - Checkpoint due (UTC): 2026-10-31T20:15Z
 - File scope (include shared files/lockfiles):
-  - `demo-app/`: the target app (supplier adapter with `getStock(sku)`, its tests, its own `package.json` and `pnpm-lock.yaml`). This moves to a separate repo if open ask #6 is approved.
+  - `0x1/agent-smith-demo` (separate repo, per Ahmed's D3-B): the target app, with a supplier adapter exposing `getStock(sku)`, its tests, and its own `package.json` and `pnpm-lock.yaml`. Its first commit is a baseline where `pnpm test` passes against supplier `v1`.
   - `supplier-mock/`: the mock supplier server, which can switch between `v1` and `v2` on demand. Also its response fixtures, changelog fixtures and migration note.
   - `inventory/`: the manifest and call-site scan, and the applicability check (`affected` or `not_affected`, with evidence).
   - This task file and one row in `coordination/BOARD.md`.
@@ -31,7 +31,8 @@ The other tracks get a target app, a supplier that changes on demand, and eviden
 ## Checkpoints
 
 2026-10-31T19:48Z / haroon-agent-1 / claimed; no code until the 20:15Z build start / 2266bc2 / 20:15Z
-2026-10-31T19:55Z / haroon-agent-1 / put the decisions for Ahmed in their own section; acknowledged cto-1 (9a8ec03) and hussain-claude-1 (6d5e7a5); committed to the interfaces / this commit / 20:15Z
+2026-10-31T19:55Z / haroon-agent-1 / put the decisions for Ahmed in their own section; acknowledged cto-1 (9a8ec03) and hussain-claude-1 (6d5e7a5); committed to the interfaces / c8eb1a7 / 20:15Z
+2026-10-31T20:06Z / haroon-agent-1 / acknowledged Ahmed's decisions (2c32a5f). Scope change: the target app moves to `0x1/agent-smith-demo`; Haroon has accepted the invite and the repo is cloned, still empty. Code starts at 20:15Z / this commit / 20:25Z
 
 ## Evidence
 
@@ -43,7 +44,7 @@ The other tracks get a target app, a supplier that changes on demand, and eviden
 
 ## Decisions for Ahmed
 
-Each needs a yes or no from Ahmed before the 20:15Z build start. Until then, I build as the default says.
+**Decided by Ahmed, recorded by cto-1 at 2c32a5f (19:56Z): D1-A, D2-A, D3-B (separate repo `0x1/agent-smith-demo`).** The options are kept below for the record.
 
 ### D1. No fallback for Terse and Agent Relay at the 20:35Z cutoff
 
@@ -93,6 +94,15 @@ Each needs a yes or no from Ahmed before the 20:15Z build start. Until then, I b
 
 ## Decisions and blockers
 
+2026-10-31T20:06Z / haroon-agent-1 / open question to cto-1 / interface / Investigation and repair, Inventory
+
+cto-1: how does `pnpm test` in `agent-smith-demo` see supplier `v2` inside the Freestyle VM? The VM blocks all network access by default, and `supplier-mock` lives in this repo. My proposal:
+- The adapter reads `SUPPLIER_URL`.
+- The test starts a small copy of the mock in the same process, at the version given by `SUPPLIER_VERSION` (default `v1`). The copy lives in `test/support/`, which a repair can't edit.
+- `agent/` runs the identical `pnpm test` with `SUPPLIER_VERSION=v2` to reproduce the failure, and again after the patch.
+
+That keeps the test deterministic and offline. Tell me if you would rather open the VM's firewall to a host port instead.
+
 2026-10-31T19:48Z / haroon-agent-1 (sponsor Haroon) / deciding human: Ahmed / proposals below / reasons given in each / all tracks
 
 1. **Terse and Agent Relay stay load-bearing; no drop at the 20:35Z cutoff.** Haroon's position: they are the two named judging criteria and the two category prizes. cto-1 now treats both as core (reply to hussain-claude-1, 19:43Z), which agrees with this. The remaining gap is the 20:35Z fallback. Haroon proposes that Terse and Relay get extra effort when they fail, not a switch to the local JSON or direct-call fallback, and that only Freestyle and Mastra keep fallbacks. The `send()` wrapper is fine as insurance, but the live demo should not rely on it.
@@ -109,7 +119,7 @@ Each needs a yes or no from Ahmed before the 20:15Z build start. Until then, I b
 
 cto-1: please confirm items 2 and 3, and say whether `demo-app/` stays in this repo (open ask #6).
 
-needs: Ahmed, for D1, D2 and D3 above, before 20:15Z.
+Resolved: Ahmed decided D1, D2 and D3 (2c32a5f).
 
 ## Handoff
 
