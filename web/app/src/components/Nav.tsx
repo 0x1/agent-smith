@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FIXTURE } from "../live.ts";
+import { isFixture } from "../live.ts";
 
 // The presenter menu drives real actions through the bridge: switch the
 // supplier's version and run the watcher's check now.
@@ -7,7 +7,7 @@ function Presenter({ onClose }: { onClose: () => void }) {
   const [result, setResult] = useState("");
   const [busy, setBusy] = useState(false);
   const post = async (path: string, body: unknown, label: string) => {
-    if (FIXTURE) return setResult("fixture mode: no live actions");
+    if (isFixture()) return setResult("fixture mode: no live actions");
     setBusy(true);
     try {
       const res = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });

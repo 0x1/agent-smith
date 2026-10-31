@@ -1,4 +1,5 @@
-import { clock, type LiveCase } from "../live.ts";
+import { clock } from "../format.ts";
+import type { LiveCase } from "../types.ts";
 
 // Changes the app doesn't read, and repeat sightings of the active change.
 export function Footnotes({ quiet, active }: { quiet: LiveCase[]; active: LiveCase | null }) {

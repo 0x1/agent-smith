@@ -1,4 +1,4 @@
-import type { Proof } from "../live.ts";
+import type { Proof } from "../types.ts";
 
 // onHand − reserved = result, from a real verifier run. When the result is not
 // what the check expects, the result is struck through and `expected` sits beside it.
