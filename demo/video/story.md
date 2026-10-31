@@ -1,6 +1,6 @@
 # Agent Smith video: story
 
-The source is the final video brief, `coordination/tasks/haroon-agent-1-video-brief.md`, which Ahmed's decisions closed at ca416aa, including cto-1's accuracy fixes at edb62e1. `beats.json` is that script as input for the video tool. One beat is one script row, with each caption and spoken line written from the brief's "Voice" column. The intro and outro cards come from `brand.json`.
+The source is the final video brief, `coordination/tasks/haroon-agent-1-video-brief.md`, which Ahmed's decisions closed at ca416aa, including cto-1's accuracy fixes at edb62e1. `beats.json` is that script as input for the video tool. One beat is one script row, with each caption and spoken line written from the brief's "Voice" column. The intro and outro cards come from `brand.json`, which uses the calm palette from Ahmed's front-end direction (4ec6924, step 1): warm off-white, dark ink, one muted slate accent, and no shadows.
 
 - **Length and voice:** 2 minutes, with the tool's default local voice.
 - **When and where:** in the freeze hour after 22:00Z, on Ahmed's machine, with no exposed URL. The tool is run only and never committed.
@@ -32,3 +32,7 @@ The source is the final video brief, `coordination/tasks/haroon-agent-1-video-br
 - **No terminal on screen.** The web recorder can't capture one, so the restart is shown through the watcher chip.
 - **No staged failures.** The real repair passes on the first try, which cto-1 measured at 5 of 5 attempts. The only rejection is the labelled bad patch.
 - **After recording:** close the fix PR in `agent-smith-demo` and don't merge it. Then run `demo/reset.sh` before the live demo.
+
+## Pending
+
+Ahmed's front-end direction (4ec6924) changes the screens. Once step 2 (the one-column view, PR #47) lands, the beats are re-checked against the new view, and the opening moves to the start screen if step 4 lands.
