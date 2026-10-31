@@ -36,6 +36,7 @@ The other tracks get a target app, a supplier that changes on demand, and eviden
 2026-10-31T20:21Z / haroon-agent-1 / acceptance criteria 1 to 4 met locally: `agent-smith-demo` baseline on its `main`, `supplier-mock/` and `inventory/` on this branch. Interfaces published below. Next: run the live supplier against Hussain's watcher once it exists, and review cto-1's VM test setup / 26116c4 (agent-smith), 5360c49 (agent-smith-demo) / 20:40Z
 2026-10-31T20:40Z / haroon-agent-1 / the optional contract fields from cto-1's PR #10 are filled: `CallSite.functionName` (e.g. `getStock`) and `Verdict.at`, and evidence now names the function. `node --test inventory.test.ts` passes 4 of 4, and strict tsc is clean, together with `agent/src/workflow.ts`. Waiting on hussain-claude-1's watcher to run the live check / this commit / 21:00Z
 2026-10-31T20:45Z / haroon-agent-1 / done per cto-1 (06844d3): the v2 migration note is now prose with no formula and no table. It still says that reserved can exceed on_hand and that such a SKU has nothing to sell. supplier-mock tests pass 2 of 2. Synced to `agent-smith-demo` on PR branch `haroon-agent-1/v2-note-prose` (be8a54b). v1 baseline passes 2 of 2 and sync check is clean. cto-1: once that PR merges, its merge commit is the new baseline for runs / this commit / 21:05Z
+2026-10-31T20:46Z / haroon-agent-1 / rehearsal of this track, against `main` at aa3b038. With `supplier-mock` live on :7200: v1, then v1.1, then v2 served correctly. The switch, `/changelog`, `/changelog/v2` and the CORS preflight (204) all work. Reset to v1 afterwards. `inventory` check on `agent-smith-demo`: v2 `affected` at `getStock() in src/supplier.ts:15`; v1.1 `warehouse` removed is `not_affected`; v1.1 `restock_eta` added is `not_affected`. Checked hussain-claude-2's Case actor (PR #16): it uses this track's naming. The watcher is not on a branch yet / this commit / 21:05Z
 
 ## Evidence
 
@@ -53,6 +54,10 @@ The other tracks get a target app, a supplier that changes on demand, and eviden
 - Checks not run and why: not run inside a Freestyle VM, which has no keys yet and belongs to cto-1. Not run against Hussain's watcher, which doesn't exist on a branch yet.
 - Environment at 19:47Z: Node 24.21.0, npm 11.19.0, pnpm 12.9.1. **Bun is not installed**, so I can't run Terse here. My track doesn't need it. `gh` is logged in as Haroon (`eychcue`) with push access to this repo. No sponsor keys, and none are needed for this track.
 - Publication/review/release status: claim on a branch with a PR; not reviewed or accepted.
+
+## Demo app rule (proposed by Haroon, 2026-10-31T20:46Z; all agents please follow)
+
+**Do not merge fix PRs in `0x1/agent-smith-demo` until after the final live demo.** Each pipeline run, rehearsals included, opens a fix PR there. One merged fix leaves the live demo with nothing to repair. Close rehearsal fix PRs instead. Runs start from the tag `demo-baseline`, which haroon-agent-1 will set on `agent-smith-demo` once its PR #1 (the prose v2 note) merges. Only setup changes to `test/support/` are merged, and haroon-agent-1 moves the tag after each one.
 
 ## Decisions for Ahmed
 
