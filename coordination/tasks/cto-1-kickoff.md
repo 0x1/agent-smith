@@ -17,7 +17,7 @@ The full reasoning is in [the proposal](cto-1-demo-architecture.md). Read it bef
 | 20:15 | 13:15 | Decisions final, tasks claimed, build starts |
 | 20:35 | 13:35 | Tool cutoff; anything not working moves to its fallback |
 | 21:30 | 14:30 | Main story runs end to end |
-| 22:00 | 15:00 | Feature freeze; bug fixes only |
+| 22:00 | 15:00 | Feature freeze; bug fixes only; rehearse the live demo |
 | 22:45 | 15:45 | Submit |
 
 ## Tracks
@@ -54,6 +54,7 @@ Do not start shared code before 20:15 UTC.
 
 ## Rules
 
+- All code must be created at the hackathon, from 11:00 PDT onward. Event rules are in [the proposal](cto-1-demo-architecture.md).
 - This project is separate from any other work. Do not bring in private code, credentials, customer data or operating context from elsewhere.
 - Only Ahmed creates services and accounts. Do not sign up for anything.
 - Never commit secrets. Keys stay out of the repo and out of the Freestyle VM.

@@ -31,7 +31,8 @@ Everything here is a proposal until a human records acceptance. Done means the r
 2026-10-31T19:33Z / cto-1 / revised: owner asked for 1 hour of polish, so freeze moves to 22:00 UTC; applicability made core; PR is the approval gate; separate target repo proposed / 3cfb953 / 19:50Z
 2026-10-31T19:40Z / cto-1 / revised after Ahmed sent product links: Terse holds the case, Agent Relay carries the hand-off path, Supabase dropped, Freestyle firewall finding corrected / this update / 19:50Z
 2026-10-31T19:41Z / cto-1 / Ahmed set the build start at 20:15 UTC with decisions final by then; timeline moved / 4aa04be / 20:15Z
-2026-10-31T19:43Z / cto-1 / replied to hussain-claude-1 on PR #1; recommendations await a human decision / this update / 20:15Z
+2026-10-31T19:43Z / cto-1 / replied to hussain-claude-1 on PR #1; recommendations await a human decision / 4b09b12 / 20:15Z
+2026-10-31T19:45Z / cto-1 / added event rules from the page Ahmed sent; model recommendation is OpenAI; demo prep now targets a live demo / this update / 20:15Z
 
 ## Evidence
 
@@ -59,7 +60,7 @@ Open asks for the team:
 2. Done: Ahmed sent product links for Mastra, Agent Relay, Terse and Freestyle.
 3. No Freestyle account exists yet. Ahmed creates any services the team needs (Ahmed, 19:33 UTC), so agents should not sign up for anything. Needed now: Freestyle, a model key, and a token limited to the target repo. Not needed: Terse Cloud and hosted Agent Relay, because both run locally without an account. Keys stay out of the repo.
 4. Name who reviews repairs and accepts the demo. The third participant is Hussain (`hussainarslan`, write access confirmed at 19:32 UTC).
-5. Share the judging criteria and any sponsor-tool requirements.
+5. Done: Ahmed sent the event page. See "Event rules" below. Still unknown: submission format and demo length. Builderbase signup happens at check-in.
 6. Approve or decline a separate target repo.
 
 ## Agents joining
@@ -72,6 +73,25 @@ Ahmed set the build start at 20:15 UTC (13:15 PDT), with decisions final by then
 4. Start no shared code before the build start.
 
 cto-1 reads new task files and replies in its own file under "Replies to agents". A comment here is coordination only; it does not approve spending, credentials, merges or deployment.
+
+## Event rules
+
+From https://events.ycombinator.com/haunted-hacks-2026, read 2026-10-31. Haunted Hacks: Real-Time AI Edition, hosted by Terse and AgentRelay.
+
+- All code must be created at the hackathon, and hacking began at 11:00 PDT. No pre-existing code. Ideas are fine.
+- Projects should ideally use Durable Actors or Agent Relay, with bonus points for both.
+- Judges want "very well-executed products or incredibly creative use cases" using them.
+- The top entries demo live at the end of the event, so a recording alone is not enough.
+- Prizes: overall top three; best Durable Actors project; best Agent Relay project; "most likely to scale to millions" (Supabase credits).
+- Credits per participant: $100 OpenAI, $100 Freestyle, $25 Supabase, $100 Superserve.
+
+What this changes in cto-1's recommendations:
+
+- Terse and Agent Relay are both core. Concern 3 from hussain-claude-1 is right, and it scores on the judges' stated bonus.
+- The model is OpenAI, using the event credits, unless a human decides otherwise.
+- Freestyle runs on event credits. Supabase stays out, since its prize is minor and it would add a second store.
+- The freeze hour rehearses the live demo. A recording is the backup only.
+- Do not bring in code written before 11:00 PDT. If you reuse your own test programs, note when they were written.
 
 ## Replies to agents
 
