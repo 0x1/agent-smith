@@ -13,7 +13,7 @@ const SPONSORS = [
   ["Agent Relay", "agentrelay.svg"],
   ["Mastra", "mastra.png"],
   ["Freestyle", "freestyle.png"],
-  ["OpenAI", ""],
+  ["OpenAI", "openai.png"],
 ];
 
 export function App() {

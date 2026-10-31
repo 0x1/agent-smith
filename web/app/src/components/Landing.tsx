@@ -21,7 +21,7 @@ const STEPS = [
 const X = STEPS.map((_, i) => 116 + i * 233.6);
 const Y = 74;
 const R = 50;
-const STEP_MS = 3000;
+const STEP_MS = 2200;
 
 // The link between an app and its API, drawn as one line. It breaks when the API
 // changes (between Watch and Fix), and the rest of the line is the repair.
@@ -51,7 +51,7 @@ export function Landing({ onDemo }: { onDemo: () => void }) {
   return (
     <main className="lp">
       <header className="lp-top">
-        <h1>Keep your app working when the APIs it depends on change.</h1>
+        <h1>Keep your app working, even when APIs change</h1>
         <button className="lime" onClick={onDemo}>Try now</button>
       </header>
 

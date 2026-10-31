@@ -134,18 +134,18 @@ details.raw { margin-top: 14px; }
 .wire { display: block; width: 100%; height: auto; margin-top: 44px; overflow: visible; }
 .seg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .seg .base { stroke: var(--line-strong); stroke-width: 1.5; }
-.seg .ink { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.1s ease-in-out; }
+.seg .ink { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .9s ease-in-out; }
 .seg.drawn .ink { stroke-dashoffset: 0; }
-.seg .head { stroke: var(--line-strong); stroke-width: 2; transition: stroke .3s 1s; }
+.seg .head { stroke: var(--line-strong); stroke-width: 2; transition: stroke .3s .8s; }
 .seg.drawn .head { stroke: var(--accent); }
 .seg.s2 .ink, .seg.s2.drawn .head { stroke: var(--danger); }
 .seg.s3 .ink, .seg.s3.drawn .head, .seg.s4 .ink, .seg.s4.drawn .head { stroke: var(--positive); }
 .node { cursor: pointer; }
-.node circle { fill: var(--card); stroke: var(--line-strong); stroke-width: 1.5; transition: fill .4s, stroke .4s; }
+.node > circle { fill: var(--card); stroke: var(--line-strong); stroke-width: 1.5; transition: fill .4s, stroke .4s; }
 .node svg { stroke: var(--ink-muted); transition: stroke .4s; }
-.node.past circle { stroke: var(--accent); }
+.node.past > circle { stroke: var(--accent); }
 .node.past svg { stroke: var(--accent); }
-.node.on circle { fill: var(--accent); stroke: var(--accent); }
+.node.on > circle { fill: var(--accent); stroke: var(--accent); }
 .node.on svg { stroke: var(--card); }
 .broke { font: 600 15px var(--font-sans); fill: var(--danger); opacity: 0; transition: opacity .4s .6s; }
 .broke.show { opacity: 1; }
@@ -160,7 +160,7 @@ details.raw { margin-top: 14px; }
   .lp-steps { grid-template-columns: repeat(2, 1fr); gap: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .seg .ink, .seg .head, .node circle, .node svg, .broke { transition: none; }
+  .seg .ink, .seg .head, .node > circle, .node svg, .broke { transition: none; }
   .lp-say { animation: none; }
 }
 
@@ -193,9 +193,9 @@ details.raw { margin-top: 14px; }
 .act .note { color: var(--ink-muted); font-size: 15px; }
 
 .built { position: fixed; left: 56px; right: 56px; bottom: 12px; display: flex; gap: 22px; align-items: baseline; color: var(--ink-muted); font-size: 14px; }
-.built { align-items: center; }
-.built b { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink-soft); }
-.built img { height: 22px; width: 22px; object-fit: contain; border-radius: 4px; }
+.built { align-items: center; justify-content: flex-end; }
+.built b { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--ink-soft); }
+.built img { height: 28px; width: 28px; object-fit: contain; border-radius: 4px; mix-blend-mode: multiply; }
 
 /* Older proof styles stay out of the main view. */
 .win { position: relative; margin-top: 18px; }
