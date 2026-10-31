@@ -1,0 +1,16 @@
+{
+  "name": "agent-smith-demo",
+  "private": true,
+  "type": "module",
+  "description": "A small storefront service that reads stock from a supplier API. Target app for the Agent Smith demo.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

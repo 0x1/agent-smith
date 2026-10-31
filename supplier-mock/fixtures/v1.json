@@ -1,0 +1,5 @@
+{
+  "WIDGET-1": { "sku": "WIDGET-1", "stock": 2, "warehouse": "SF-1", "updated_at": "2026-10-31T18:00:00Z" },
+  "WIDGET-2": { "sku": "WIDGET-2", "stock": 4, "warehouse": "SF-1", "updated_at": "2026-10-31T18:00:00Z" },
+  "WIDGET-3": { "sku": "WIDGET-3", "stock": 0, "warehouse": "OAK-2", "updated_at": "2026-10-31T18:00:00Z" }
+}

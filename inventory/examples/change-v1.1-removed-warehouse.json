@@ -1,0 +1,9 @@
+{
+  "provider": "supplier",
+  "endpoint": "GET /v1/inventory/{sku}",
+  "changeKind": "breaking",
+  "fieldPath": "warehouse",
+  "shapeDiff": { "removed": ["warehouse"], "added": [], "retyped": [] },
+  "summary": "warehouse removed",
+  "sourceRef": "http://127.0.0.1:7200/changelog/v1.1"
+}

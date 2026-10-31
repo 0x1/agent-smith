@@ -1,0 +1,13 @@
+{
+  "name": "supplier-mock",
+  "private": true,
+  "type": "module",
+  "description": "Mock supplier API for the Agent Smith demo",
+  "engines": { "node": ">=23.6" },
+  "scripts": {
+    "start": "node server.ts",
+    "test": "node --test supplier.test.ts",
+    "sync": "node sync.ts ../../agent-smith-demo",
+    "sync:check": "node sync.ts ../../agent-smith-demo --check"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "provider": "supplier",
+  "endpoint": "GET /v1/inventory/{sku}",
+  "changeKind": "added",
+  "fieldPath": "restock_eta",
+  "shapeDiff": { "removed": [], "added": ["restock_eta"], "retyped": [] },
+  "summary": "restock_eta added",
+  "sourceRef": "http://127.0.0.1:7200/changelog/v1.1"
+}
