@@ -10,7 +10,6 @@ export function Footnotes({ quiet, active }: { quiet: LiveCase[]; active: LiveCa
       {quiet.map((c) => (
         <div key={c.caseId} className="card enter" title={c.verdict?.evidence.join("\n")}>
           <span className="ok">✓</span> {c.explanation || c.change.summary}
-          {c.verdict?.evidence[0] && <div className="mono" style={{ fontSize: 15, color: "var(--ink-muted)" }}>{c.verdict.evidence[0]}</div>}
         </div>
       ))}
       {repeats.length > 0 && (

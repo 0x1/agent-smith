@@ -62,6 +62,16 @@ a { color: inherit; }
 .dek { font-size: 20px; line-height: 30px; color: var(--ink-soft); margin-top: 16px; max-width: 46ch; }
 .dek.quiet { font-size: 24px; line-height: 36px; }
 
+/* One column case view */
+.column { max-width: 920px; margin-top: 8px; }
+.column .stack { max-width: none; }
+.column .proof { margin-top: 18px; }
+.column .foot .card { max-width: none; padding: 8px 14px; font-size: 17px; }
+details.how { margin-top: 26px; }
+details.how > summary { font-size: 19px; font-weight: 600; color: var(--ink); }
+details.how .chat { margin-top: 12px; }
+details.how .evidence { max-width: none; }
+
 /* Step stack */
 .stack { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
 .card { border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--card); }
