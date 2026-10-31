@@ -49,8 +49,12 @@ for (;;) {
     if (Date.now() - lastApprovalCheck > APPROVAL_EVERY_MS) {
       lastApprovalCheck = Date.now();
       for (const caseId of state.caseIds ?? []) {
-        const record = await invoke<Case | null>(`Case/${caseId}`, "read");
-        if (record) await syncApproval(record);
+        try {
+          const record = await invoke<Case | null>(`Case/${caseId}`, "read");
+          if (record) await syncApproval(record);
+        } catch (error) {
+          console.warn(`approval check failed for ${caseId}: ${String(error)}`);
+        }
       }
     }
     for (const caseId of state.caseIds ?? []) {

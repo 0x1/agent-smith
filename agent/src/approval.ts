@@ -14,8 +14,12 @@ export async function syncApproval(record: Case): Promise<void> {
   if (record.status !== "awaiting_approval" || !record.pr) return;
   const res = await fetch(`https://api.github.com/repos/${REPO}/pulls/${record.pr.number}/reviews`, {
     headers: { authorization: `Bearer ${process.env.AGENT_SMITH_GITHUB_TOKEN}`, accept: "application/vnd.github+json" },
+    signal: AbortSignal.timeout(3000),
   });
-  if (!res.ok) return;
+  if (!res.ok) {
+    console.warn(`could not read reviews for PR #${record.pr.number}: ${res.status}`);
+    return;
+  }
   const decided = ((await res.json()) as Review[]).filter((r) => r.state === "APPROVED" || r.state === "CHANGES_REQUESTED");
   const latest = decided.at(-1);
   if (!latest) return;
