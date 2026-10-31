@@ -17,7 +17,7 @@ function QuietWindow({ s }: { s: LiveState }) {
   const stored = w?.shape && Object.keys(w.shape).length ? w.shape : null;
   if (!stored && (!isLive(s, "supplier") || !s.sample)) {
     return (
-      <div className="win"><span className="spark" aria-hidden>✱</span>
+      <div className="win">
         <div className="card nolive-card"><b>✕ No live data from the supplier since {sinceText(s, "supplier")}.</b></div>
       </div>
     );
@@ -25,7 +25,7 @@ function QuietWindow({ s }: { s: LiveState }) {
   const label = stored ? `The shape the watcher has stored · ${w?.endpoint || "GET /v1/inventory/{sku}"}` : `What the supplier sends now · GET ${s.sample?.path}`;
   const outline = stored ? outlineFromPaths(stored) : outlineOf(s.sample?.body);
   return (
-    <div className="win"><span className="spark" aria-hidden>✱</span>
+    <div className="win">
       <div className="card spec enter">
         <div className="lbl">{label}</div>
         <pre>{printOutline(outline)}</pre>
@@ -77,7 +77,7 @@ export function App() {
       <div className="grid">
         <div>
           <Headline text={c.headline} />
-          <StepStack steps={st} waiting={waiting} />
+          <StepStack steps={st} />
           <ReviewButton c={c} />
           <Evidence steps={st} />
           <Footnotes quiet={quiet} active={c} />

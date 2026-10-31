@@ -64,7 +64,6 @@ function ProofCard({ c, msgs }: { c: LiveCase; msgs: RelayEntry[] }) {
 export function Window({ c, msgs, relayLive, relaySince, waiting }: { c: LiveCase; msgs: RelayEntry[]; relayLive: boolean; relaySince: string; waiting: boolean }) {
   return (
     <div className={`win${waiting ? " waiting" : ""}`}>
-      <span className="spark" aria-hidden>✱</span>
       <ProofCard c={c} msgs={msgs} />
       <RelayThread msgs={msgs} live={relayLive} since={relaySince} />
     </div>

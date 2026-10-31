@@ -1,5 +1,25 @@
 # Agent Smith case view: design
 
+> **Superseded in part, 2026-10-31 21:46Z (Ahmed's front end direction, `coordination/tasks/cto-1-demo-architecture.md`).**
+> Colour, shadows and type scale below are replaced by the calm palette. Layout changes (one column, start screen) follow in later PRs.
+>
+> | Token | Value | Use |
+> |---|---|---|
+> | `page` | `#f7f4ee` | warm off-white page |
+> | `card` | `#ffffff` | cards |
+> | `sunken` | `#f1ede5` | later steps, quiet panels |
+> | `line` / `line-strong` | `#e2ddd2` / `#c9c2b4` | 1 px borders |
+> | `ink` / `ink-soft` / `ink-muted` | `#1d1f24` / `#464b55` / `#6b707a` | text |
+> | `accent` | `#3f5a7a` | the primary action only (Review the fix) |
+> | `positive` / `positive-tint` | `#1f7049` / `#e4f1e8` | pass only |
+> | `danger` / `danger-tint` | `#ad3530` / `#f9e5e3` | fail, no live data, fixture banner |
+>
+> - **No shadows and no 3D effects.** No hard offsets, tilts or sparkle tile. Borders are 1 px.
+> - **Smaller display type.** Headline 46 px, current step 24 px, arithmetic 64 px, "All quiet." 72 px.
+> - Step cards are white. A done step shows a green ✓, the current step has an ink border, and a failed step is danger-tinted. Status is still never colour alone.
+> - Hover is a background or brightness change, never movement.
+
+
 Status: approved by Hussain, 2026-10-31. The prototype is on branch `hussain-claude-1/prototype-case-view` and opens on `?variant=F`.
 
 ## What it is
