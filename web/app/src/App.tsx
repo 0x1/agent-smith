@@ -3,6 +3,7 @@ import { Footnotes } from "./components/Footnotes.tsx";
 import { Headline } from "./components/Headline.tsx";
 import { Nav } from "./components/Nav.tsx";
 import { ReviewButton } from "./components/ReviewButton.tsx";
+import { StartScreen } from "./components/StartScreen.tsx";
 import { StepStack } from "./components/StepStack.tsx";
 import { isLive, sinceText, WatcherChip } from "./components/WatcherChip.tsx";
 import { RelayThread } from "./components/RelayThread.tsx";
@@ -63,8 +64,7 @@ export function App() {
     body = (
       <div className="grid">
         <div>
-          <h1 className="h quiet enter">All quiet.</h1>
-          <p className="dek quiet">The watcher checks your supplier's inventory endpoint on a timer. When the shape of its response changes, the case opens here.</p>
+          <StartScreen />
           <Footnotes quiet={quiet} active={null} />
         </div>
         <QuietWindow s={s} />
