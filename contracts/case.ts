@@ -75,6 +75,15 @@ export interface VerifierDecision {
   at: string;
 }
 
+// Numbers from a real verifier run, for the view's arithmetic.
+export interface Proof {
+  sku: string;
+  onHand: number;
+  reserved: number;
+  result: number;
+  expected: number;
+}
+
 export interface Approval {
   state: "pending" | "approved" | "rejected";
   by: string;
@@ -100,6 +109,7 @@ export interface Case {
   // Hidden tests. These stay separate from the before and after runs.
   regression: RunResult | null;
   verifier: VerifierDecision | null;
+  proof: Proof | null;
   pr: { number: number; url: string; openedAt: string } | null;
   approval: Approval;
 }

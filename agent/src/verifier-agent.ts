@@ -1,4 +1,4 @@
-import type { RunResult } from "../../contracts/case.ts";
+import type { Proof, RunResult } from "../../contracts/case.ts";
 import type { RelayMessage } from "../../contracts/relay.ts";
 import { getRelay } from "./relay.ts";
 import { verify } from "./verifier.ts";
@@ -8,6 +8,7 @@ export interface Verdict {
   reason: string;
   after: RunResult | null;
   regression: RunResult | null;
+  proof: Proof | null;
 }
 
 const waiting = new Map<string, (verdict: Verdict) => void>();
@@ -24,8 +25,9 @@ export async function startVerifierAgent(repoDir = process.env.TARGET_REPO_DIR ?
   relay.on("repair.proposed", async (message: RelayMessage, messageId: string) => {
     if (message.type !== "repair.proposed") return;
     const { caseId, attempt, headCommit, diffRef } = message;
-    const { decision, reason, after, regression } = await verify(repoDir, headCommit, diffRef);
-    results.set(key(caseId, attempt), { decision, reason, after, regression });
+    const verdict = await verify(repoDir, headCommit, diffRef);
+    const { decision, reason } = verdict;
+    results.set(key(caseId, attempt), verdict);
     await relay.reply(relay.verifier, messageId, {
       type: "verification.result",
       caseId,

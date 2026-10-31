@@ -37,7 +37,7 @@ const checkApplicability = createStep({
   outputSchema: state.extend({ affected: z.boolean() }),
   execute: async ({ inputData }) => {
     const { change, repoDir, repo } = inputData;
-    const caseId = makeCaseId(repo, change.provider, change.endpoint, change.fieldPath);
+    const caseId = makeCaseId(repo.split("/").pop() ?? repo, change.provider, change.endpoint, change.fieldPath);
     const inventory = scan(repoDir, { repo, commit: inputData.commit });
     const { verdict: found, callSite } = applicability(change, inventory);
     const verdict = { ...found, at: new Date().toISOString() };
@@ -113,11 +113,12 @@ const verification = createStep({
       at: new Date().toISOString(),
       say: "I have a fix. The tests pass here. Please check it independently.",
     });
-    const { decision, reason, after, regression } = await pending;
+    const { decision, reason, after, regression, proof } = await pending;
     await patchCase(caseId, {
       status: decision === "accept" ? "repaired" : "investigating",
       after,
       regression,
+      proof,
       verifier: { decision, reason, at: new Date().toISOString() },
     });
     return { ...inputData, accepted: decision === "accept", feedback: decision === "accept" ? null : reason };
