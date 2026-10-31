@@ -7,7 +7,7 @@
 - Base commit: 4e0cf64
 - Head commit: see latest commit on this branch
 - Claimed at (UTC): 2026-10-31T19:42:00Z
-- Checkpoint due (UTC): 2026-10-31T20:00:00Z
+- Checkpoint due (UTC): 2026-10-31T20:15:00Z
 - File scope (include shared files/lockfiles): this task file; one new row in `coordination/BOARD.md`. No application code, lockfiles or shared configuration. cto-1's task file is not edited.
 - Dependencies / overlapping claims checked: only `cto-1-demo-architecture` exists, and it is coordination-only. No other branches or PRs on `origin` at 19:41 UTC.
 
@@ -17,7 +17,8 @@ A short list of concerns about cto-1's proposal, backed by sponsor tools we ran 
 
 ## Checkpoints
 
-2026-10-31T19:42Z / hussain-claude-1 / claimed; concerns published for review / this commit / 20:00Z
+2026-10-31T19:42Z / hussain-claude-1 / claimed; concerns published for review / e964f19 / 20:00Z
+2026-10-31T19:46Z / hussain-claude-1 / rechecked against 4aa04be and dropped points already covered; objections raised before the 20:15Z build start / this commit / 20:15Z
 
 ## Evidence
 
@@ -31,18 +32,23 @@ A short list of concerns about cto-1's proposal, backed by sponsor tools we ran 
 
 ## Concerns about cto-1's proposal (proposals only)
 
-1. **Open ask #2 is resolved.** Terse is https://github.com/TerseAI/durable-actors and Agent Relay is https://agentrelay.com/. Both ran locally without an account. Terse and Agent Relay host the event and judge two tracks, with bonus points for using both, so treating them as optional may cost those tracks.
-2. **Hussain's direction for the core:** watch what the supplier API actually returns, rather than reading a changelog fixture. A scheduled probe records the response's structure, compares it with the last one, and classifies the change: breaking, added field, `Sunset`/`Deprecation` header, or outage. Changelog reading already exists elsewhere (apidrift, Patch). Error monitoring and security advisories become bonus inputs to the same case. Terse fits naturally: one actor per watched endpoint, with its own timer and saved structure.
-3. **The rename is too easy to prove much.** Suggest `{stock: 7}` becomes `{inventory: {on_hand: 7, reserved: 5}}`, with the expected available quantity fixed at `2`. Add regression tests the repair agent never sees, and reject any patch that touches `test/`.
-4. **Deduplication needs a key.** Derive `caseId` from project, provider, endpoint and field, for example `projectA.supplier.get-inventory.stock`. Terse IDs reject `:`. One actor per case already stops two signals from creating two cases. Add `seen_events` for exact repeats.
-5. **Restart behaviour:** in our test, Terse kept saved state after `kill -9` but lost pending alarms. Anything on a timer needs re-arming at startup.
-6. **Runtimes:** Terse's TypeScript side needs Bun 1.4.2 or newer. The Relay SDK needs Node 22 or newer. Suggest pnpm instead of npm.
-7. **Freestyle `vm.exec`** defaults to a 30 s timeout (pass `timeoutMs` up to 300,000), has no working-directory option, and requires a firewall setting on create. Snapshot after `pnpm install` so test runs start warm.
-8. **The case never learns about approval when the PR is the gate.** Something has to read the PR's review state, or the dashboard's approve button performs the merge.
+Reviewed against `4aa04be`. Points that commit already covers (sponsor links, Terse holding the case, the actor ID handling dedup, Node 22 plus Bun) are left out.
+
+1. **Make watching the API the core** (Hussain's direction). A scheduled probe records the structure of what the supplier API actually returns and compares it with the last response. It classifies each change: breaking, added field, `Sunset`/`Deprecation` header, or outage. This replaces the changelog fixture, because reading changelogs already exists elsewhere (apidrift, Patch). Each watched endpoint gets its own Terse actor with a timer and the saved structure. Error monitoring and advisories are bonus inputs to the same case.
+2. **Change the meaning, not just the name.** A rename proves little because any model fixes it in one pass. Suggest `{stock: 7}` becomes `{inventory: {on_hand: 7, reserved: 5}}`, with the assertion fixed at `2` available. Add regression tests the repair agent never sees, and reject any patch that touches `test/`.
+3. **Make Agent Relay the core handoff path, not a step for after the main story works.** Run observer, repair and verifier as Relay agents, with the verifier's accept or reject sent as a reply. That earns the Relay track. Start it with `relay init --tools none`; plain `init` edits the Claude and Codex configs and turns on message injection. Agents must call `channels.join` or they hear nothing.
+4. **Terse alarms do not survive a restart.** In our test, saved state survived `kill -9` but pending alarms were gone. Anything on a timer needs re-arming at startup. Also, if `onAlarm` throws it is not retried, so set the next alarm before doing the work.
+5. **Terse details:**
+   - The dev command we ran is `bunx durable-actors dev`, not `terse actor dev`.
+   - IDs must match `^[A-Za-z0-9._-]+$`, so build case IDs with `.`, not `:`.
+   - Add a `seen_events` table for exact repeat events.
+6. **Freestyle `vm.exec`** times out after 30 s by default. The SDK types show the timeout can be raised to 300,000 ms with `timeoutMs`, and `exec` has no working-directory option. The pricing docs list 10 snapshots on the free plan, so snapshotting after `pnpm install` may be allowed and would keep test runs warm.
+7. **Use pnpm instead of `npm test`.**
+8. **With the PR as the gate, the case never learns it was approved.** Something has to read the PR's review state, or the case view's approve button performs the merge.
 
 ## Decisions and blockers
 
-2026-10-31T19:42Z / hussain-claude-1 / no human decision yet / concerns above / brings tested sponsor facts into the 20:00 UTC acceptance / all board tasks
+2026-10-31T19:42Z / hussain-claude-1 / no human decision yet / concerns above / brings tested sponsor facts in before decisions become final at 20:15 UTC / all board tasks
 
 ## Handoff
 
