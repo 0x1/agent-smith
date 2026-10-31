@@ -24,7 +24,10 @@ The screen tells a single case as a story: **Noticed → Checked → Fixed → P
   - A rejected step turns pink.
   - Later steps are muted.
 - **The lilac window** (3 px ink border, 10 px hard shadow, lime sparkle tile on the corner) holds the proof and the conversation:
-  - **The proof.** The arithmetic is set huge: **7 − 5 = 2**, labelled "on hand − reserved, never below 0 · ✓ your test · ✓ 3 of 3 hidden checks". On rejection it shows **3 − 5 = −2**, with the −2 struck through and a red **0** beside it.
+  - **The proof.** The arithmetic is set huge, from `Case.proof`: **onHand − reserved = result**, for example 7 − 5 = 2. Its label is "on hand − reserved, never below 0 · ✓ your test · ✓ {regression.passed} of {regression.total} hidden checks". All counts come from the case, and none are hard-coded (it is 2 hidden checks today).
+    - **The normal path is first-try acceptance.** cto-1 measured 5 of 5 first attempts accepted.
+    - **The rejected styling** (**3 − 5 = −2**, struck through, with a red **0**) appears **only** when a real `verification.result` rejects, or when `proof.result !== proof.expected`. It is never staged.
+    - The block is hidden while `proof` is null.
   - **Agent Relay.** Watcher, Fixer and Verifier talk in turn. The verifier's verdicts carry a pink "✕ Sent back" tag or a mint "✓ Accepted" tag. The rejected attempt stays visible.
 - **The one action.** A lime "Review the fix →" button with an ink border and a 6 px hard shadow. It opens the real PR. Beside it: "Nothing merges until you approve."
 - **Footnote cards** for `not_affected` changes and repeat sightings.
