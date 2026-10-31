@@ -1,7 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Case, WatcherState } from "../../contracts/case.ts";
+import type { Case, Change, WatcherState } from "../../contracts/case.ts";
 import { invoke } from "./case-store.ts";
 import { loadEnv } from "./env.ts";
 import { investigate } from "./workflow.ts";
@@ -13,12 +12,21 @@ process.env.TARGET_REPO_DIR = REPO_DIR;
 
 const started = new Set<string>();
 
+async function readNote(change: Change): Promise<string> {
+  const res = await fetch(change.sourceRef);
+  if (!res.ok) throw new Error(`could not read the supplier's note: ${res.status}`);
+  return res.text();
+}
+
 async function handle(caseId: string): Promise<void> {
-  const record = await invoke<Case>(`Case/${caseId}`, "read");
-  if (record.status !== "detected" || !record.change) return;
   started.add(caseId);
+  const record = await invoke<Case | null>(`Case/${caseId}`, "read");
+  if (!record || record.status !== "detected" || !record.change) {
+    started.delete(caseId);
+    return;
+  }
   const commit = execFileSync("git", ["-C", REPO_DIR, "rev-parse", "demo-baseline^{commit}"], { encoding: "utf8" }).trim();
-  const note = readFileSync(join(REPO_DIR, "test/support/supplier/notes/v2.md"), "utf8");
+  const note = await readNote(record.change);
   const run = await investigate.createRun();
   const result = await run.start({
     inputData: { change: record.change, repoDir: REPO_DIR, repo: "0x1/agent-smith-demo", commit, note },
