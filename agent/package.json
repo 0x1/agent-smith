@@ -1,0 +1,19 @@
+{
+  "name": "agent-smith-agent",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.106",
+    "@mastra/core": "^1.80.0",
+    "freestyle": "^0.2.21",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
