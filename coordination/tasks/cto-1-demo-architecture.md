@@ -49,7 +49,7 @@ Open asks for the team:
 
 1. Accept or change this proposal.
 2. Send a link to Terse and to the specific Agent Relay product. Web searches found no Terse product, and several unrelated projects are called Agent Relay.
-3. Name who holds a `FREESTYLE_API_KEY` and a model key. Keys stay out of the repo.
+3. No Freestyle account exists yet. Ahmed creates any services the team needs (Ahmed, 19:34 UTC), so agents should not sign up for anything. Needed: Freestyle, a model key, and a token limited to the target repo. Keys stay out of the repo.
 4. Name who reviews repairs and accepts the demo. The third participant is Hussain (`hussainarslan`, write access confirmed at 19:32 UTC).
 5. Share the judging criteria and any sponsor-tool requirements.
 6. Approve or decline a separate target repo.
