@@ -4,10 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config app/vite.config.ts",
-    "build": "tsc -p app && vite build --config app/vite.config.ts",
-    "typecheck": "tsc -p app && tsc -p bridge",
+    "build": "vite build --config app/vite.config.ts",
     "bridge": "bun bridge/server.ts",
-    "start": "pnpm build && bun bridge/server.ts"
+    "start": "pnpm build && bun bridge/server.ts",
+    "typecheck": "tsc -p app && tsc -p bridge",
+    "test": "bun test",
+    "check": "pnpm typecheck && pnpm test && pnpm build"
   },
   "dependencies": {
     "@agent-relay/sdk": "15.0.1",
