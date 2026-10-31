@@ -128,10 +128,10 @@ details.raw { margin-top: 14px; }
 
 /* Landing: one line across the page. It breaks where the API changes and is repaired after. */
 .lp { min-height: calc(100vh - 150px); display: flex; flex-direction: column; justify-content: center; }
-.lp-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 48px; }
+.lp-top { display: flex; flex-direction: column; align-items: flex-start; gap: 26px; }
 .lp-top h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(44px, 5.4vw, 92px); line-height: 1.04; letter-spacing: -0.03em; max-width: 17ch; }
-.lp-top .lime { flex-shrink: 0; }
-.wire { display: block; width: 100%; height: auto; margin-top: 44px; overflow: visible; }
+.lp-top .lime { font-size: 22px; padding: 16px 34px; }
+.wire { display: block; width: 100%; height: auto; margin-top: 36px; overflow: visible; }
 .seg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .seg .base { stroke: var(--line-strong); stroke-width: 1.5; }
 .seg .ink { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .9s ease-in-out; }
@@ -156,7 +156,6 @@ details.raw { margin-top: 14px; }
 .lp-say { margin: 34px auto 0; max-width: 34em; min-height: 2.6em; text-align: center; font-size: clamp(21px, 2vw, 30px); line-height: 1.3; letter-spacing: -0.01em; color: var(--ink-soft); animation: say .45s ease-out both; }
 @keyframes say { from { opacity: 0; } }
 @media (max-width: 760px) {
-  .lp-top { flex-direction: column; align-items: flex-start; }
   .lp-steps { grid-template-columns: repeat(2, 1fr); gap: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
