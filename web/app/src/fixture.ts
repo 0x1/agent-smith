@@ -1,11 +1,11 @@
 // FIXTURE DATA for development and screenshots only. Loaded by a dynamic import
 // when the URL has `?fixture=1`, and the page shows a "FIXTURE DATA" banner.
 // `?stage=` picks a state; `&reject=1` takes the path where attempt 1 is rejected.
-import type { WatcherState } from "../../../contracts/case.ts";
+import type { RunResult, TestFailure, WatcherState } from "../../../contracts/case.ts";
 import type { RelayMessage } from "../../../contracts/relay.ts";
 import { AGENT_NAMES } from "../../../contracts/relay.ts";
 import type { RelayEntry, StreamEvent } from "../../shared/stream.ts";
-import type { LiveCase } from "./live.ts";
+import type { LiveCase } from "./types.ts";
 
 const STAGES = ["quiet", "noticed", "checked", "fixing", "rejected", "proved", "waiting", "approved", "escalated", "nolive", "restart"] as const;
 type Stage = (typeof STAGES)[number];
@@ -68,7 +68,7 @@ export function playFixture(emit: (e: StreamEvent) => void): () => void {
   const status: LiveCase["status"] =
     stage === "noticed" ? "detected" : stage === "escalated" ? "escalated"
     : stage === "proved" ? "repaired" : stage === "waiting" || stage === "restart" ? "awaiting_approval" : stage === "approved" ? "approved" : "investigating";
-  const run = (commit: string, ok: boolean, passed: number, total: number, failure: LiveCase["after"] extends infer R ? R extends { failure: infer F } ? F : never : never) =>
+  const run = (commit: string, ok: boolean, passed: number, total: number, failure: TestFailure | null): RunResult =>
     ({ commit, command: "pnpm test", exitCode: ok ? 0 : 1, logRef: "", passed, total, failure, durationMs: 4200 });
   const c: LiveCase = {
     ...base(caseId, at(0)),

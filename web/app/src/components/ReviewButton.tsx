@@ -1,4 +1,4 @@
-import type { LiveCase } from "../live.ts";
+import type { LiveCase } from "../types.ts";
 
 // The one action. It links to the real pull request in the case record.
 export function ReviewButton({ c }: { c: LiveCase }) {

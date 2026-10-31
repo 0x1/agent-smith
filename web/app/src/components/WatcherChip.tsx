@@ -1,5 +1,6 @@
 import type { SourceName, SourceStatus } from "../../../shared/stream.ts";
-import { clock, type LiveState } from "../live.ts";
+import { clock } from "../format.ts";
+import type { LiveState } from "../types.ts";
 
 const LABEL: Record<SourceName, string> = { terse: "Terse", relay: "Agent Relay", supplier: "Supplier" };
 // The restart chip shows for this long after a real restart, then the normal chip returns.

@@ -1,5 +1,5 @@
 import type { RelayEntry } from "../../../shared/stream.ts";
-import type { LiveCase } from "../live.ts";
+import type { LiveCase } from "../types.ts";
 import { counts, rejectedNow, siteName } from "../model.ts";
 import { Arithmetic } from "./Arithmetic.tsx";
 import { RelayThread } from "./RelayThread.tsx";

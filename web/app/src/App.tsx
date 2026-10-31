@@ -6,36 +6,33 @@ import { ReviewButton } from "./components/ReviewButton.tsx";
 import { StepStack } from "./components/StepStack.tsx";
 import { isLive, sinceText, WatcherChip } from "./components/WatcherChip.tsx";
 import { Window } from "./components/Window.tsx";
-import { FIXTURE, useLive, useNow, type LiveState } from "./live.ts";
+import { clock, outlineFromPaths, outlineOf, printOutline } from "./format.ts";
+import { isFixture, useLive, useNow } from "./live.ts";
 import { activeCase, caseMessages, notAffected, steps, unstructured } from "./model.ts";
+import type { LiveState } from "./types.ts";
 
-// `{ "sku": string, "stock": number }`, from the supplier's live response.
-function shapeOf(v: unknown, pad = ""): string {
-  if (Array.isArray(v)) return `[ ${v.length ? shapeOf(v[0], pad) : ""} ]`;
-  if (v && typeof v === "object") {
-    const inner = Object.entries(v).map(([k, x]) => `${pad}  "${k}": ${shapeOf(x, pad + "  ")}`);
-    return `{\n${inner.join(",\n")}\n${pad}}`;
-  }
-  return v === null ? "null" : typeof v;
-}
-
+// The response shape the watcher has stored, or failing that the supplier's live response.
 function QuietWindow({ s }: { s: LiveState }) {
   const w = s.watcher;
-  if (!isLive(s, "supplier") || !s.sample) {
+  const stored = w?.shape && Object.keys(w.shape).length ? w.shape : null;
+  if (!stored && (!isLive(s, "supplier") || !s.sample)) {
     return (
       <div className="win"><span className="spark" aria-hidden>✱</span>
         <div className="card nolive-card"><b>✕ No live data from the supplier since {sinceText(s, "supplier")}.</b></div>
       </div>
     );
   }
+  const label = stored ? `The shape the watcher has stored · ${w?.endpoint || "GET /v1/inventory/{sku}"}` : `What the supplier sends now · GET ${s.sample?.path}`;
+  const outline = stored ? outlineFromPaths(stored) : outlineOf(s.sample?.body);
   return (
     <div className="win"><span className="spark" aria-hidden>✱</span>
       <div className="card spec enter">
-        <div className="lbl">What the supplier sends now · GET {s.sample.path}</div>
-        <pre>{shapeOf(s.sample.body)}</pre>
-        {w && (
+        <div className="lbl">{label}</div>
+        <pre>{printOutline(outline)}</pre>
+        {w && w.probeCount > 0 && (
           <div className="gl">
-            {w.lastChangeAt ? <>{w.probeCount} checks so far. Last change seen at {new Date(w.lastChangeAt).toTimeString().slice(0, 8)}.</>
+            {w.lastChangeAt
+              ? <>{w.probeCount} checks so far. Last change seen at {clock(w.lastChangeAt)}.</>
               : <>Same shape for <b>{w.probeCount}</b> checks.</>}
           </div>
         )}
@@ -66,7 +63,7 @@ export function App() {
       <div className="grid">
         <div>
           <h1 className="h quiet enter">All quiet.</h1>
-          <p className="dek quiet">The watcher checks your supplier's {s.watcher?.endpoint ?? "endpoint"} on a timer. When the shape of its response changes, the case opens here.</p>
+          <p className="dek quiet">The watcher checks your supplier's inventory endpoint on a timer. When the shape of its response changes, the case opens here.</p>
           <Footnotes quiet={quiet} active={null} />
         </div>
         <QuietWindow s={s} />
@@ -92,7 +89,7 @@ export function App() {
 
   return (
     <div className="page">
-      {FIXTURE && <div className="fixture-banner">FIXTURE DATA · not live · remove ?fixture=1 for the real demo</div>}
+      {isFixture() && <div className="fixture-banner">FIXTURE DATA · not live · remove ?fixture=1 for the real demo</div>}
       <Nav />
       <WatcherChip s={s} now={now} />
       {body}

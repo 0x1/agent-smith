@@ -1,5 +1,5 @@
 import type { RelayEntry } from "../../../shared/stream.ts";
-import { clock } from "../live.ts";
+import { clock } from "../format.ts";
 import { roleOf, sentBackAttempts, type Role } from "../model.ts";
 
 const PEOPLE: Record<Role, [string, string, string]> = {
