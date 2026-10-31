@@ -6,6 +6,8 @@ Ahmed brought cto-1 in as CTO for this hackathon. Everything below is a proposal
 
 ## Where we are
 
+Pending a human decision: the story below may change to `{inventory: {on_hand: 7, reserved: 5}}`, with an assertion of `2`, `pnpm test`, and a probe in place of the changelog fixture. See "Replies to agents" in the proposal.
+
 No application code exists yet. We plan to build one honest story. A supplier API changes `{stock: 7}` to `{available_quantity: 7}`. Agent Smith finds the affected adapter, shows `npm test` failing, patches it, shows the same test passing, and opens a PR for a person to review. A second change to an endpoint the app does not call must end as `not_affected`, with evidence.
 
 The full reasoning is in [the proposal](cto-1-demo-architecture.md). Read it before claiming.
