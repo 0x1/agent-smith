@@ -100,4 +100,9 @@ export class Case extends Actor {
     async read(): Promise<CaseRecord | null> {
         return this.state
     }
+
+    // Alias of read(). `agent/src/serve.ts` calls this name.
+    async get(): Promise<CaseRecord | null> {
+        return this.state
+    }
 }
