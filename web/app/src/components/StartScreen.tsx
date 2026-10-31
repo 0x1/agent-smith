@@ -55,6 +55,21 @@ export function StartScreen() {
           <p className="gl">Scanned {inv.repo}{inv.commit ? ` at ${inv.commit.slice(0, 7)}` : ""}. The watcher checks the APIs your code calls.</p>
         </div>
       )}
+      <TeamFit />
+    </div>
+  );
+}
+
+// How this fits a team. "Next" is marked as not built: it must never read as working.
+function TeamFit() {
+  return (
+    <div className="team">
+      <h2>How this fits your team</h2>
+      <ul>
+        <li><span className="state ok">✓ Working today</span> Fixes arrive as a normal GitHub pull request. Nothing merges until a person approves.</li>
+        <li><span className="state ok">✓ Working today</span> The watcher, fixer and verifier hand off over Agent Relay, and you can read the whole conversation.</li>
+        <li><span className="state next">Next · not built yet</span> Your team's own Claude Code or Codex agent joins that same channel.</li>
+      </ul>
     </div>
   );
 }

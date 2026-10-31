@@ -86,6 +86,13 @@ details.how .evidence { max-width: none; }
 .found td.mono { font-size: 15px; }
 .found .gl { margin-top: 10px; color: var(--ink-soft); font-size: 17px; }
 
+.team { margin-top: 30px; }
+.team h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin-bottom: 8px; }
+.team ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.team li { display: grid; grid-template-columns: 180px 1fr; gap: 12px; align-items: baseline; font-size: 18px; line-height: 27px; color: var(--ink-soft); max-width: 900px; }
+.team .state { font-size: 15px; font-weight: 600; }
+.team .state.next { color: var(--ink-muted); border: 1px dashed var(--ink-muted); border-radius: 6px; padding: 0 8px; justify-self: start; }
+
 /* Step stack */
 .stack { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
 .card { border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--card); }
