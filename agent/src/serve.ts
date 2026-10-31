@@ -1,32 +1,20 @@
 import { execFileSync } from "node:child_process";
-import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Case, WatcherState } from "../../contracts/case.ts";
+import { invoke } from "./case-store.ts";
 import { loadEnv } from "./env.ts";
 import { investigate } from "./workflow.ts";
 
 loadEnv();
-const ACTORS = process.env.TERSE_ACTOR_URL ?? "http://127.0.0.1:7100/v1/projects/local/actors";
 const WATCHER = "EndpointWatcher/supplier.get-inventory";
 const REPO_DIR = process.env.TARGET_REPO_DIR ?? join(import.meta.dirname, "..", "..", "..", "agent-smith-demo");
 process.env.TARGET_REPO_DIR = REPO_DIR;
 
-async function invoke<T>(path: string, method: string, args: unknown[] = []): Promise<T> {
-  const res = await fetch(`${ACTORS}/${path}/invoke`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ requestId: randomUUID(), method, args }),
-  });
-  if (!res.ok) throw new Error(`${path}.${method}: ${res.status}`);
-  const body = (await res.json()) as { result?: T };
-  return (body.result ?? body) as T;
-}
-
 const started = new Set<string>();
 
 async function handle(caseId: string): Promise<void> {
-  const record = await invoke<Case>(`Case/${caseId}`, "get");
+  const record = await invoke<Case>(`Case/${caseId}`, "read");
   if (record.status !== "detected" || !record.change) return;
   started.add(caseId);
   const commit = execFileSync("git", ["-C", REPO_DIR, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
