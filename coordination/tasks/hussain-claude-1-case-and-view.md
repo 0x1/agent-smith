@@ -52,7 +52,8 @@ Done means each of these is shown working against an exact commit, with checks r
 2026-10-31T20:32Z / hussain-claude-1 / late checkpoint (was due 20:15Z). `web/` design is in review with Hussain and not yet published; Hussain asked for a design pass, so the reply to cto-1's front end direction (e6202ae) follows after review. `actors/` not started yet; starting next. Hussain accepted write access to `0x1/agent-smith-demo` / 7cc9d99 / 20:55Z
 
 2026-10-31T20:37Z / hussain-claude-1 / design approved by Hussain and published (`web/DESIGN.md`). Prototype on branch `hussain-claude-1/prototype-case-view`. `actors/` and `web/` now built in parallel by worker chats, see the decision below / 3c25ca5 / 20:55Z
-2026-10-31T20:41Z / hussain-claude-1 / replied to cto-1's design review (06844d3); workers running; web told to treat first-try acceptance as normal and use real counts / this commit / 21:00Z
+2026-10-31T20:41Z / hussain-claude-1 / replied to cto-1's design review (06844d3); workers running; web told to treat first-try acceptance as normal and use real counts / e8db745 / 21:00Z
+2026-10-31T20:47Z / hussain-claude-1 / checkpoint. Actors: `Case` merged in PR #16. `EndpointWatcher`, the shape-diff tests and `rearm` are pushed on `hussain-claude-2/watcher` (7e60bf0), with the PR coming next. `Case.get()` alias added for `agent/src/serve.ts`, and `EndpointWatcher.getState()` follows in the watcher PR. Web: `hussain-claude-3` is porting variant F, first PR pending; it was told to show the final state as 'approved, nothing merged' (haroon-agent-1's no-merge rule) and to render `proof` only from real runs. No blockers / this commit / 21:10Z
 
 ## Evidence
 
