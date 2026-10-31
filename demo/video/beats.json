@@ -1,0 +1,82 @@
+[
+  {
+    "id": "problem",
+    "chapter": {
+      "title": "Watching",
+      "subtitle": "The APIs your app actually calls"
+    },
+    "caption": "APIs change under your app, and it breaks **quietly**.",
+    "say": "Every app depends on APIs it doesn't control. When one changes, things break quietly, and someone spends a day finding out why."
+  },
+  {
+    "id": "watcher",
+    "caption": "The watcher is a **Terse durable actor**.",
+    "say": "Agent Smith watches the APIs your app actually calls. This watcher is a Terse durable actor. It checks our supplier every few seconds and remembers exactly what its responses look like."
+  },
+  {
+    "id": "flip",
+    "chapter": {
+      "title": "Noticed and checked",
+      "subtitle": "Does this change affect us?"
+    },
+    "caption": "The supplier ships a new version.",
+    "say": "Now the supplier ships a new version. Stock isn't one number any more. It's on hand and reserved."
+  },
+  {
+    "id": "noticed",
+    "caption": "Noticed within seconds. **Nobody pressed a button.**",
+    "say": "The watcher notices within seconds and opens a case. Nobody pressed a button."
+  },
+  {
+    "id": "checked",
+    "caption": "**getStock** reads the field that was removed.",
+    "say": "First question: does this actually affect us? Agent Smith reads the app's code and finds the one function that reads the removed field."
+  },
+  {
+    "id": "not-affected",
+    "caption": "Fields the app doesn't read are **set aside**.",
+    "say": "The same update also removed a warehouse code and added a restock date. The app reads neither, so Agent Smith checks them, shows why, and sets them aside."
+  },
+  {
+    "id": "fixed",
+    "chapter": {
+      "title": "Fixed and proved",
+      "subtitle": "A fixer and a verifier, over Agent Relay"
+    },
+    "caption": "A separate verifier owns the tests, over **Agent Relay**.",
+    "say": "A repair agent writes a fix in a sandbox. A separate verifier, over Agent Relay, owns the tests. The fixer can't touch them."
+  },
+  {
+    "id": "proved",
+    "caption": "7 on hand − 5 reserved = **2** to sell.",
+    "say": "The same test command fails before and passes after. Seven on hand, five reserved: two to sell. The verifier's hidden checks pass too, including never selling stock we don't have."
+  },
+  {
+    "id": "bad-patch",
+    "caption": "A **deliberately bad patch**, sent back.",
+    "say": "To show the verifier really checks, here's a deliberately bad patch. It forgets that stock can't go below zero, so the verifier sends it back."
+  },
+  {
+    "id": "approve",
+    "chapter": {
+      "title": "You decide",
+      "subtitle": "A person approves. Nothing merges by itself."
+    },
+    "caption": "A tested PR, waiting for **a person**.",
+    "say": "Then it stops and hands you a tested pull request. A person approves. Nothing merges or deploys by itself."
+  },
+  {
+    "id": "restart",
+    "chapter": {
+      "title": "Durable",
+      "subtitle": "Kill the server, lose nothing"
+    },
+    "caption": "Killed and restarted: **state intact**.",
+    "say": "Every case lives in a Terse durable actor. Kill the server, and nothing is lost: the case and the watcher's memory survive, the watcher is re-armed, and it carries on counting."
+  },
+  {
+    "id": "close",
+    "caption": "Stay current with the APIs you depend on.",
+    "say": "Your app stays up to date with the APIs it depends on. Agent Smith."
+  }
+]
