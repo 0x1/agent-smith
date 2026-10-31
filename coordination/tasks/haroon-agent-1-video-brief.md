@@ -46,7 +46,7 @@ needs: Ahmed.
 6. **Fixed, over Agent Relay.** The fixer and the verifier talk in the case's Relay conversation. The verifier owns the tests, and the fixer can't edit them.
 7. **Proved.** The same command, `SUPPLIER_VERSION=v2 pnpm test`, fails before and passes after. 7 − 5 = 2 is shown from the real run, and the verifier's hidden checks pass (2 of 2).
 8. **You decide.** A PR for a human. Nothing merges or deploys by itself.
-9. **Terse durability.** `kill -9` the actor server. It comes back with the case and the watcher's state intact.
+9. **Terse durability.** `kill -9` the actor server. The case and the watcher's state survive. Pending alarms don't, so `rearm` in `demo/restart-proof.sh` restarts the checks, and we say so.
 10. **Speed.** About 29 seconds from the change to a verified fix, with nobody starting it (cto-1's run, 20:58Z). Use the time measured in the recorded run, not this number.
 
 ## Honesty rules
@@ -72,7 +72,7 @@ Timings are targets. "Screen" is what's visible, and "Voice" is the voice-over.
 | 0:56 | "Fixed" card and the Relay conversation: fixer, then verifier. | "A repair agent writes a fix in a sandbox. A separate verifier, over Agent Relay, owns the tests. The fixer can't touch them." |
 | 1:10 | "Proved" card: 7 − 5 = 2. Same command, red then green. Hidden checks 2 of 2. | "Same test command, failing before and passing after. Seven on hand, five reserved: two to sell. And the verifier's hidden checks pass too, including never selling stock we don't have." |
 | 1:25 | "You" card. "Review the fix →" opens the PR. "Nothing merges until you approve." | "Then it stops and hands you a tested PR. A person decides. Nothing deploys by itself." |
-| 1:35 | Terminal: `kill -9` the actor server. Watcher chip: "Restarted · new process · state intact". | "And because every case lives in a durable actor, killing the server loses nothing. It picks up exactly where it was." |
+| 1:35 | `kill -9` the actor server (`demo/restart-proof.sh`). On the case view, the watcher chip turns to "Restarted · new process · state intact". The web recorder can't show a terminal. | "Every case lives in a Terse durable actor. Kill the server, and nothing is lost: the case and the watcher's memory survive, the watcher is re-armed, and it carries on counting." |
 | 1:48 | End card: "Agent Smith". Built on Terse Durable Actors and Agent Relay. Team names. | "Your app stays up to date with the APIs it depends on. Agent Smith." |
 
 ## Recording plan
@@ -103,7 +103,8 @@ Steps 1 to 4 are on Ahmed's machine. Hussain's agent owns the exact commands in 
 
 2026-10-31T21:04Z / haroon-agent-1 / first draft published for team input / d29a815 / 21:25Z
 2026-10-31T21:08Z / haroon-agent-1 / recorded Ahmed's answer on when and where; questions 1, 2, 4 and 5 remain open / db7db0c / 21:25Z
-2026-10-31T21:12Z / haroon-agent-1 / script now takes its not-affected moment from the single v2 flip, matching hussain-claude-2's per-field watcher (PR #32, which I checked) / this commit / 21:30Z
+2026-10-31T21:12Z / haroon-agent-1 / script now takes its not-affected moment from the single v2 flip, matching hussain-claude-2's per-field watcher (PR #32, which I checked) / b98adb7 / 21:30Z
+2026-10-31T21:14Z / haroon-agent-1 / folded in hussain-claude-1's input (PR #33): the 1:35 beat is now accurate about alarms and re-arming, and is shown on the case view, not a terminal / this commit / 21:30Z
 
 ## Evidence
 
