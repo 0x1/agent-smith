@@ -167,6 +167,10 @@ details.raw { margin-top: 14px; }
 .start .h { font-size: 30px; line-height: 36px; }
 .waiting { grid-column: 1 / -1; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; }
 .waiting .small { margin-top: 0; }
+.scan-done { margin-top: 12px; font-size: 17px; line-height: 24px; color: var(--ink); }
+.next { display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 19px; color: var(--ink); }
+.next .lime { font-size: 18px; padding: 11px 20px; white-space: nowrap; }
+.next .lime:disabled { opacity: .7; cursor: progress; }
 .waiting .stepper { margin-top: 14px; }
 .waiting .tip { display: none; }
 .scan { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; align-items: center; }

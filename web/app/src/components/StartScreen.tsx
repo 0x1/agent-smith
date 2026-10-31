@@ -6,7 +6,7 @@ import { StepStack } from "./StepStack.tsx";
 // The shape of GET /api/inventory: the real scan() of the one connected demo repo.
 interface CallSite { path: string; line: number; functionName?: string; fieldsRead: string[] }
 interface Endpoint { provider: string; endpoint: string; status: "used" | "not_used"; callSites: CallSite[] }
-interface Inventory { repo: string; commit: string | null; scannedAt: string; endpoints: Endpoint[] }
+interface Inventory { repo: string; commit: string | null; scannedAt: string; filesScanned: string[]; endpoints: Endpoint[] }
 
 const REPO = "0x1/agent-smith-demo";
 
@@ -16,6 +16,22 @@ export function StartScreen({ watcher, now, others }: { watcher: LiveWatcher | n
   const [inv, setInv] = useState<Inventory | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [changing, setChanging] = useState(false);
+  // Switches the mock supplier and runs a real check, so the case opens at once.
+  const simulate = async () => {
+    setChanging(true);
+    setError("");
+    try {
+      for (const [path, body] of [["/api/presenter/version", { version: "v2" }], ["/api/presenter/probe", {}]] as const) {
+        const res = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      }
+    } catch (err) {
+      setError(String(err instanceof Error ? err.message : err));
+      setChanging(false);
+    }
+  };
+  const used = inv?.endpoints.filter((e) => e.status === "used").length ?? 0;
   const run = async () => {
     setBusy(true);
     setError("");
@@ -37,9 +53,10 @@ export function StartScreen({ watcher, now, others }: { watcher: LiveWatcher | n
         <h1 className="h">Try it on the demo repo</h1>
         <div className="scan">
           <input className="repo" value={REPO} readOnly aria-label="Connected repo" />
-          <button className="lime" onClick={run} disabled={busy}>{busy ? "Scanning…" : "Scan this repo"}</button>
+          <button className="lime" onClick={run} disabled={busy}>{busy ? "Scanning…" : inv ? "Scan again" : "Scan this repo"}</button>
         </div>
-        {error && <p className="no scan-error">✕ The scan failed: {error}</p>}
+        {error && <p className="no scan-error">✕ That didn't work: {error}</p>}
+        {inv && <p className="scan-done"><span className="ok">✓</span> Scan finished. Found {used} {used === 1 ? "API" : "APIs"} in use across {inv.filesScanned.length} files.</p>}
         <p className="small">Demo: one connected repo, one known provider.</p>
         {watcher && watcher.probeCount > 0 && last !== null && (
           <p className="small">No changes in {watcher.probeCount} checks. Last checked {last} s ago.</p>
@@ -69,7 +86,12 @@ export function StartScreen({ watcher, now, others }: { watcher: LiveWatcher | n
       </div>
       <TeamFit />
       <div className="waiting">
-        <p className="small">{inv ? "Watching. These fill in as soon as the API changes." : "Scan first. Then these fill in when the API changes."}</p>
+        {inv ? (
+          <div className="next">
+            <p>We're watching. Now see what happens when the supplier changes its API.</p>
+            <button className="lime" onClick={simulate} disabled={changing}>{changing ? "Supplier changing…" : "Simulate an API change"}</button>
+          </div>
+        ) : <p className="small">Scan first. Then these fill in when the API changes.</p>}
         <StepStack steps={WAITING} onPick={() => {}} />
       </div>
     </div>
