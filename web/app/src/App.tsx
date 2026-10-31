@@ -5,7 +5,8 @@ import { Nav } from "./components/Nav.tsx";
 import { ReviewButton } from "./components/ReviewButton.tsx";
 import { StepStack } from "./components/StepStack.tsx";
 import { isLive, sinceText, WatcherChip } from "./components/WatcherChip.tsx";
-import { Window } from "./components/Window.tsx";
+import { RelayThread } from "./components/RelayThread.tsx";
+import { ProofCard } from "./components/Window.tsx";
 import { clock, outlineFromPaths, outlineOf, printOutline } from "./format.ts";
 import { isFixture, useLive, useNow } from "./live.ts";
 import { activeCase, caseMessages, notAffected, steps, unstructured } from "./model.ts";
@@ -72,17 +73,20 @@ export function App() {
   } else {
     const msgs = [...caseMessages(s, c.caseId), ...unstructured(s)].sort((x, y) => x.at.localeCompare(y.at));
     const st = steps(c, msgs);
-    const waiting = c.status === "awaiting_approval" && !!c.pr;
+    // Open by default when there is a rejection to see, so it is never hidden.
+    const showHow = msgs.some((m) => m.parsed?.type === "verification.result" && m.parsed.decision === "reject");
     body = (
-      <div className="grid">
-        <div>
-          <Headline text={c.headline} />
-          <StepStack steps={st} />
-          <ReviewButton c={c} />
-          <Evidence steps={st} />
-          <Footnotes quiet={quiet} active={c} />
-        </div>
-        <Window c={c} msgs={msgs} relayLive={isLive(s, "relay")} relaySince={sinceText(s, "relay")} waiting={waiting} />
+      <div className="column">
+        <Headline text={c.headline} />
+        <StepStack steps={st} />
+        <ProofCard c={c} msgs={msgs} />
+        <ReviewButton c={c} />
+        <Footnotes quiet={quiet} active={c} />
+        <details className="how" open={showHow}>
+          <summary>See how we know</summary>
+          <RelayThread msgs={msgs} live={isLive(s, "relay")} since={sinceText(s, "relay")} />
+          <Evidence steps={st} bare />
+        </details>
       </div>
     );
   }
