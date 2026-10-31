@@ -2,11 +2,11 @@
   {
     "id": "problem",
     "chapter": {
-      "title": "Watching",
-      "subtitle": "The APIs your app actually calls"
+      "title": "Find dependencies",
+      "subtitle": "Demo: one connected repo, one known provider"
     },
-    "caption": "APIs change under your app, and it breaks **quietly**.",
-    "say": "Every app depends on APIs it doesn't control. When one changes, things break quietly, and someone spends a day finding out why."
+    "caption": "Find every **dependency** your app relies on.",
+    "say": "Every app depends on APIs it doesn't control. Agent Smith starts by finding the dependencies your app relies on, and the exact code that calls them."
   },
   {
     "id": "watcher",
@@ -16,11 +16,11 @@
   {
     "id": "flip",
     "chapter": {
-      "title": "Noticed and checked",
+      "title": "Noticing and checking",
       "subtitle": "Does this change affect us?"
     },
     "caption": "The supplier ships a new version.",
-    "say": "Now the supplier ships a new version. Stock isn't one number any more. It's on hand and reserved."
+    "say": "Now our mock supplier ships a new version. Stock isn't one number any more. It's on hand and reserved."
   },
   {
     "id": "noticed",
@@ -40,7 +40,7 @@
   {
     "id": "fixed",
     "chapter": {
-      "title": "Fixed and proved",
+      "title": "Fixing and proving",
       "subtitle": "A fixer and a verifier, over Agent Relay"
     },
     "caption": "A separate verifier owns the tests, over **Agent Relay**.",
@@ -59,7 +59,7 @@
   {
     "id": "approve",
     "chapter": {
-      "title": "You decide",
+      "title": "Your turn",
       "subtitle": "A person approves. Nothing merges by itself."
     },
     "caption": "A tested PR, waiting for **a person**.",
