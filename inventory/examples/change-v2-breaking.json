@@ -1,0 +1,9 @@
+{
+  "provider": "supplier",
+  "endpoint": "GET /v1/inventory/{sku}",
+  "changeKind": "breaking",
+  "fieldPath": "stock",
+  "shapeDiff": { "removed": ["stock"], "added": ["inventory", "inventory.on_hand", "inventory.reserved"], "retyped": [] },
+  "summary": "stock replaced by inventory.on_hand and inventory.reserved",
+  "sourceRef": "http://127.0.0.1:7200/changelog/v2"
+}

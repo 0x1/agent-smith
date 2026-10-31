@@ -1,0 +1,5 @@
+{
+  "WIDGET-1": { "sku": "WIDGET-1", "stock": 2, "updated_at": "2026-10-31T18:00:00Z", "restock_eta": "2026-11-04" },
+  "WIDGET-2": { "sku": "WIDGET-2", "stock": 4, "updated_at": "2026-10-31T18:00:00Z", "restock_eta": null },
+  "WIDGET-3": { "sku": "WIDGET-3", "stock": 0, "updated_at": "2026-10-31T18:00:00Z", "restock_eta": "2026-11-02" }
+}

@@ -1,0 +1,9 @@
+{
+  "provider": "supplier",
+  "endpoint": "GET /v1/pricing/{sku}",
+  "changeKind": "breaking",
+  "fieldPath": "price_cents",
+  "shapeDiff": { "removed": ["price_cents"], "added": ["price.amount"], "retyped": [] },
+  "summary": "price_cents replaced by price.amount",
+  "sourceRef": "http://127.0.0.1:7200/changelog"
+}

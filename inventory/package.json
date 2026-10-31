@@ -1,0 +1,16 @@
+{
+  "name": "inventory",
+  "private": true,
+  "type": "module",
+  "description": "Finds which provider endpoints and fields an app uses, and decides whether a change affects it",
+  "engines": { "node": ">=23.6" },
+  "main": "index.ts",
+  "scripts": {
+    "test": "node --test inventory.test.ts",
+    "scan": "node cli.ts scan",
+    "check": "node cli.ts check"
+  },
+  "dependencies": {
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "WIDGET-1": { "sku": "WIDGET-1", "inventory": { "on_hand": 7, "reserved": 5 }, "warehouse": "SF-1", "updated_at": "2026-10-31T18:00:00Z" },
+  "WIDGET-2": { "sku": "WIDGET-2", "inventory": { "on_hand": 4, "reserved": 0 }, "warehouse": "SF-1", "updated_at": "2026-10-31T18:00:00Z" },
+  "WIDGET-3": { "sku": "WIDGET-3", "inventory": { "on_hand": 3, "reserved": 5 }, "warehouse": "OAK-2", "updated_at": "2026-10-31T18:00:00Z" }
+}
