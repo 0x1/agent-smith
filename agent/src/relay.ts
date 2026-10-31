@@ -7,14 +7,14 @@ const BASE_URL = process.env.RELAY_BASE_URL ?? "http://127.0.0.1:8787";
 // The workspace key is local to this machine. `web/` reads it for its observer.
 const KEY_FILE = join(import.meta.dirname, "..", ".relay-workspace.json");
 
-async function connect(): Promise<AgentRelay> {
-  if (existsSync(KEY_FILE)) {
-    const { workspaceKey } = JSON.parse(readFileSync(KEY_FILE, "utf8"));
-    return new AgentRelay({ workspaceKey, baseUrl: BASE_URL });
-  }
-  const relay = await AgentRelay.createWorkspace({ name: "agent-smith", baseUrl: BASE_URL });
-  writeFileSync(KEY_FILE, JSON.stringify({ workspaceKey: relay.workspaceKey, baseUrl: BASE_URL }));
-  return relay;
+interface Saved {
+  workspaceKey: string;
+  baseUrl: string;
+  tokens: Record<string, string>;
+}
+
+function load(): Saved | null {
+  return existsSync(KEY_FILE) ? JSON.parse(readFileSync(KEY_FILE, "utf8")) : null;
 }
 
 type Client = Extract<Awaited<ReturnType<AgentRelay["workspace"]["register"]>>, { sendMessage: unknown }>;
@@ -31,12 +31,22 @@ export interface Relay {
 let shared: Promise<Relay> | null = null;
 
 async function open(): Promise<Relay> {
-  const relay = await connect();
-  const [observer, repair, verifier] = await Promise.all(
-    [AGENT_NAMES.observer, AGENT_NAMES.repair, AGENT_NAMES.verifier].map(
-      (name) => relay.workspace.register({ name, type: "agent" }) as Promise<Client>,
-    ),
-  );
+  const saved = load();
+  const relay = saved
+    ? new AgentRelay({ workspaceKey: saved.workspaceKey, baseUrl: BASE_URL })
+    : await AgentRelay.createWorkspace({ name: "agent-smith", baseUrl: BASE_URL });
+  const tokens: Record<string, string> = saved?.tokens ?? {};
+  // A name can only be registered once, so later runs reconnect with its token.
+  const client = async (name: string): Promise<Client> => {
+    if (tokens[name]) return (await relay.workspace.reconnect({ apiToken: tokens[name] })) as Client;
+    const registered = (await relay.workspace.register({ name, type: "agent" })) as Client;
+    tokens[name] = registered.token ?? "";
+    return registered;
+  };
+  const observer = await client(AGENT_NAMES.observer);
+  const repair = await client(AGENT_NAMES.repair);
+  const verifier = await client(AGENT_NAMES.verifier);
+  writeFileSync(KEY_FILE, JSON.stringify({ workspaceKey: relay.workspaceKey, baseUrl: BASE_URL, tokens }));
   await observer.channels.create({ name: REPAIR_CHANNEL, topic: "Repairs and verification" }).catch(() => {});
   await Promise.all([observer, repair, verifier].map((c) => c.channels.join(REPAIR_CHANNEL)));
 
