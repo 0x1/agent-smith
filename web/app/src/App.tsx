@@ -1,47 +1,10 @@
-import { Evidence } from "./components/Evidence.tsx";
-import { Footnotes } from "./components/Footnotes.tsx";
+import { CaseView } from "./components/CaseView.tsx";
 import { Headline } from "./components/Headline.tsx";
 import { Nav } from "./components/Nav.tsx";
-import { ReviewButton } from "./components/ReviewButton.tsx";
 import { StartScreen } from "./components/StartScreen.tsx";
-import { StepStack } from "./components/StepStack.tsx";
 import { isLive, sinceText, WatcherChip } from "./components/WatcherChip.tsx";
-import { RelayThread } from "./components/RelayThread.tsx";
-import { ProofCard } from "./components/Window.tsx";
-import { clock, outlineFromPaths, outlineOf, printOutline } from "./format.ts";
 import { isFixture, useLive, useNow } from "./live.ts";
-import { activeCase, caseMessages, notAffected, steps, unstructured } from "./model.ts";
-import type { LiveState } from "./types.ts";
-
-// The response shape the watcher has stored, or failing that the supplier's live response.
-function QuietWindow({ s }: { s: LiveState }) {
-  const w = s.watcher;
-  const stored = w?.shape && Object.keys(w.shape).length ? w.shape : null;
-  if (!stored && (!isLive(s, "supplier") || !s.sample)) {
-    return (
-      <div className="win">
-        <div className="card nolive-card"><b>✕ No live data from the supplier since {sinceText(s, "supplier")}.</b></div>
-      </div>
-    );
-  }
-  const label = stored ? `The shape the watcher has stored · ${w?.endpoint || "GET /v1/inventory/{sku}"}` : `What the supplier sends now · GET ${s.sample?.path}`;
-  const outline = stored ? outlineFromPaths(stored) : outlineOf(s.sample?.body);
-  return (
-    <div className="win">
-      <div className="card spec enter">
-        <div className="lbl">{label}</div>
-        <pre>{printOutline(outline)}</pre>
-        {w && w.probeCount > 0 && (
-          <div className="gl">
-            {w.lastChangeAt
-              ? <>{w.probeCount} checks so far. Last change seen at {clock(w.lastChangeAt)}.</>
-              : <>Same shape for <b>{w.probeCount}</b> checks.</>}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+import { activeCase, caseMessages, notAffected, unstructured } from "./model.ts";
 
 export function App() {
   const s = useLive();
@@ -52,43 +15,12 @@ export function App() {
 
   let body;
   if (!terseEver || (!s.watcher && !c)) {
-    body = (
-      <div className="grid">
-        <div>
-          <Headline text={`No live data from Terse since ${sinceText(s, "terse")}.`} dek="The bridge keeps retrying the watcher. This page fills in as soon as it answers." />
-        </div>
-        <QuietWindow s={s} />
-      </div>
-    );
+    body = <Headline text={`No live data from Terse since ${sinceText(s, "terse")}.`} dek="The bridge keeps retrying the watcher. This page fills in as soon as it answers." />;
   } else if (!c) {
-    body = (
-      <div className="grid">
-        <div>
-          <StartScreen />
-          <Footnotes quiet={quiet} active={null} />
-        </div>
-        <QuietWindow s={s} />
-      </div>
-    );
+    body = <StartScreen watcher={s.watcher} now={now} others={quiet.length} />;
   } else {
     const msgs = [...caseMessages(s, c.caseId), ...unstructured(s)].sort((x, y) => x.at.localeCompare(y.at));
-    const st = steps(c, msgs);
-    // Open by default when there is a rejection to see, so it is never hidden.
-    const showHow = msgs.some((m) => m.parsed?.type === "verification.result" && m.parsed.decision === "reject");
-    body = (
-      <div className="column">
-        <Headline text={c.headline} />
-        <StepStack steps={st} />
-        <ProofCard c={c} msgs={msgs} />
-        <ReviewButton c={c} />
-        <Footnotes quiet={quiet} active={c} />
-        <details className="how" open={showHow}>
-          <summary>See how we know</summary>
-          <RelayThread msgs={msgs} live={isLive(s, "relay")} since={sinceText(s, "relay")} />
-          <Evidence steps={st} bare />
-        </details>
-      </div>
-    );
+    body = <CaseView c={c} msgs={msgs} others={quiet.length} relayLive={isLive(s, "relay")} relaySince={sinceText(s, "relay")} />;
   }
 
   return (
@@ -97,6 +29,10 @@ export function App() {
       <Nav />
       <WatcherChip s={s} now={now} />
       {body}
+      <footer className="built">
+        <span>Built with</span>
+        {["Terse", "Agent Relay", "Mastra", "Freestyle", "OpenAI"].map((name) => <b key={name}>{name}</b>)}
+      </footer>
     </div>
   );
 }

@@ -1,22 +1,19 @@
-import type { Step, StepKey } from "../model.ts";
+import type { Step } from "../model.ts";
 
-const ICONS: Record<StepKey, string> = { noticed: "◎", checked: "⌕", fixed: "✎", proved: "✓", you: "☺" };
-
-export function StepCard({ step }: { step: Step }) {
-  const big = step.state === "now" || step.state === "bad";
+// The story at a glance: labels and times. Hover for a sentence, click for the detail.
+export function StepStack({ steps, onPick }: { steps: Step[]; onPick: (step: Step) => void }) {
   return (
-    <div className={`card step ${step.state} enter`}>
-      <span className="ic" aria-hidden>{step.state === "bad" ? "✕" : step.state === "done" ? "✓" : ICONS[step.key]}</span>
-      <div style={{ minWidth: 0 }}>
-        <div className="nm">{big ? step.what : step.name}</div>
-        {step.state === "done" && <div className="sub">{step.what}</div>}
-        {big && <div className="sub">{step.state === "bad" ? `${step.name} · sent back` : step.name}</div>}
-      </div>
-      <span className="tm">{step.state === "later" ? "" : step.when}</span>
-    </div>
+    <ol className="stepper">
+      {steps.map((s) => (
+        <li key={s.key} className={`st ${s.state}`}>
+          <button onClick={() => onPick(s)} disabled={s.state === "later"} aria-label={`${s.name}: ${s.what}`}>
+            <span className="dot" aria-hidden>{s.state === "bad" ? "✕" : s.state === "done" ? "✓" : ""}</span>
+            <span className="lb">{s.name}</span>
+            <span className="tm">{s.state === "later" ? "" : s.when}</span>
+            <span className="tip" role="tooltip">{s.what}</span>
+          </button>
+        </li>
+      ))}
+    </ol>
   );
-}
-
-export function StepStack({ steps }: { steps: Step[] }) {
-  return <div className="stack">{steps.map((s) => <StepCard key={s.key} step={s} />)}</div>;
 }

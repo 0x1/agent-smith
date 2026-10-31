@@ -68,9 +68,9 @@ describe("plain, real text", () => {
     expect(steps(c, []).find((s) => s.key === "proved")?.what).toBe("Your test passes (1 of 1) and so do 2 of 2 hidden checks.");
   });
 
-  test("Noticed says the explanation's first sentence, not the field-path summary", () => {
+  test("Noticed names what the supplier changed, in plain words", () => {
     const noticed = steps(kase({ status: "detected" }), []).find((s) => s.key === "noticed");
-    expect(noticed?.what).toBe("Stock used to be one number.");
+    expect(noticed?.what).toBe("The supplier changed stock.");
     expect(noticed?.detail).toContain("stock removed; inventory.on_hand added");
   });
 

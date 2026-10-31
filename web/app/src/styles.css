@@ -29,7 +29,7 @@ a { color: inherit; }
   .btn, .lime { transition: none; }
 }
 
-.page { min-height: 100vh; padding: 0 56px 72px; }
+.page { min-height: 100vh; padding: 0 56px 28px; }
 
 /* Fixture banner: loud on purpose, so fixture data is never mistaken for live. */
 .fixture-banner { margin: 0 -56px; padding: 10px 56px; background: var(--danger-tint); color: var(--danger); border-bottom: 2px solid var(--danger);
@@ -56,71 +56,106 @@ a { color: inherit; }
 
 /* Layout */
 .grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px; margin-top: 18px; align-items: start; }
-.h { font-family: var(--font-display); font-weight: 700; font-size: 46px; line-height: 52px; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; margin-top: 18px; }
+.h { font-family: var(--font-display); font-weight: 700; font-size: 42px; line-height: 48px; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
 .h.quiet { font-size: 72px; line-height: 76px; }
 .h.nolive { font-size: 46px; color: var(--danger); }
 .dek { font-size: 20px; line-height: 30px; color: var(--ink-soft); margin-top: 16px; max-width: 46ch; }
 .dek.quiet { font-size: 24px; line-height: 36px; }
 
-/* One column case view */
-.column { max-width: 920px; margin-top: 8px; }
-.column .stack { max-width: none; }
-.column .proof { margin-top: 18px; }
-.column .foot .card { max-width: none; padding: 8px 14px; font-size: 17px; }
-details.how { margin-top: 26px; }
-details.how > summary { font-size: 19px; font-weight: 600; color: var(--ink); }
-details.how .chat { margin-top: 12px; }
-details.how .evidence { max-width: none; }
-
-/* Start screen and What we found */
-.start .h { font-size: 52px; line-height: 58px; max-width: 18ch; }
-.scan { display: flex; gap: 12px; margin-top: 22px; align-items: center; }
-.scan .repo { font: 500 19px var(--font-mono); padding: 13px 16px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--card); color: var(--ink); width: 340px; }
-.scan .lime { font-size: 19px; padding: 13px 22px; cursor: pointer; }
-.scan-error { margin-top: 12px; font-size: 18px; }
-.found { margin-top: 26px; }
-.found h2 { font-family: var(--font-display); font-weight: 700; font-size: 26px; margin-bottom: 10px; }
-.found table { border-collapse: collapse; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 12px; font-size: 17px; }
-.found th, .found td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
-.found th { color: var(--ink-muted); font-weight: 600; font-size: 15px; }
-.found td.mono { font-size: 15px; }
-.found .gl { margin-top: 10px; color: var(--ink-soft); font-size: 17px; }
-
-.team { margin-top: 30px; }
-.team h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin-bottom: 8px; }
-.team ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.team li { display: grid; grid-template-columns: 180px 1fr; gap: 12px; align-items: baseline; font-size: 18px; line-height: 27px; color: var(--ink-soft); max-width: 900px; }
-.team .state { font-size: 15px; font-weight: 600; }
-.team .state.next { color: var(--ink-muted); border: 1px dashed var(--ink-muted); border-radius: 6px; padding: 0 8px; justify-self: start; }
-
-/* Step stack */
-.stack { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
-.card { border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--card); }
-.step { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; padding: 9px 18px;
-}
-.step .ic { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; font-weight: 700; border: 1px solid var(--line-strong); background: var(--card); color: var(--ink-soft); }
-.step .nm { font-weight: 650; font-size: 21px; line-height: 28px; }
-.step .sub { font-size: 17px; line-height: 24px; color: var(--ink-soft); }
-.step.done .sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.step .tm { font-family: var(--font-mono); font-size: 15px; color: var(--ink-muted); }
-.step.done .ic { border-color: var(--positive); color: var(--positive); }
-.step.later { background: var(--sunken); border-color: transparent; }
-.step.later .nm { color: var(--ink-muted); }
-.step.now { border-color: var(--ink); padding: 16px 18px; }
-.step.now .nm, .step.bad .nm { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 30px; letter-spacing: -0.01em; }
-.step.bad { background: var(--danger-tint); border-color: var(--danger); padding: 16px 18px; }
-.step.bad .ic { border-color: var(--danger); color: var(--danger); }
 .ok { color: var(--positive); font-weight: 600; }
 .no { color: var(--danger); font-weight: 600; }
 
-/* The one action */
-.act { margin-top: 26px; display: flex; gap: 16px; align-items: center; }
-.lime { background: var(--accent); border: 0; border-radius: 10px; color: var(--accent-ink); font-weight: 600; font-size: 22px;
-  padding: 15px 26px; text-decoration: none; display: inline-flex; gap: 12px; align-items: center; transition: filter .12s; }
-.lime:hover { filter: brightness(1.12); }
-.act .note { color: var(--ink-muted); font-size: 18px; line-height: 26px; }
+/* One screen: fills the width, never needs scrolling at 1440x900 or above. */
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; min-width: 0; }
+.panel h2 { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; color: var(--ink-muted); margin-bottom: 12px; }
+.small { font-size: 16px; line-height: 24px; color: var(--ink-muted); margin-top: 10px; }
 
-/* The lilac window */
+.case { margin-top: 14px; }
+.case-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+.case-head .dek { margin-top: 6px; font-size: 19px; line-height: 26px; max-width: none; }
+.approved { font-size: 19px; padding-top: 8px; white-space: nowrap; }
+
+.stepper { list-style: none; padding: 0; margin-top: 24px; display: grid; grid-template-columns: repeat(5, 1fr); }
+.st { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.st::before { content: ''; position: absolute; top: 15px; left: -50%; right: 50%; height: 1px; background: var(--line-strong); }
+.st:first-child::before { display: none; }
+.st button { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
+.st button:disabled { cursor: default; }
+.st button:not(:disabled):hover .lb { text-decoration: underline; text-underline-offset: 4px; }
+.st .tip { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 6px; z-index: 30; width: max-content; max-width: 320px; padding: 8px 12px; background: var(--ink); color: var(--card); border-radius: 8px; font-size: 15px; line-height: 21px; visibility: hidden; }
+.st:first-child .tip { left: 0; transform: none; }
+.st:last-child .tip { left: auto; right: 0; transform: none; }
+.st button:hover .tip, .st button:focus-visible .tip { visibility: visible; }
+.step-detail { margin-bottom: 14px; }
+.step-detail p { font-size: 19px; line-height: 27px; }
+.step-detail pre { margin-top: 10px; font-family: var(--font-mono); font-size: 13px; line-height: 20px; color: var(--ink-soft); white-space: pre-wrap; word-break: break-word; }
+.st .dot { position: relative; width: 31px; height: 31px; border-radius: 50%; display: grid; place-items: center; font-size: 15px; font-weight: 700; background: var(--page); border: 1px solid var(--line-strong); color: var(--ink-muted); }
+.st .lb { font-weight: 600; font-size: 18px; color: var(--ink); }
+.st .tm { font-family: var(--font-mono); font-size: 13px; color: var(--ink-muted); min-height: 18px; }
+.st.done .dot { background: var(--positive-tint); border-color: var(--positive); color: var(--positive); }
+.st.now .dot { border: 2px solid var(--accent); background: var(--card); }
+.st.bad .dot { background: var(--danger-tint); border-color: var(--danger); color: var(--danger); }
+.st.later .lb { color: var(--ink-muted); font-weight: 500; }
+
+.notice { margin-top: 14px; padding: 9px 16px; border: 1px dashed var(--danger); border-radius: 10px; color: var(--danger); font-size: 17px; line-height: 24px; }
+
+.panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+.panel dl > div { display: grid; grid-template-columns: 90px 1fr; padding: 7px 0; font-size: 20px; }
+.panel dt { color: var(--ink-muted); }
+.panel dd { margin: 0; font-weight: 600; }
+.sell { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.sell .k { color: var(--ink-muted); font-size: 18px; }
+.sell .math { font-family: var(--font-display); font-weight: 700; font-size: 38px; letter-spacing: -0.02em; }
+.sell.wrong b { color: var(--danger); text-decoration: line-through; }
+.sell em { font-family: var(--font-sans); font-style: normal; font-size: 17px; color: var(--danger); }
+.did { list-style: none; padding: 0; }
+.did li { display: grid; grid-template-columns: 24px 1fr auto; align-items: baseline; padding: 7px 0; font-size: 19px; color: var(--ink-soft); }
+.did b { font-weight: 600; color: var(--ink); }
+.did .m { font-weight: 700; color: var(--ink-muted); }
+.did .ok .m { color: var(--positive); }
+.did .no .m, .did .no b { color: var(--danger); }
+.did .wait b { color: var(--ink-muted); font-weight: 500; }
+.how-link { display: block; margin: 14px 0 0 auto; color: var(--ink-soft); font-size: 17px; }
+.how-link:hover { color: var(--ink); }
+
+.scrim { position: fixed; inset: 0; background: rgba(29, 31, 36, .28); z-index: 50; cursor: default; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(640px, 92vw); background: var(--page); border-left: 1px solid var(--line-strong); z-index: 51; overflow-y: auto; padding: 22px 26px; }
+.drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.drawer-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 24px; }
+.drawer .chat { background: var(--card); }
+.drawer .evidence { max-width: none; font-size: 13px; line-height: 20px; }
+details.raw { margin-top: 14px; }
+
+.start { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; margin-top: 28px; align-items: start; }
+.start .h { font-size: 50px; line-height: 56px; }
+.start .dek { max-width: none; }
+.scan { display: flex; gap: 12px; margin-top: 24px; align-items: center; }
+.scan .repo { font: 500 17px var(--font-mono); padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--card); color: var(--ink); flex: 1; min-width: 0; }
+.scan .lime { font-size: 18px; padding: 12px 20px; white-space: nowrap; }
+.scan-error { margin-top: 12px; font-size: 17px; }
+.start-right { display: flex; flex-direction: column; gap: 20px; }
+.found table { border-collapse: collapse; width: 100%; font-size: 17px; }
+.found th, .found td { text-align: left; padding: 9px 12px 9px 0; border-top: 1px solid var(--line); vertical-align: top; }
+.found th { color: var(--ink-muted); font-weight: 600; font-size: 14px; border-top: 0; }
+.found td.mono { font-size: 15px; }
+.team ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.team li { display: grid; grid-template-columns: 90px 1fr; gap: 10px; align-items: baseline; font-size: 18px; line-height: 26px; color: var(--ink-soft); }
+.team .state { font-size: 15px; font-weight: 600; }
+.team .state.next { color: var(--ink-muted); }
+
+.ok { color: var(--positive); font-weight: 600; }
+.no { color: var(--danger); font-weight: 600; }
+
+.act { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
+.lime { background: var(--accent); border: 0; border-radius: 10px; color: var(--accent-ink); font-weight: 600; font-size: 20px;
+  padding: 14px 24px; text-decoration: none; display: inline-flex; gap: 12px; align-items: center; transition: filter .12s; }
+.lime:hover { filter: brightness(1.12); }
+.act .note { color: var(--ink-muted); font-size: 15px; }
+
+.built { position: fixed; left: 56px; right: 56px; bottom: 12px; display: flex; gap: 22px; align-items: baseline; color: var(--ink-muted); font-size: 14px; }
+.built b { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--ink-soft); }
+
+/* Older proof styles stay out of the main view. */
 .win { position: relative; margin-top: 18px; }
 /* While a person must act, the review button is the only lime element. */
 
@@ -178,13 +213,6 @@ details[open] > summary::before { transform: rotate(90deg); }
 details > summary::-webkit-details-marker { display: none; }
 .evidence { margin-top: 12px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px;
   white-space: pre-wrap; font-family: var(--font-mono); font-size: 15px; line-height: 22px; max-width: 760px; }
-
-/* Quiet state: the stored response shape */
-.spec { padding: 26px 30px; }
-.spec .lbl { font-size: 18px; color: var(--ink-muted); font-weight: 600; }
-.spec pre { font-family: var(--font-mono); font-size: 30px; line-height: 44px; margin: 10px 0 6px; color: var(--ink); white-space: pre-wrap; }
-.spec .ty { color: var(--ink-muted); font-style: italic; }
-.spec .gl { font-size: 19px; color: var(--ink-soft); }
 
 /* "No live data" panel. Never a placeholder: it names the source and the time. */
 .nolive-card { padding: 22px 26px; font-size: 21px; line-height: 30px; }
