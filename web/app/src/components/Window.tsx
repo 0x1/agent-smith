@@ -5,7 +5,7 @@ import { Arithmetic } from "./Arithmetic.tsx";
 import { RelayThread } from "./RelayThread.tsx";
 
 // The current step's proof, visible without a click.
-function ProofCard({ c, msgs }: { c: LiveCase; msgs: RelayEntry[] }) {
+export function ProofCard({ c, msgs }: { c: LiveCase; msgs: RelayEntry[] }) {
   const rejection = rejectedNow(c, msgs);
   const late = rejection || ["repaired", "awaiting_approval", "approved", "rejected"].includes(c.status);
   if (late && c.proof) {

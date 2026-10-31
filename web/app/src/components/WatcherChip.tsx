@@ -20,7 +20,7 @@ function SourceChip({ s, source, extra }: { s: LiveState; source: SourceName; ex
   const state = s.bridge === "live" ? st?.state ?? "connecting" : "connecting";
   const word = state === "live" ? "✓ live" : state === "connecting" ? "… connecting" : "✕ down";
   return (
-    <span className="chip small" title={st?.detail}>
+    <span className={`chip small${state === "live" ? "" : " nolive"}`} title={st?.detail}>
       <span className={`d ${state}`} />{LABEL[source]}{extra ? ` ${extra}` : ""} · {word}
     </span>
   );
@@ -41,16 +41,17 @@ export function WatcherChip({ s, now }: { s: LiveState; now: number }) {
   } else {
     const ago = w.lastProbeAt ? Math.max(0, Math.round((now - new Date(w.lastProbeAt).getTime()) / 1000)) : null;
     main = (
-      <span className="chip">
-        <span className="d" />Watcher · Terse durable actor · {ago === null ? "no check yet" : `checked ${ago} s ago`} · {w.probeCount} checks
+      <span className="chip" title="Terse watcher, Agent Relay and the supplier all report live">
+        <span className="d" />Live · {ago === null ? "no check yet" : `checked ${ago} s ago`} · {w.probeCount} checks
       </span>
     );
   }
+  // One "Live" chip when everything is up. Any source that isn't stays on screen, in red.
   return (
     <div className="chips">
       {main}
-      <SourceChip s={s} source="relay" />
-      <SourceChip s={s} source="supplier" extra={s.sample?.version} />
+      {!isLive(s, "relay") && <SourceChip s={s} source="relay" />}
+      {!isLive(s, "supplier") && <SourceChip s={s} source="supplier" extra={s.sample?.version} />}
       {s.bridge !== "live" && <span className="chip nolive">✕ The page lost the bridge · reconnecting</span>}
     </div>
   );
