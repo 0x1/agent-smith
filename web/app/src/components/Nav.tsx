@@ -32,11 +32,12 @@ function Presenter({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function Nav({ demo, onHow }: { demo: boolean; onHow: () => void }) {
+export function Nav({ demo, onHow, onTry }: { demo: boolean; onHow: () => void; onTry: () => void }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="nav">
       <div className="logo"><span className="mark" aria-hidden>✱</span>Agent Smith</div>
+      {!demo && <button className="lime nav-try" onClick={onTry}>Try now</button>}
       {demo && (
         <div className="navr">
           <span>Controlled demo · mock supplier · nothing deploys</span>

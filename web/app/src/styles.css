@@ -130,7 +130,7 @@ details.raw { margin-top: 14px; }
 .lp { min-height: calc(100vh - 150px); display: flex; flex-direction: column; justify-content: center; }
 .lp-top { display: flex; flex-direction: column; align-items: flex-start; gap: 26px; }
 .lp-top h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(44px, 5.4vw, 92px); line-height: 1.04; letter-spacing: -0.03em; max-width: 17ch; }
-.lp-top .lime { font-size: 22px; padding: 16px 34px; }
+.nav-try { font-size: 18px; padding: 11px 24px; }
 .wire { display: block; width: 100%; height: auto; margin-top: 36px; overflow: visible; }
 .seg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .seg .base { stroke: var(--line-strong); stroke-width: 1.5; }
@@ -152,7 +152,7 @@ details.raw { margin-top: 14px; }
 .lp-steps { list-style: none; padding: 0; margin-top: 6px; display: grid; grid-template-columns: repeat(6, 1fr); text-align: center; }
 .lp-steps button { font-size: clamp(16px, 1.4vw, 21px); font-weight: 500; color: var(--ink-muted); transition: color .3s; }
 .lp-steps button.on { color: var(--ink); font-weight: 650; }
-.lp-steps button:focus-visible, .lp-top .lime:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.lp-steps button:focus-visible, .nav-try:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .lp-say { margin: 34px auto 0; max-width: 34em; min-height: 2.6em; text-align: center; font-size: clamp(21px, 2vw, 30px); line-height: 1.3; letter-spacing: -0.01em; color: var(--ink-soft); animation: say .45s ease-out both; }
 @keyframes say { from { opacity: 0; } }
 @media (max-width: 760px) {

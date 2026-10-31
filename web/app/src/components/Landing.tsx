@@ -46,13 +46,12 @@ function usePlayhead() {
   return { at: Math.min(at, STEPS.length - 1), pick: (i: number) => { setPaused(true); setAt(i); } };
 }
 
-export function Landing({ onDemo }: { onDemo: () => void }) {
+export function Landing() {
   const { at, pick } = usePlayhead();
   return (
     <main className="lp">
       <header className="lp-top">
         <h1>Keep your app working, even when APIs change</h1>
-        <button className="lime" onClick={onDemo}>Try now</button>
       </header>
 
       <svg className="wire" viewBox="0 0 1400 150" role="img" aria-label="Six steps from adding a repo to happy customers">

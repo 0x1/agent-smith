@@ -42,8 +42,8 @@ export function App() {
   return (
     <div className="page">
       {isFixture() && <div className="fixture-banner">FIXTURE DATA · not live · remove ?fixture=1 for the real demo</div>}
-      <Nav demo={demo} onHow={() => { window.location.hash = ""; }} />
-      {demo ? <><WatcherChip s={s} now={now} />{body}</> : <Landing onDemo={() => { window.location.hash = "demo"; }} />}
+      <Nav demo={demo} onHow={() => { window.location.hash = ""; }} onTry={() => { window.location.hash = "demo"; }} />
+      {demo ? <><WatcherChip s={s} now={now} />{body}</> : <Landing />}
       <footer className="built">
         <span>Built with</span>
         {SPONSORS.map(([name, logo]) => (
