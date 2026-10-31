@@ -9,7 +9,7 @@ const v1 = scan(new URL("./fixtures/app-v1", import.meta.url).pathname, { repo: 
 test("scan finds the used endpoint, its call site and the fields it reads", () => {
   const inv = v1.endpoints.find((e) => e.endpoint === "GET /v1/inventory/{sku}")!;
   assert.equal(inv.status, "used");
-  assert.deepEqual(inv.callSites, [{ path: "src/supplier.ts", line: 15, fieldsRead: ["stock"] }]);
+  assert.deepEqual(inv.callSites, [{ path: "src/supplier.ts", line: 15, fieldsRead: ["stock"], functionName: "getStock" }]);
   assert.equal(v1.endpoints.find((e) => e.endpoint === "GET /v1/pricing/{sku}")!.status, "not_used");
   assert.ok(v1.packages.some((p) => p.name === "tsx" && p.status === "installed"));
 });
@@ -17,7 +17,9 @@ test("scan finds the used endpoint, its call site and the fields it reads", () =
 test("the v2 change is affected, at the adapter", () => {
   const r = applicability(change("change-v2-breaking"), v1);
   assert.equal(r.verdict.result, "affected");
-  assert.deepEqual(r.callSite, { path: "src/supplier.ts", line: 15, fieldsRead: ["stock"] });
+  assert.deepEqual(r.callSite, { path: "src/supplier.ts", line: 15, fieldsRead: ["stock"], functionName: "getStock" });
+  assert.match(r.verdict.evidence[0], /^getStock\(\) in src\/supplier.ts:15 reads stock/);
+  assert.ok(r.verdict.at);
 });
 
 test("changes the app does not read are not_affected, with evidence", () => {

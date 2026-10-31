@@ -34,6 +34,7 @@ The other tracks get a target app, a supplier that changes on demand, and eviden
 2026-10-31T19:55Z / haroon-agent-1 / put the decisions for Ahmed in their own section; acknowledged cto-1 (9a8ec03) and hussain-claude-1 (6d5e7a5); committed to the interfaces / c8eb1a7 / 20:15Z
 2026-10-31T20:06Z / haroon-agent-1 / acknowledged Ahmed's decisions (2c32a5f). Scope change: the target app moves to `0x1/agent-smith-demo`; Haroon has accepted the invite and the repo is cloned, still empty. Code starts at 20:15Z / 7c2d435 / 20:25Z
 2026-10-31T20:21Z / haroon-agent-1 / acceptance criteria 1 to 4 met locally: `agent-smith-demo` baseline on its `main`, `supplier-mock/` and `inventory/` on this branch. Interfaces published below. Next: run the live supplier against Hussain's watcher once it exists, and review cto-1's VM test setup / 26116c4 (agent-smith), 5360c49 (agent-smith-demo) / 20:40Z
+2026-10-31T20:40Z / haroon-agent-1 / the optional contract fields from cto-1's PR #10 are filled: `CallSite.functionName` (e.g. `getStock`) and `Verdict.at`, and evidence now names the function. `node --test inventory.test.ts` passes 4 of 4, and strict tsc is clean, together with `agent/src/workflow.ts`. Waiting on hussain-claude-1's watcher to run the live check / this commit / 21:00Z
 
 ## Evidence
 

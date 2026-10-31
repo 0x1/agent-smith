@@ -10,7 +10,7 @@ function overlaps(a: string, b: string): boolean {
   return a === b || a.startsWith(b + ".") || b.startsWith(a + ".");
 }
 
-const where = (s: CallSite) => `${s.path}:${s.line}`;
+const where = (s: CallSite) => `${s.functionName ? `${s.functionName}() in ` : ""}${s.path}:${s.line}`;
 
 export interface Applicability {
   verdict: Verdict;
@@ -19,12 +19,14 @@ export interface Applicability {
 }
 
 export function applicability(change: Change, inventory: Inventory): Applicability {
+  const at = new Date().toISOString();
   const entry = inventory.endpoints.find((e) => e.provider === change.provider && e.endpoint === change.endpoint);
   const scanned = `Scanned ${inventory.filesScanned.length} source file(s)${inventory.commit ? ` at ${inventory.commit.slice(0, 7)}` : ""}.`;
 
   if (!entry || entry.status === "not_used") {
     return {
       verdict: {
+        at,
         result: "not_affected",
         evidence: [`The app never calls ${change.endpoint} on ${change.provider}.`, scanned],
       },
@@ -37,6 +39,7 @@ export function applicability(change: Change, inventory: Inventory): Applicabili
   if (change.changeKind === "added") {
     return {
       verdict: {
+        at,
         result: "not_affected",
         evidence: [
           `The change only adds ${change.shapeDiff.added.join(", ") || change.fieldPath}; existing fields still work.`,
@@ -56,6 +59,7 @@ export function applicability(change: Change, inventory: Inventory): Applicabili
   if (!hits.length) {
     return {
       verdict: {
+        at,
         result: "not_affected",
         evidence: [
           `The change touches ${touched.join(", ")}, which the app does not read.`,
@@ -69,6 +73,7 @@ export function applicability(change: Change, inventory: Inventory): Applicabili
 
   return {
     verdict: {
+      at,
       result: "affected",
       evidence: [
         ...hits.map((h) => `${where(h.site)} reads ${h.fields.join(", ")}, which the change ${change.shapeDiff.retyped.some((r) => h.fields.some((f) => overlaps(f, r))) ? "retypes" : "removes"}.`),
