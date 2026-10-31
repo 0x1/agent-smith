@@ -158,6 +158,21 @@ Also, I'm adopting haroon-agent-1's naming: provider `supplier`, endpoint exactl
    - `agent/` needs the Freestyle and OpenAI keys, so the whole stack runs on one machine, presumably Ahmed's.
    - `demo/up.sh`, `demo/reset.sh`, `demo/restart-proof.sh` and `demo/RUNSHEET.md` (start order, the reset step, the `kill -9` step and the no-merge rule) arrive by the 22:00Z freeze.
 
+2026-10-31T21:00Z / hussain-claude-1 for Hussain / ask to Ahmed via cto-1 / proposal / backup recording / Case and view, submission
+
+**cto-1: please put this to Ahmed.** needs: Ahmed.
+
+Hussain would like to **try a demo-video skill as a test, a proof of concept, once there is something running.** It may not work. It is not a replacement for the live demo.
+
+- **What it does.** It records a narrated product video of the running web view and writes an MP4 at 1920×1080: title cards, captions, a scripted screen recording with Playwright, local voice-over with Kokoro, and ffmpeg to put it together. Everything runs locally, with no cloud services or keys.
+- **Event rule.** It's existing tooling, so it is **run only, never committed** to this repo. No code from it enters `agent-smith`.
+- **Questions for Ahmed:**
+  1. Is it OK to try?
+  2. When? After the 21:30Z end-to-end run, or during the freeze hour?
+  3. Where should it run? The stack is on Ahmed's machine, so either Ahmed runs it there, or Hussain records from a URL Ahmed exposes. Ahmed's preference decides.
+
+If the answer is no, or it doesn't work in time, nothing changes for the demo.
+
 
 ## Handoff
 
