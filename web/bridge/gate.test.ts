@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { gateCase, gateWatcher, nextDelay, unwrapState } from "./gate.ts";
+import { applyFrame, gateCase, gateWatcher, nextDelay, unwrapState } from "./gate.ts";
 
 const seen = { version: 10, pid: 100, probeCount: 50 };
 
@@ -45,4 +45,17 @@ test("backoff doubles from 250 ms and stops at 2 s", () => {
   const seq = [250];
   while (seq.length < 6) seq.push(nextDelay(seq[seq.length - 1]));
   expect(seq).toEqual([250, 500, 1000, 2000, 2000, 2000]);
+});
+
+test("applyFrame folds Terse state_update frames into the last full state", () => {
+  const full = applyFrame(null, { type: "state", version: 717, state: { state: { probeCount: 351, caseIds: [] } } });
+  expect(full).toEqual({ state: { probeCount: 351, caseIds: [] } });
+  const upd = applyFrame(full, { type: "state_update", version: 719, changes: { state: { probeCount: 352, caseIds: ["a"] } }, removed: [] });
+  expect(unwrapState(upd)).toEqual({ probeCount: 352, caseIds: ["a"] });
+  expect(applyFrame({ state: 1, extra: 2 }, { type: "state_update", changes: {}, removed: ["extra"] })).toEqual({ state: 1 });
+});
+
+test("applyFrame ignores an update before any full frame, and unknown frames", () => {
+  expect(applyFrame(null, { type: "state_update", changes: { state: {} } })).toBeNull();
+  expect(applyFrame({ state: 1 }, { type: "ping" })).toBeNull();
 });

@@ -45,6 +45,32 @@ export function unwrapState<T>(frameState: unknown): T | null {
   return (frameState ?? null) as T | null;
 }
 
+// Terse sends one full `state` frame on connect, then `state_update` frames that
+// carry only the changed emittable fields (`changes`, each with its full new
+// value) and any `removed` field names. Fold either kind into the last known
+// fields, so every frame yields the actor's complete emittable state.
+// Returns null for frames that carry no state.
+export type Fields = Record<string, unknown>;
+export interface TerseFrame {
+  type?: string;
+  state?: unknown;
+  changes?: Fields;
+  removed?: string[];
+  version?: number;
+}
+export function applyFrame(last: Fields | null, frame: TerseFrame): Fields | null {
+  if (frame.type === "state") {
+    return frame.state && typeof frame.state === "object" ? { ...(frame.state as Fields) } : {};
+  }
+  if (frame.type === "state_update") {
+    if (!last) return null;
+    const next: Fields = { ...last, ...(frame.changes ?? {}) };
+    for (const key of frame.removed ?? []) delete next[key];
+    return next;
+  }
+  return null;
+}
+
 export function nextDelay(current: number): number {
   return Math.min(current * 2, 2000);
 }

@@ -29,13 +29,27 @@ export const STEP_NAMES: Record<StepKey, string> = {
 const ORDER: StepKey[] = ["noticed", "checked", "fixed", "proved", "you"];
 
 // Cases that need the main stage: everything except changes the app doesn't read.
+// One supplier release can open several cases at once (one per changed field),
+// and until agent/ decides applicability they all sit at `detected`. Lead with
+// the newest case agent/ found affecting the app, then the newest breaking
+// replacement, then any breaking change, then the newest of the rest.
 export function activeCase(s: LiveState): LiveCase | null {
   const ids = s.watcher?.caseIds ?? Object.keys(s.cases);
-  for (let i = ids.length - 1; i >= 0; i--) {
-    const c = s.cases[ids[i]];
-    if (c && c.status !== "not_affected") return c;
-  }
-  return null;
+  const open = ids
+    .map((id) => s.cases[id])
+    .filter((c): c is LiveCase => !!c && c.status !== "not_affected")
+    .reverse();
+  const breaking = (c: LiveCase) => c.change?.changeKind === "breaking";
+  // The watcher puts a field's replacement (a removal plus the new object that
+  // replaces it, e.g. stock -> inventory) in one case; a bare removal is its own.
+  const replaced = (c: LiveCase) => breaking(c) && (c.change?.shapeDiff?.added?.length ?? 0) > 0;
+  return (
+    open.find((c) => c.verdict?.result === "affected") ??
+    open.find(replaced) ??
+    open.find(breaking) ??
+    open[0] ??
+    null
+  );
 }
 
 export function notAffected(s: LiveState): LiveCase[] {

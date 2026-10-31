@@ -1,7 +1,7 @@
 // Live state from the Terse actors: the watcher, and every case it lists.
 import type { Case, WatcherState } from "../../contracts/case.ts";
 import { config } from "./config.ts";
-import { FIRST_DELAY, gateCase, gateWatcher, nextDelay, unwrapState } from "./gate.ts";
+import { applyFrame, FIRST_DELAY, type Fields, gateCase, gateWatcher, nextDelay, type TerseFrame, unwrapState } from "./gate.ts";
 import { type Hub, log } from "./hub.ts";
 
 const { terse } = config;
@@ -55,17 +55,20 @@ function follow(cls: string, id: string, h: Handlers) {
     const reconnecting = hadSocket;
     hadSocket = true;
     let first = true;
+    let fields: Fields | null = null;
     ws.onmessage = (ev) => {
-      let frame: { type?: string; state?: unknown; version?: number };
+      let frame: TerseFrame;
       try {
         frame = JSON.parse(String(ev.data));
       } catch {
         return;
       }
-      if (frame.type !== "state") return;
+      const next = applyFrame(fields, frame);
+      if (!next) return;
+      fields = next;
       delay = FIRST_DELAY;
       failingSince = null;
-      h.onFrame(frame.state, Number(frame.version ?? 0), first && reconnecting);
+      h.onFrame(fields, Number(frame.version ?? 0), first && reconnecting);
       first = false;
     };
     ws.onclose = () => {
