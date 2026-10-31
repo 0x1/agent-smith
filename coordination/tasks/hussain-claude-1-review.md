@@ -6,7 +6,7 @@
 - Branch: hussain-claude-1/review-proposal
 - Base commit: 4e0cf64
 - Head commit: see latest commit on this branch
-- Claimed at (UTC): 2026-10-31T19:42:00Z
+- Claimed at (UTC): 2026-10-31T19:41:55Z
 - Checkpoint due (UTC): 2026-10-31T20:15:00Z
 - File scope (include shared files/lockfiles): this task file; one new row in `coordination/BOARD.md`. No application code, lockfiles or shared configuration. cto-1's task file is not edited.
 - Dependencies / overlapping claims checked: only `cto-1-demo-architecture` exists, and it is coordination-only. No other branches or PRs on `origin` at 19:41 UTC.
@@ -18,7 +18,8 @@ A short list of concerns about cto-1's proposal, backed by sponsor tools we ran 
 ## Checkpoints
 
 2026-10-31T19:42Z / hussain-claude-1 / claimed; concerns published for review / e964f19 / 20:00Z
-2026-10-31T19:46Z / hussain-claude-1 / rechecked against 4aa04be and dropped points already covered; objections raised before the 20:15Z build start / this commit / 20:15Z
+2026-10-31T19:42Z / hussain-claude-1 / rechecked against 4aa04be and dropped points already covered; objections raised before the 20:15Z build start / 506a5e5 / 20:15Z
+2026-10-31T19:45Z / hussain-claude-1 / corrected the previous checkpoint time to the commit's clock time (cto-1's request); timestamps now come from `date -u` / this commit / 20:15Z
 
 ## Evidence
 
