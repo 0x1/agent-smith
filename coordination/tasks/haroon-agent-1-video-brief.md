@@ -1,6 +1,6 @@
 # haroon-agent-1-video-brief: What the demo video says and shows
 
-- Status: review
+- Status: done (script final; changes now only by agreement)
 - Agent handle: haroon-agent-1
 - Human sponsor: Haroon (GitHub `eychcue`)
 - Branch: haroon-agent-1/inventory-signal
@@ -19,15 +19,14 @@ Done means Ahmed, Hussain and Haroon have each said "yes" or given changes under
 
 **How to add input:** each agent appends to its own heading under "Team input", or comments on this file's PR. haroon-agent-1 folds agreed changes into the script. This is the one exception to "edit only your own file", for that section only. Haroon proposed it, and it is open to all three humans' agents.
 
-## Open questions for Ahmed
+## Decisions from Ahmed (recorded by cto-1 at ca416aa, 21:17Z)
 
-needs: Ahmed.
-
-1. **Format and length.** What does the submission need: a YouTube link, a maximum length? Draft below assumes about 2 minutes.
-2. **Voice.** Is it one of us, or the tool's generated voice-over (PR #28)?
+1. **Length: 2 minutes.** The submission form's exact fields are still for Ahmed to check.
+2. **Voice: the tool's default local voice.**
 3. **When and where. Decided by Ahmed (via cto-1, PR #28):** during the freeze hour, after 22:00Z (15:00 PDT), on Ahmed's machine, with no exposed URL. Run only, never committed. Rehearsing the live demo comes first.
-4. **The PR step.** Opening the fix PR still fails with 403. If the token isn't fixed before recording, the video stops at "repaired, verifier accepted" and says the PR is the next step. We don't fake it.
-5. **The verifier saying no.** cto-1 has a deliberately bad patch (`agent/src/reject-check.ts`) that the verifier rejects ("should be 0, but the fix returned -2"). Show it, clearly labelled as a deliberate bad patch, or leave it out? Ahmed's call (cto-1, 20:44Z).
+4. **The PR step works.** The token is fixed, and the first automatic fix PR is `agent-smith-demo` #2. Close the PR from the recording run; never merge it.
+5. **Labelled bad patch: yes, if the main run is stable by 22:00Z.** It's said out loud and labelled on screen as deliberate, and it runs through the real verifier as its own Relay exchange. If it isn't stable, skip the 1:22 beat and the script still fits.
+6. **Approval on stage:** Haroon or Hussain clicks Approve, because Ahmed can't approve PRs opened under his login. Ahmed hasn't yet said which of them.
 
 ## The message
 
@@ -71,9 +70,10 @@ Timings are targets. "Screen" is what's visible, and "Voice" is the voice-over.
 | 0:48 | Footnote cards from the same v2 flip: `warehouse` removed and `restock_eta` added, each "not affected", with the reason. | "The same update also removed a warehouse code and added a restock date. The app reads neither, so Agent Smith checks them, shows why, and sets them aside. No noise." |
 | 0:56 | "Fixed" card and the Relay conversation: fixer, then verifier. | "A repair agent writes a fix in a sandbox. A separate verifier, over Agent Relay, owns the tests. The fixer can't touch them." |
 | 1:10 | "Proved" card: 7 − 5 = 2. Same command, red then green. Hidden checks 2 of 2. | "Same test command, failing before and passing after. Seven on hand, five reserved: two to sell. And the verifier's hidden checks pass too, including never selling stock we don't have." |
-| 1:25 | "You" card. "Review the fix →" opens the PR. "Nothing merges until you approve." | "Then it stops and hands you a tested PR. A person decides. Nothing deploys by itself." |
-| 1:35 | `kill -9` the actor server (`demo/restart-proof.sh`). On the case view, the watcher chip turns to "Restarted · new process · state intact". The web recorder can't show a terminal. | "Every case lives in a Terse durable actor. Kill the server, and nothing is lost: the case and the watcher's memory survive, the watcher is re-armed, and it carries on counting." |
-| 1:48 | End card: "Agent Smith". Built on Terse Durable Actors and Agent Relay. Team names. | "Your app stays up to date with the APIs it depends on. Agent Smith." |
+| 1:22 | *Only if stable by 22:00Z.* Labelled on screen as a deliberate bad patch. The verifier sends back a patch without the clamp: 3 − 5 = −2, struck through. | "To show the verifier really checks, here's a deliberately bad patch. It forgets that stock can't go below zero, so the verifier sends it back." |
+| 1:30 | "You" card. A teammate (not Ahmed) clicks Approve on the PR, and the case reads "approved by …". Nothing merges. | "Then it stops and hands you a tested PR. A person approves. Nothing merges or deploys by itself." |
+| 1:40 | `kill -9` the actor server (`demo/restart-proof.sh`). On the case view, the watcher chip turns to "Restarted · new process · state intact". The web recorder can't show a terminal. | "Every case lives in a Terse durable actor. Kill the server, and nothing is lost: the case and the watcher's memory survive, the watcher is re-armed, and it carries on counting." |
+| 1:52 | End card: "Agent Smith". Built on Terse Durable Actors and Agent Relay. Team names. | "Your app stays up to date with the APIs it depends on. Agent Smith." |
 
 ## Recording plan
 
@@ -108,6 +108,8 @@ Steps 1 to 4 are on Ahmed's machine. Hussain's agent owns the exact commands in 
 - 2026-10-31T21:04Z: first draft. Haroon would like all three of us to agree on the content before the video is made, and then Hussain's tool makes it.
 
 ## Checkpoints
+
+2026-10-31T21:18Z / haroon-agent-1 / **script marked final** with Ahmed's decisions (ca416aa): 2 minutes, default voice, the labelled bad patch beat only if stable at 22:00Z, approval by Haroon or Hussain. hussain-claude-1 can build `beats.json` from the script table now / this commit / none
 
 2026-10-31T21:04Z / haroon-agent-1 / first draft published for team input / d29a815 / 21:25Z
 2026-10-31T21:08Z / haroon-agent-1 / recorded Ahmed's answer on when and where; questions 1, 2, 4 and 5 remain open / db7db0c / 21:25Z
