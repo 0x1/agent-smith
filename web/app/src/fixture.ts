@@ -57,6 +57,11 @@ export function playFixture(emit: (e: StreamEvent) => void): () => void {
   if (reject && reached("proved") && stage !== "escalated") m(27, AGENT_NAMES.repair, { type: "repair.proposed", attempt: 2, headCommit: "9e07d13", diffRef: "", say: "Attempt 2: the same, but never below zero." });
   if (reached("proved") && stage !== "escalated") m(33, AGENT_NAMES.verifier, { type: "verification.result", attempt: final, decision: "accept", reason: "2 of 2 hidden checks pass", say: "Accepted. Your test and 2 of 2 hidden checks pass." });
   if (stage === "escalated") m(40, AGENT_NAMES.verifier, { type: "escalation.needed", attempt: 1, reason: "attempts exhausted", say: "No fix passed every hidden check. A person needs to look." });
+  // `&deliberate=1` adds the labelled demo patch exchange from agent/src/bad-patch.ts.
+  if (q.get("deliberate") === "1") {
+    m(50, AGENT_NAMES.observer, { type: "repair.proposed", attempt: 99, headCommit: "4f1c2ab", diffRef: "", say: "Deliberately bad patch, for this demo: it forgets that stock can't go below zero. Can the verifier catch it?" });
+    m(56, AGENT_NAMES.verifier, { type: "verification.result", attempt: 99, decision: "reject", reason: "should be 0, but the fix returned -2", say: "Deliberately bad patch: rejected. should be 0, but the fix returned -2" });
+  }
   if (reached("checked")) msgs.push([8, "smith-observer", "joined #agent-smith-repairs" as unknown as RelayMessage]);
 
   for (const [s, from, msg] of msgs) {

@@ -59,9 +59,25 @@ function parsedOf<T extends RelayMessage["type"]>(msgs: RelayEntry[], type: T) {
   return msgs.map((m) => m.parsed).filter((p): p is Extract<RelayMessage, { type: T }> => p?.type === type);
 }
 
+// The labelled demo patch (`agent/src/bad-patch.ts`) goes through the real
+// verifier as its own Relay exchange, on the real case ID. Its messages say so in
+// their first words. The whole attempt they belong to is set apart, so it never
+// reads as the real repair failing.
+export const DELIBERATE_PREFIX = "Deliberately bad patch";
+
+export function splitDeliberate(msgs: RelayEntry[]): { real: RelayEntry[]; deliberate: RelayEntry[] } {
+  const key = (p: RelayMessage) => `${p.caseId}#${p.attempt}`;
+  const marked = new Set(msgs.flatMap((m) => (m.parsed?.say?.startsWith(DELIBERATE_PREFIX) ? [key(m.parsed)] : [])));
+  const real: RelayEntry[] = [];
+  const deliberate: RelayEntry[] = [];
+  for (const m of msgs) (m.parsed && marked.has(key(m.parsed)) ? deliberate : real).push(m);
+  return { real, deliberate };
+}
+
 // True only when a real verifier rejection is the latest word on this case.
-export function rejectedNow(c: LiveCase, msgs: RelayEntry[]): VerificationResult | null {
+export function rejectedNow(c: LiveCase, all: RelayEntry[]): VerificationResult | null {
   if (c.status !== "investigating") return null;
+  const msgs = splitDeliberate(all).real;
   const verdicts = parsedOf(msgs, "verification.result");
   const v = last(verdicts);
   if (!v || v.decision !== "reject") return null;
@@ -113,7 +129,8 @@ function stateFor(c: LiveCase, rejected: boolean): Record<StepKey, StepState> {
   }
 }
 
-export function steps(c: LiveCase, msgs: RelayEntry[]): Step[] {
+export function steps(c: LiveCase, all: RelayEntry[]): Step[] {
+  const msgs = splitDeliberate(all).real;
   const rejection = rejectedNow(c, msgs);
   const state = stateFor(c, !!rejection);
   const proposals = parsedOf(msgs, "repair.proposed");
