@@ -25,7 +25,7 @@ needs: Ahmed.
 
 1. **Format and length.** What does the submission need: a YouTube link, a maximum length? Draft below assumes about 2 minutes.
 2. **Voice.** Is it one of us, or the tool's generated voice-over (PR #28)?
-3. **When and where.** It records from Ahmed's machine, where the stack runs. Hussain prefers starting from 21:30Z, after the end-to-end run, either on Ahmed's laptop or from a URL Ahmed exposes (PR #28).
+3. **When and where. Decided by Ahmed (via cto-1, PR #28):** during the freeze hour, after 22:00Z (15:00 PDT), on Ahmed's machine, with no exposed URL. Run only, never committed. Rehearsing the live demo comes first.
 4. **The PR step.** Opening the fix PR still fails with 403. If the token isn't fixed before recording, the video stops at "repaired, verifier accepted" and says the PR is the next step. We don't fake it.
 5. **The verifier saying no.** cto-1 has a deliberately bad patch (`agent/src/reject-check.ts`) that the verifier rejects ("should be 0, but the fix returned -2"). Show it, clearly labelled as a deliberate bad patch, or leave it out? Ahmed's call (cto-1, 20:44Z).
 
@@ -42,7 +42,7 @@ needs: Ahmed.
 3. **The change.** The presenter flips the supplier to v2. Nobody starts the agents.
 4. **Noticed.** The response changed from `stock: 2` to `inventory: {on_hand: 7, reserved: 5}`.
 5. **Checked: is this app affected?** "`getStock()` in `src/supplier.ts:15` reads `stock`, which the change removes."
-   - And the opposite case: a change to a field the app doesn't read is ignored, with the reason. This is what separates us from a dependency bot.
+   - And the opposite case, from the same flip (once PR #32 is merged): the watcher opens one case per field, so `warehouse` (removed) and `restock_eta` (added) end as `not_affected`, with the reason. This is what separates us from a dependency bot.
 6. **Fixed, over Agent Relay.** The fixer and the verifier talk in the case's Relay conversation. The verifier owns the tests, and the fixer can't edit them.
 7. **Proved.** The same command, `SUPPLIER_VERSION=v2 pnpm test`, fails before and passes after. 7 − 5 = 2 is shown from the real run, and the verifier's hidden checks pass (2 of 2).
 8. **You decide.** A PR for a human. Nothing merges or deploys by itself.
@@ -68,7 +68,7 @@ Timings are targets. "Screen" is what's visible, and "Voice" is the voice-over.
 | 0:22 | Presenter menu: switch supplier to v2. | "Now the supplier ships a new version. Stock isn't one number any more. It's on-hand and reserved." |
 | 0:30 | "Noticed" card. The response before and after. | "The watcher notices within seconds and opens a case. Nobody pressed a button." |
 | 0:38 | "Checked" card: `getStock()` in `src/supplier.ts:15` reads `stock`. | "First question: does this actually affect us? Agent Smith reads the app's code and finds the one function that reads the removed field." |
-| 0:48 | Footnote card: a not-affected change, with its reason. | "Changes your app doesn't depend on are checked and set aside, with the evidence. No noise." |
+| 0:48 | Footnote cards from the same v2 flip: `warehouse` removed and `restock_eta` added, each "not affected", with the reason. | "The same update also removed a warehouse code and added a restock date. The app reads neither, so Agent Smith checks them, shows why, and sets them aside. No noise." |
 | 0:56 | "Fixed" card and the Relay conversation: fixer, then verifier. | "A repair agent writes a fix in a sandbox. A separate verifier, over Agent Relay, owns the tests. The fixer can't touch them." |
 | 1:10 | "Proved" card: 7 − 5 = 2. Same command, red then green. Hidden checks 2 of 2. | "Same test command, failing before and passing after. Seven on hand, five reserved: two to sell. And the verifier's hidden checks pass too, including never selling stock we don't have." |
 | 1:25 | "You" card. "Review the fix →" opens the PR. "Nothing merges until you approve." | "Then it stops and hands you a tested PR. A person decides. Nothing deploys by itself." |
@@ -101,7 +101,9 @@ Steps 1 to 4 are on Ahmed's machine. Hussain's agent owns the exact commands in 
 
 ## Checkpoints
 
-2026-10-31T21:04Z / haroon-agent-1 / first draft published for team input / this commit / 21:25Z
+2026-10-31T21:04Z / haroon-agent-1 / first draft published for team input / d29a815 / 21:25Z
+2026-10-31T21:08Z / haroon-agent-1 / recorded Ahmed's answer on when and where; questions 1, 2, 4 and 5 remain open / db7db0c / 21:25Z
+2026-10-31T21:12Z / haroon-agent-1 / script now takes its not-affected moment from the single v2 flip, matching hussain-claude-2's per-field watcher (PR #32, which I checked) / this commit / 21:30Z
 
 ## Evidence
 
