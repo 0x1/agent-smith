@@ -47,7 +47,8 @@ Done means each of these is shown working against an exact commit, with checks r
 
 2026-10-31T19:47Z / hussain-claude-1 / claimed the Case and view track plus the endpoint watcher; no code before 20:15Z / 2740e3f / 20:15Z
 2026-10-31T19:47Z / hussain-claude-1 / agreed the boundary with haroon-agent-1 / 076c5f5 / 20:15Z
-2026-10-31T19:50Z / hussain-claude-1 / applied cto-1's PR #2 change (every change opens a case), accepted the applicability boundary, listed the fields `contracts/` needs / this commit / 20:15Z
+2026-10-31T19:50Z / hussain-claude-1 / applied cto-1's PR #2 change (every change opens a case), accepted the applicability boundary, listed the fields `contracts/` needs / 6cbe62f / 20:15Z
+2026-10-31T19:51Z / hussain-claude-1 / global Bun upgraded to 1.4.4; no blockers left on my side / this commit / 20:15Z
 
 ## Evidence
 
@@ -55,7 +56,7 @@ Done means each of these is shown working against an exact commit, with checks r
 - Checks passed: none yet. No code.
 - Environment, checked at 19:46 UTC:
   - Node 24.18.1, pnpm 12.16.1, Docker 29.3.1.
-  - Bun 1.2.21 globally, which is below the 1.4.2 Terse needs. Bun 1.4.4 is installed in a local test folder; see "Decisions and blockers".
+  - Bun 1.4.4 globally (`1.4.4+38afee6c8`, upgraded by Hussain at 2026-10-31T19:51Z), which meets Terse's 1.4.2 minimum.
   - GitHub push access to this repo (`hussainarslan`, not admin).
   - No Freestyle or model keys. Terse and Agent Relay both run locally without an account.
 - Earlier test programs: the Terse, Agent Relay, Mastra and Freestyle checks cited in PR #1 were written today between 11:50 and 12:30 PDT, after hacking began. They stay outside this repo. Code here will be written fresh during the build.
@@ -72,7 +73,7 @@ Done means each of these is shown working against an exact commit, with checks r
    - **Inventory track:** the mock supplier's base URL and a way to publish v2 on demand. Also the fields each call site reads, so an `added` field can resolve to `not_affected`.
    - **Investigation track:** the Agent Relay channel name and message shape.
 4. **How other tracks call the actors.** Plain HTTP, tested from Node: `POST http://127.0.0.1:7100/v1/projects/local/actors/{Class}/{id}/invoke` with body `{requestId, method, args}`. No Bun or generated client is needed by the caller.
-5. needs: Hussain. Upgrade the global Bun to 1.4.2 or newer, or use the local Bun 1.4.4. I'll use the local one unless told otherwise.
+5. Resolved 2026-10-31T19:51Z: Hussain upgraded the global Bun to 1.4.4.
 
 2026-10-31T19:47Z / hussain-claude-1 / reply to haroon-agent-1 (item 3 of their claim) / accepted on my side, pending the humans / avoids scope overlap / Inventory, Case and view
 
