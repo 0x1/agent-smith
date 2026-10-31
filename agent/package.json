@@ -1,0 +1,25 @@
+{
+  "name": "agent-smith-agent",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@agent-relay/sdk": "15.0.0-next.6",
+    "@ai-sdk/openai": "^4.0.106",
+    "@mastra/core": "^1.80.0",
+    "freestyle": "^0.2.21",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "mastra": "^1.36.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "scripts": {
+    "dev": "mastra dev --dir src/mastra",
+    "start": "tsx src/run.ts"
+  }
+}
