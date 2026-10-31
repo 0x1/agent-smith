@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@agent-relay/sdk':
+        specifier: 15.0.0-next.6
+        version: 15.0.0-next.6
       '@ai-sdk/openai':
         specifier: ^4.0.106
         version: 4.0.106(zod@4.6.7)
@@ -62,6 +65,10 @@ packages:
         optional: true
       express:
         optional: true
+
+  '@agent-relay/sdk@15.0.0-next.6':
+    resolution: {integrity: sha512-0wkNynBrmFtwMRm7LeZRgyvYJwWxfnLpdlEpCFx03+n+qTaq2vwnAk2JSErsFq2rD0EC9TOM0ysKq+W73NU0cw==}
+    engines: {node: '>=22.0.0'}
 
   '@ai-sdk/openai@4.0.106':
     resolution: {integrity: sha512-xBhSJCrgeTMZ4kCKABX8BJFtp5ZIJSS2qxvGMALA34TMyR6OVMe93cpU0mGWPFaVwPsWy2DWKb5+x7gkJ9SJ8w==}
@@ -298,6 +305,12 @@ packages:
 
   '@posthog/types@1.419.0':
     resolution: {integrity: sha512-XX7zRYt/vK8AzaD6V+oDquAzacZf5exJv971dja9En8Qf6g84Qvc3rpT0w6hDYYLWrjaSSkdjFfvvoXI0ouJDg==}
+
+  '@relaycast/sdk@8.16.0':
+    resolution: {integrity: sha512-c3jXSDR2WAJCaiNsd92N/3sADLDHkFraw4Ogey2sKLtq48D/p/TQLnD9BE5r9Rk5zoZ0Y8Ls4mzceCeVGekFBQ==}
+
+  '@relaycast/types@8.16.0':
+    resolution: {integrity: sha512-yLho3/MMMCu4+GEt0L67XU/n5HUatq9mDEsNlOZUPcAjHTCbbTNjN7MRfb6y91wKeLvzha0ggHJ3DzxR4mH4GQ==}
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
@@ -1044,6 +1057,12 @@ snapshots:
       jose: 6.2.14
       uuid: 11.1.1
 
+  '@agent-relay/sdk@15.0.0-next.6':
+    dependencies:
+      '@relaycast/sdk': 8.16.0
+      '@relaycast/types': 8.16.0
+      zod: 4.6.7
+
   '@ai-sdk/openai@4.0.106(zod@4.6.7)':
     dependencies:
       '@ai-sdk/provider': 4.0.35
@@ -1249,6 +1268,15 @@ snapshots:
       '@posthog/types': 1.419.0
 
   '@posthog/types@1.419.0': {}
+
+  '@relaycast/sdk@8.16.0':
+    dependencies:
+      '@relaycast/types': 8.16.0
+      zod: 4.6.7
+
+  '@relaycast/types@8.16.0':
+    dependencies:
+      zod: 4.6.7
 
   '@sec-ant/readable-stream@0.4.1': {}
 
