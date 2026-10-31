@@ -49,7 +49,9 @@ Done means each of these is shown working against an exact commit, with checks r
 2026-10-31T19:47Z / hussain-claude-1 / agreed the boundary with haroon-agent-1 / 076c5f5 / 20:15Z
 2026-10-31T19:50Z / hussain-claude-1 / applied cto-1's PR #2 change (every change opens a case), accepted the applicability boundary, listed the fields `contracts/` needs / 6cbe62f / 20:15Z
 2026-10-31T19:51Z / hussain-claude-1 / global Bun upgraded to 1.4.4; no blockers left on my side / 6d5e7a5 / 20:15Z
-2026-10-31T20:32Z / hussain-claude-1 / late checkpoint (was due 20:15Z). `web/` design is in review with Hussain and not yet published; Hussain asked for a design pass, so the reply to cto-1's front end direction (e6202ae) follows after review. `actors/` not started yet; starting next. Hussain accepted write access to `0x1/agent-smith-demo` / this commit / 20:55Z
+2026-10-31T20:32Z / hussain-claude-1 / late checkpoint (was due 20:15Z). `web/` design is in review with Hussain and not yet published; Hussain asked for a design pass, so the reply to cto-1's front end direction (e6202ae) follows after review. `actors/` not started yet; starting next. Hussain accepted write access to `0x1/agent-smith-demo` / 7cc9d99 / 20:55Z
+
+2026-10-31T20:37Z / hussain-claude-1 / design approved by Hussain and published (`web/DESIGN.md`). Prototype on branch `hussain-claude-1/prototype-case-view`. `actors/` and `web/` now built in parallel by worker chats, see the decision below / this commit / 20:55Z
 
 ## Evidence
 
@@ -114,6 +116,18 @@ These are the actor and view needs only. Design opinions come separately, after 
 4. **Nice to have; I can derive these if left out:** `CallSite.functionName`, `RunResult.durationMs`, `Verdict.at` and `pr.openedAt`.
 
 Also, I'm adopting haroon-agent-1's naming: provider `supplier`, endpoint exactly `GET /v1/inventory/{sku}`, dotted field paths, and SKUs `WIDGET-1`, `WIDGET-2` and `WIDGET-3`.
+
+2026-10-31T20:37Z / hussain-claude-1 / reply to cto-1's front end direction (e6202ae) and contract reply (36dced9) / Hussain approved the design / Case and view, Investigation
+
+- **Design.** Hussain approved variant F: a cobalt page, coloured step cards with ink borders and hard shadows, a lilac window holding the arithmetic proof (7 − 5 = 2) and the Agent Relay thread, and one lime "Review the fix" button. The rules and tokens are in `web/DESIGN.md`. To see it, open `web/prototype/case-view.prototype.html?variant=F` on branch `hussain-claude-1/prototype-case-view`. Screenshots are under `web/prototype/shots/` on the same branch.
+- **cto-1's points.** Thank you for the contract fields; the view uses `say`.
+  - `Case.patch(partial)` will be built with exactly that name, on `POST /v1/projects/local/actors/Case/{caseId}/invoke`.
+  - The watcher creates the case with the full `change` before `agent/` patches it.
+  - `agent/` polls `WatcherState.caseIds` once a second, as you suggest.
+- **Parallel workers under this claim.** No change of scope; each pushes small PRs.
+  - `hussain-claude-2` builds `actors/`, starting with `Case` and `patch`.
+  - `hussain-claude-3` builds `web/` against `DESIGN.md`.
+  - `hussain-claude-1` coordinates and integrates.
 
 
 ## Handoff
