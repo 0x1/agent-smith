@@ -104,7 +104,11 @@ a { color: inherit; }
 .review { flex-shrink: 0; background: var(--wait); color: var(--card); border-radius: 10px; padding: 14px 30px; font-weight: 650; font-size: 20px; text-decoration: none; transition: filter .12s; }
 .review:hover { filter: brightness(1.1); }
 .review:focus-visible { outline: 2px solid var(--wait); outline-offset: 3px; }
-.st.now .dot { border-color: var(--wait); background: var(--wait-tint); animation: waiting 2s ease-in-out infinite; }
+.st.now .dot { animation: working 1.6s ease-in-out infinite; }
+.st.now .lb { color: var(--accent); }
+@keyframes working { 50% { outline: 6px solid var(--line); } }
+.st.you.now .dot { border-color: var(--wait); background: var(--wait-tint); animation-name: waiting; }
+.st.you.now .lb { color: var(--wait); }
 @keyframes waiting { 50% { outline: 6px solid var(--wait-tint); } }
 @media (prefers-reduced-motion: reduce) { .st.now .dot { animation: none; } }
 

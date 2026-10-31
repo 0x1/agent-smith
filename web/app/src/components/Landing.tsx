@@ -11,8 +11,8 @@ const ICONS: React.ReactNode[] = [
 
 const STEPS = [
   { title: "Add your repo", say: "Connect the app you want to keep working." },
-  { title: "Find its APIs", say: "We read your code and list the APIs it calls and the fields it reads." },
-  { title: "Watch for changes", say: "A supplier changes its API. Our watcher sees the new response within seconds." },
+  { title: "Find dependencies", say: "Agent Smith finds every API and dependency your app relies on." },
+  { title: "Watch for changes", say: "When any of them changes, Agent Smith notices within seconds." },
   { title: "Fix and prove it", say: "Agents write the fix in a sandbox. A separate verifier proves it with tests they can't edit." },
   { title: "Review and merge", say: "You get a normal pull request. Nothing merges until a person approves." },
   { title: "Happy customers", say: "Your app keeps working, and nobody gets paged." },
