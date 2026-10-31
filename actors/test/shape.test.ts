@@ -28,8 +28,8 @@ group("flatten", () => {
             inventory: "object",
             "inventory.on_hand": "number",
             "inventory.reserved": "number",
-            warehouse: "string",
             updated_at: "string",
+            restock_eta: "string",
         })
     })
 })
@@ -55,8 +55,9 @@ group("classify", () => {
 })
 
 group("supplier versions", () => {
-    test("v1 to v2 matches the agreed Change", () => {
-        const d = diffShapes(flatten(fixture("v1")), flatten(fixture("v2")))
+    // v2 builds on v1.1 (supplier-mock bf43518), so v1.1 -> v2 is the stock change alone.
+    test("v1.1 to v2 matches the agreed Change", () => {
+        const d = diffShapes(flatten(fixture("v1.1")), flatten(fixture("v2")))
         expect(d).toEqual({ removed: ["stock"], added: ["inventory", "inventory.on_hand", "inventory.reserved"], retyped: [] })
         const change = buildChange(d, meta)!
         expect(change.changeKind).toBe("breaking")
@@ -83,10 +84,13 @@ group("splitDiff (one case per field)", () => {
         return splitDiff(diffShapes(flatten(fixture(from)), after), after).map((g) => buildChange(g, meta)!)
     }
 
-    test("v1 to v2 is one breaking case on stock, with inventory as its replacement", () => {
+    test("v1 to v2 opens stock (with inventory as its replacement), warehouse and restock_eta", () => {
         const out = cases("v1", "v2")
-        expect(out.map((c) => [c.changeKind, c.fieldPath])).toEqual([["breaking", "stock"]])
-        expect(out[0].shapeDiff).toEqual({ removed: ["stock"], added: ["inventory", "inventory.on_hand", "inventory.reserved"], retyped: [] })
+        expect(out.map((c) => [c.changeKind, c.fieldPath, c.shapeDiff])).toEqual([
+            ["breaking", "stock", { removed: ["stock"], added: ["inventory", "inventory.on_hand", "inventory.reserved"], retyped: [] }],
+            ["breaking", "warehouse", { removed: ["warehouse"], added: [], retyped: [] }],
+            ["added", "restock_eta", { removed: [], added: ["restock_eta"], retyped: [] }],
+        ])
     })
 
     test("v1 to v1.1 is a breaking case on warehouse and an added case on restock_eta", () => {
