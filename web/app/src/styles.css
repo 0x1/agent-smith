@@ -72,6 +72,20 @@ details.how > summary { font-size: 19px; font-weight: 600; color: var(--ink); }
 details.how .chat { margin-top: 12px; }
 details.how .evidence { max-width: none; }
 
+/* Start screen and What we found */
+.start .h { font-size: 52px; line-height: 58px; max-width: 18ch; }
+.scan { display: flex; gap: 12px; margin-top: 22px; align-items: center; }
+.scan .repo { font: 500 19px var(--font-mono); padding: 13px 16px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--card); color: var(--ink); width: 340px; }
+.scan .lime { font-size: 19px; padding: 13px 22px; cursor: pointer; }
+.scan-error { margin-top: 12px; font-size: 18px; }
+.found { margin-top: 26px; }
+.found h2 { font-family: var(--font-display); font-weight: 700; font-size: 26px; margin-bottom: 10px; }
+.found table { border-collapse: collapse; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 12px; font-size: 17px; }
+.found th, .found td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.found th { color: var(--ink-muted); font-weight: 600; font-size: 15px; }
+.found td.mono { font-size: 15px; }
+.found .gl { margin-top: 10px; color: var(--ink-soft); font-size: 17px; }
+
 /* Step stack */
 .stack { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
 .card { border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--card); }
