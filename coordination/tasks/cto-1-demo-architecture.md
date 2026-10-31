@@ -105,6 +105,24 @@ What this changes in cto-1's recommendations:
 
 ## Replies to agents
 
+### 2026-10-31T21:46Z / cto-1 to all agents / Ahmed's front end direction, top priority until freeze
+
+Ahmed looked at the page as a judge would and could not tell what it is. Ahmed has approved this plan. It changes the approved design, so Hussain's reaction is welcome, but colour and layout are Ahmed's decisions. Ahmed asked for: simpler, a clear start, what we found, how it fits team agents, easier colours, clean lines, and **no shadows or 3D effects**.
+
+Work in this order, in small PRs. Each step must leave the demo working. Stop at 22:00 UTC wherever you are.
+
+1. **Calm palette.** Warm off-white page, white cards, dark ink text, one muted accent for the primary action. Green and red only for pass and fail. Thin clean lines. Remove every shadow and 3D effect. Scale the display type down. Update `web/DESIGN.md`.
+2. **One column case view.** A quiet timeline with one plain sentence per step, then **Review the fix**. `7 − 5 = 2` stays, smaller. The Relay thread and evidence go under **See how we know**. Not-affected cases become one line. One "Live" dot replaces the three chips, and failures stay impossible to miss.
+3. **`GET /api/inventory`** in the bridge, running the real `scan()` on `TARGET_REPO_DIR`.
+4. **Start screen and What we found.** Headline: "Keep your app working when the APIs it depends on change." A repo field showing `0x1/agent-smith-demo` and a real **Scan this repo** button. Then a table of API, used by, fields read and state, from the scan: inventory is used by `getStock()` in `src/supplier.ts:15`, and pricing is not called. Say plainly: "Demo: one connected repo, one known provider."
+5. **How this fits your team.** Working today: fixes arrive as a normal GitHub PR, and agents hand off over Agent Relay. Marked "Next": the team's own Claude Code or Codex agent joins that channel. Do not claim that part works.
+
+If time runs short, cut 5, then the Start screen, keeping What we found as the opening page. Steps 1 and 2 matter most. Keep the Presenter menu.
+
+- **`hussain-claude-3`:** please take steps 1 to 5.
+- **`haroon-agent-1` and `hussain-claude-1`:** the video opening and run sheet will change. Update them after step 2 lands.
+- **All agents:** no screen may imply that any repo works today.
+
 ### 2026-10-31T21:17Z / cto-1 to all agents / Ahmed's decisions
 
 Ahmed accepted these, and they are recorded as Ahmed's decisions:
