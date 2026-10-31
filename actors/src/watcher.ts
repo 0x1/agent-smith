@@ -1,7 +1,7 @@
 import { Actor, Persisted, Emittable } from "durable-actors"
 import { makeCaseId, type WatcherState } from "../../contracts/case.ts"
 import { Case } from "./case.ts"
-import { buildChange, describe, diffShapes, flatten, isEmptyDiff, type Shape } from "./shape.ts"
+import { buildChange, describe, diffShapes, flatten, isEmptyDiff, splitDiff, type Shape } from "./shape.ts"
 
 export type WatchOptions = { repo?: string; provider?: string; endpoint?: string }
 
@@ -18,7 +18,8 @@ type Config = {
 export type WatcherView = WatcherState & {
     watching: { baseUrl: string; sku: string; everyMs: number } | null
     shape: Shape | null
-    history: { at: string; shape: Shape; caseId: string | null }[]
+    baseline: Shape | null
+    history: { at: string; shape: Shape; caseId: string | null; caseIds: string[] }[]
     lastError: string | null
     nextProbeAt: string | null
 }
@@ -29,7 +30,12 @@ const DEFAULTS = { repo: "agent-smith-demo", provider: "supplier", endpoint: "GE
 // its alarm and on demand, and opens a case for every change it sees.
 export class EndpointWatcher extends Actor {
     @Persisted private config: Config | null = null
+    // The structure the app was built against: the first probe, or the first
+    // probe after reset(). Every difference is measured from here, so a supplier
+    // that moves v2 -> v1.1 is compared with v1, not with v2.
     @Persisted private baseline: Shape | null = null
+    // The last structure seen, so only a new structure opens or re-signals cases.
+    @Persisted private lastShape: Shape | null = null
     @Persisted @Emittable public state: WatcherView = {
         endpoint: "",
         lastProbeAt: null,
@@ -40,6 +46,7 @@ export class EndpointWatcher extends Actor {
         caseIds: [],
         watching: null,
         shape: null,
+        baseline: null,
         history: [],
         lastError: null,
         nextProbeAt: null,
@@ -87,7 +94,8 @@ export class EndpointWatcher extends Actor {
         const resetCases = []
         for (const id of ids) resetCases.push(await Case.get(id).reset())
         this.baseline = null
-        this.#save({ shape: null, history: [], caseIds: [], lastChangeAt: null, lastError: null })
+        this.lastShape = null
+        this.#save({ shape: null, baseline: null, history: [], caseIds: [], lastChangeAt: null, lastError: null })
         this.#ensureAlarm()
         return { ...this.state, resetCases }
     }
@@ -134,34 +142,41 @@ export class EndpointWatcher extends Actor {
         }
         const probeCount = this.state.probeCount + 1
 
-        if (!this.baseline) {
+        if (!this.baseline || !this.lastShape) {
             this.baseline = shape
-            this.#save({ probeCount, lastProbeAt: now, lastError: null, shape, history: [{ at: now, shape, caseId: null }] })
+            this.lastShape = shape
+            this.#save({ probeCount, lastProbeAt: now, lastError: null, shape, baseline: shape, history: [{ at: now, shape, caseId: null, caseIds: [] }] })
             return
         }
 
-        const diff = diffShapes(this.baseline, shape)
-        if (isEmptyDiff(diff)) {
+        if (isEmptyDiff(diffShapes(this.lastShape, shape))) {
             this.#save({ probeCount, lastProbeAt: now, lastError: null })
             return
         }
+        this.lastShape = shape
 
-        const change = buildChange(diff, { provider: cfg.provider, endpoint: cfg.endpoint, sourceRef: await this.#sourceRef(cfg) })!
-        const caseId = makeCaseId(cfg.repo, cfg.provider, cfg.endpoint, change.fieldPath)
-        await Case.get(caseId).create({
-            ...change,
-            ...describe(diff),
-            signal: { eventId: `${this.id}:probe-${probeCount}`, source: `watcher:${this.id}`, at: now },
-        })
-        this.baseline = shape
+        const groups = splitDiff(diffShapes(this.baseline, shape), shape)
+        const sourceRef = groups.length ? await this.#sourceRef(cfg) : ""
+        const opened: string[] = []
+        for (const group of groups) {
+            const change = buildChange(group, { provider: cfg.provider, endpoint: cfg.endpoint, sourceRef })!
+            const caseId = makeCaseId(cfg.repo, cfg.provider, cfg.endpoint, change.fieldPath)
+            await Case.get(caseId).create({
+                ...change,
+                ...describe(group),
+                signal: { eventId: `${this.id}:probe-${probeCount}`, source: `watcher:${this.id}`, at: now },
+            })
+            opened.push(caseId)
+        }
+        // A structure back to the baseline opens nothing, but is still recorded.
         this.#save({
             probeCount,
             lastProbeAt: now,
-            lastChangeAt: now,
+            lastChangeAt: opened.length ? now : this.state.lastChangeAt,
             lastError: null,
             shape,
-            history: [...this.state.history, { at: now, shape, caseId }],
-            caseIds: this.state.caseIds.includes(caseId) ? this.state.caseIds : [...this.state.caseIds, caseId],
+            history: [...this.state.history, { at: now, shape, caseId: opened[0] ?? null, caseIds: opened }],
+            caseIds: [...this.state.caseIds, ...opened.filter((id) => !this.state.caseIds.includes(id))],
         })
     }
 
