@@ -126,20 +126,28 @@ a { color: inherit; }
 .drawer .evidence { max-width: none; font-size: 13px; line-height: 20px; }
 details.raw { margin-top: 14px; }
 
-.start { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; margin-top: 28px; align-items: start; }
-.start .h { font-size: 50px; line-height: 56px; }
-.start .dek { max-width: none; }
-.scan { display: flex; gap: 12px; margin-top: 24px; align-items: center; }
-.scan .repo { font: 500 17px var(--font-mono); padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--card); color: var(--ink); flex: 1; min-width: 0; }
-.scan .lime { font-size: 18px; padding: 12px 20px; white-space: nowrap; }
+.landing { margin-top: 18px; }
+.hero .h { font-size: 44px; line-height: 50px; text-wrap: pretty; }
+.flow { list-style: none; padding: 0; margin-top: 26px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+.flow li { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
+.flow li::after { content: ''; position: absolute; top: 28px; left: 66px; right: -6px; height: 1px; background: var(--line-strong); }
+.flow li:last-child::after { display: none; }
+.flow-ic { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--card); border: 1px solid var(--line-strong); color: var(--accent); }
+.flow b { font-weight: 650; font-size: 18px; line-height: 24px; margin-top: 4px; }
+.flow-sub { font-size: 15px; line-height: 21px; color: var(--ink-muted); }
+.how-modal { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(1240px, 92vw); background: var(--page); border: 1px solid var(--line-strong); border-radius: 14px; padding: 26px 30px 32px; z-index: 51; }
+.try { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--ink-muted); }
+.start { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); align-items: start; }
+.scan { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; align-items: center; }
+.scan .repo { font: 500 16px var(--font-mono); padding: 11px 14px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--card); color: var(--ink); flex: 1 1 100%; min-width: 0; }
+.scan .lime { font-size: 18px; padding: 11px 20px; white-space: nowrap; }
 .scan-error { margin-top: 12px; font-size: 17px; }
-.start-right { display: flex; flex-direction: column; gap: 20px; }
-.found table { border-collapse: collapse; width: 100%; font-size: 17px; }
+.found table { border-collapse: collapse; width: 100%; font-size: 15px; }
 .found th, .found td { text-align: left; padding: 9px 12px 9px 0; border-top: 1px solid var(--line); vertical-align: top; }
 .found th { color: var(--ink-muted); font-weight: 600; font-size: 14px; border-top: 0; }
-.found td.mono { font-size: 15px; }
+.found td.mono { font-size: 13px; }
 .team ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.team li { display: grid; grid-template-columns: 90px 1fr; gap: 10px; align-items: baseline; font-size: 18px; line-height: 26px; color: var(--ink-soft); }
+.team li { display: grid; grid-template-columns: 66px 1fr; gap: 8px; align-items: baseline; font-size: 16px; line-height: 23px; color: var(--ink-soft); }
 .team .state { font-size: 15px; font-weight: 600; }
 .team .state.next { color: var(--ink-muted); }
 

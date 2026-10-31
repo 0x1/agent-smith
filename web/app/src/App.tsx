@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { CaseView } from "./components/CaseView.tsx";
+import { HowItWorksModal } from "./components/HowItWorks.tsx";
 import { Headline } from "./components/Headline.tsx";
 import { Nav } from "./components/Nav.tsx";
 import { StartScreen } from "./components/StartScreen.tsx";
@@ -7,6 +9,7 @@ import { isFixture, useLive, useNow } from "./live.ts";
 import { activeCase, caseMessages, notAffected, unstructured } from "./model.ts";
 
 export function App() {
+  const [how, setHow] = useState(false);
   const s = useLive();
   const now = useNow();
   const c = activeCase(s);
@@ -26,9 +29,10 @@ export function App() {
   return (
     <div className="page">
       {isFixture() && <div className="fixture-banner">FIXTURE DATA · not live · remove ?fixture=1 for the real demo</div>}
-      <Nav />
+      <Nav onHow={() => setHow(true)} />
       <WatcherChip s={s} now={now} />
       {body}
+      {how && <HowItWorksModal onClose={() => setHow(false)} />}
       <footer className="built">
         <span>Built with</span>
         {["Terse", "Agent Relay", "Mastra", "Freestyle", "OpenAI"].map((name) => <b key={name}>{name}</b>)}
