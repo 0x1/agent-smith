@@ -21,7 +21,7 @@ test("serves v1, switches to v2 on demand, and publishes the note", async () => 
     assert.equal(v2.stock, undefined);
     const log = await (await fetch(`${base}/changelog`)).json();
     assert.deepEqual(log.map((n: { version: string }) => n.version), ["v1.1", "v2"]);
-    assert.match(log[1].note, /on_hand - reserved/);
+    assert.match(log[1].note, /reserved. can be higher than .on_hand/);
   });
 });
 
