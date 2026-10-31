@@ -78,6 +78,17 @@ function enclosingFunction(node: ts.Node): ts.Node {
   return n ?? node.getSourceFile();
 }
 
+// `export async function getStock` -> "getStock"; `const getStock = async () =>` -> "getStock".
+function functionNameOf(fn: ts.Node): string | undefined {
+  if ((ts.isFunctionDeclaration(fn) || ts.isMethodDeclaration(fn) || ts.isFunctionExpression(fn)) && fn.name && ts.isIdentifier(fn.name)) {
+    return fn.name.text;
+  }
+  if ((ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) && ts.isVariableDeclaration(fn.parent) && ts.isIdentifier(fn.parent.name)) {
+    return fn.parent.name.text;
+  }
+  return undefined;
+}
+
 function lineOf(sf: ts.SourceFile, node: ts.Node): number {
   return sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1;
 }
@@ -171,12 +182,14 @@ export function scan(repoDir: string, opts: { repo?: string; commit?: string | n
             let decl: ts.Node | undefined = node.parent;
             if (decl && ts.isAwaitExpression(decl)) decl = decl.parent;
             const responseVar = decl && ts.isVariableDeclaration(decl) && ts.isIdentifier(decl.name) ? decl.name.text : null;
+            const fn = enclosingFunction(node);
             const { fields, firstLine } = responseVar
-              ? fieldsReadFrom(sf, enclosingFunction(node), responseVar)
+              ? fieldsReadFrom(sf, fn, responseVar)
               : { fields: [], firstLine: null };
+            const functionName = functionNameOf(fn);
             const key = `${p.provider}|${e.endpoint}`;
             const list = sites.get(key) ?? [];
-            list.push({ path: rel, line: firstLine ?? lineOf(sf, node), fieldsRead: fields });
+            list.push({ path: rel, line: firstLine ?? lineOf(sf, node), fieldsRead: fields, ...(functionName ? { functionName } : {}) });
             sites.set(key, list);
           }
         }
