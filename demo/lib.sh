@@ -67,9 +67,16 @@ kill_supplier() {
   esac
 }
 
+# Background servers get all three fds redirected and `exec`, so no shell keeps
+# the caller's stdout open (otherwise `demo/up.sh | tee` never finishes).
 start_actors() {
   [ -d "$ROOT/actors/node_modules" ] || (cd "$ROOT/actors" && bun install >>"$LOGS/actors.log" 2>&1)
-  (cd "$ROOT/actors" && nohup bunx durable-actors dev >>"$LOGS/actors.log" 2>&1 &)
+  (cd "$ROOT/actors" && exec nohup bunx durable-actors dev) >>"$LOGS/actors.log" 2>&1 </dev/null &
+}
+
+start_supplier() {
+  (cd "$ROOT/supplier-mock" && SUPPLIER_VERSION=v1 PORT=$SUPPLIER_PORT exec nohup node server.ts) >>"$LOGS/supplier.log" 2>&1 </dev/null &
+  for _ in $(seq 1 20); do supplier_up && break; sleep 0.5; done
 }
 
 # Waits until the actor host answers 200. Returns 1 after $1 seconds.

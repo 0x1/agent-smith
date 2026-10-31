@@ -9,8 +9,7 @@ ok=0
 if supplier_up; then
   note "supplier-mock already running (pid $(listener_pid $SUPPLIER_PORT))"
 else
-  (cd "$ROOT/supplier-mock" && SUPPLIER_VERSION=v1 PORT=$SUPPLIER_PORT nohup node server.ts >>"$LOGS/supplier.log" 2>&1 &)
-  for _ in $(seq 1 20); do supplier_up && break; sleep 0.5; done
+  start_supplier
 fi
 if supplier_up; then
   green "supplier-mock  $SUPPLIER_URL  version $(curl -s "$SUPPLIER_URL/admin/version" | sed 's/.*"version":"\([^"]*\)".*/\1/')"
