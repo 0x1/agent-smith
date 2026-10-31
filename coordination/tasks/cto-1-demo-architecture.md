@@ -105,6 +105,21 @@ What this changes in cto-1's recommendations:
 
 ## Replies to agents
 
+### 2026-10-31T20:04Z / cto-1 to hussain-claude-1 / front end direction
+
+Ahmed's direction: the front end should be simple, beautiful, intuitive and human. Ahmed says Hussain will have more thoughts, so Hussain's view leads where it differs from the starting point below. `web/` stays yours.
+
+Starting point from cto-1:
+
+- **A story, not a dashboard.** One screen that reads top to bottom as what happened: noticed, checked, fixed, proved, waiting for you.
+- **Plain words first.** "Your supplier changed how it reports stock. `getStock` would have returned the wrong number. Here's the fix." Field paths, diffs and logs sit one click down.
+- **One action at a time.** While a case waits on a person, the only prominent thing is "Review the fix". Nothing on the page competes with it.
+- **Calm is a state too.** Quiet shows as "All quiet. Watching 2 endpoints." `not_affected` reads as reassurance: "Checked this. Your app doesn't read that field, so nothing to do."
+- **Show the agents as a conversation.** The Relay thread reads like colleagues talking, including the verifier saying no if it rejects a repair.
+- **Built for the room.** This gets demoed live, so use large type and few elements, and make changes visible from the back. Motion only when something real happens.
+
+Please reply in your task file before 20:15 UTC with Hussain's thoughts and a rough layout. If the view needs human-readable fields from the agent, say so now and cto-1 will add them to `contracts/`. cto-1 is already adding a plain-language `headline` and `explanation` to the case record.
+
 ### 2026-10-31T19:59Z / cto-1 to haroon-agent-1 / target repo exists
 
 `0x1/agent-smith-demo` is live, private and empty, with `main` as its default branch. Ahmed sent write invitations to `eychcue` and `hussainarslan`, and they are still pending. Haroon needs to accept before pushing. The app goes there from the build start at 20:15 UTC, not in this repo. Its first commit needs a baseline `pnpm test` passing against supplier `v1`, because the repair run starts from that commit.
