@@ -1,0 +1,883 @@
+<!doctype html>
+<!--
+  PROTOTYPE, throwaway. Question: what should the Agent Smith case view look like?
+  Three structurally different variants of one page, switchable with ?variant=A|B|C
+  and the floating bar (or the left and right arrow keys). The data is a stub that
+  follows contracts/case.ts and contracts/relay.ts. "Next step" (or Space) moves the
+  stub case forward. Open this file directly; nothing to install.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent Smith · case view prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Hanken+Grotesk:wght@400..700&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet" />
+<style>
+/* ---------------------------------------------------------------------------
+   Tokens: warm paper and ink. Every colour is named; dark mode flips values.
+   Accent is deep teal (hue 195), kept clear of the status hues
+   (success 150, warn 72, danger 25, info 250).
+   --------------------------------------------------------------------------- */
+:root {
+  --font-sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Hanken Grotesk', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Room-scale type ladder: read from the back of the room */
+  --text-caption: 18px;  --lh-caption: 26px;
+  --text-body: 19px;     --lh-body: 30px;
+  --text-step: 24px;     --lh-step: 34px;
+  --text-h2: 30px;       --lh-h2: 38px;
+  --text-display: 52px;  --lh-display: 58px;
+  --text-mega: 76px;     --lh-mega: 80px;
+  --text-mono: 17px;     --lh-mono: 26px;
+
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 24px; --radius-pill: 999px;
+
+  --surface: oklch(0.962 0.007 84);
+  --surface-raised: oklch(0.995 0.003 90);
+  --surface-sunken: oklch(0.945 0.008 83);
+  --surface-flat: oklch(0.95 0.007 83);
+  --border-subtle: oklch(0.925 0.007 84);
+  --border: oklch(0.895 0.009 82);
+
+  --text-strong: oklch(0.24 0.012 66);
+  --text: oklch(0.36 0.012 68);
+  --text-muted: oklch(0.52 0.012 72);
+  --text-subtle: oklch(0.55 0.012 74);
+
+  --ink: oklch(0.22 0.014 66);
+  --ink-hover: oklch(0.3 0.014 68);
+  --ink-fg: oklch(0.995 0.003 90);
+
+  --accent: oklch(0.5 0.105 195);
+  --accent-hover: oklch(0.44 0.095 195);
+  --accent-tint: oklch(0.95 0.028 195);
+  --accent-fg: oklch(0.995 0.003 90);
+  --ring-soft: oklch(0.85 0.06 195);
+
+  --success: oklch(0.55 0.115 150); --success-tint: oklch(0.95 0.035 150); --success-fg: oklch(0.41 0.1 150);
+  --warn: oklch(0.71 0.12 72);      --warn-tint: oklch(0.952 0.05 78);     --warn-fg: oklch(0.47 0.08 62);
+  --danger: oklch(0.555 0.185 25);  --danger-tint: oklch(0.95 0.035 25);   --danger-fg: oklch(0.48 0.16 25);
+  --info: oklch(0.55 0.085 250);    --info-tint: oklch(0.95 0.025 250);    --info-fg: oklch(0.45 0.075 250);
+  --neutral-tint: oklch(0.935 0.007 84); --neutral-fg: oklch(0.45 0.012 70);
+
+  --agent-observer: oklch(0.5 0.105 195);
+  --agent-repair: oklch(0.52 0.12 300);
+  --agent-verifier: oklch(0.5 0.09 110);
+
+  --shadow-card: 0 1px 1px oklch(0.3 0.02 70 / 0.04), 0 2px 6px -1px oklch(0.3 0.02 70 / 0.06);
+  --shadow-raised: 0 1px 2px oklch(0.3 0.02 70 / 0.05), 0 10px 26px -8px oklch(0.3 0.02 70 / 0.12);
+  --shadow-focus: 0 0 0 3px var(--ring-soft);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dark {
+  --surface: oklch(0.178 0.009 72); --surface-raised: oklch(0.226 0.011 74); --surface-sunken: oklch(0.152 0.008 70);
+  --surface-flat: oklch(0.206 0.01 73); --border-subtle: oklch(0.27 0.011 74); --border: oklch(0.31 0.012 74);
+  --text-strong: oklch(0.975 0.005 88); --text: oklch(0.88 0.008 82); --text-muted: oklch(0.7 0.011 78); --text-subtle: oklch(0.58 0.012 76);
+  --ink: oklch(0.97 0.005 88); --ink-hover: oklch(0.88 0.008 84); --ink-fg: oklch(0.2 0.011 70);
+  --accent: oklch(0.72 0.11 195); --accent-tint: oklch(0.31 0.05 195); --accent-fg: oklch(0.17 0.01 70); --ring-soft: oklch(0.43 0.07 195);
+  --success-tint: oklch(0.3 0.055 150); --success-fg: oklch(0.82 0.12 150);
+  --danger-tint: oklch(0.32 0.075 25); --danger-fg: oklch(0.82 0.13 25);
+  --neutral-tint: oklch(0.27 0.011 74); --neutral-fg: oklch(0.74 0.011 78);
+}
+
+* { box-sizing: border-box; margin: 0; }
+html, body { background: var(--surface); color: var(--text); font-family: var(--font-sans);
+  font-size: var(--text-body); line-height: var(--lh-body); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+button:focus-visible, summary:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+.mono { font-family: var(--font-mono); font-size: var(--text-mono); line-height: var(--lh-mono); }
+.display { font-family: var(--font-display); color: var(--text-strong); letter-spacing: -0.025em; font-weight: 700; }
+.muted { color: var(--text-muted); } .subtle { color: var(--text-subtle); }
+.card { background: var(--surface-raised); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+.enter { animation: enter .22s var(--ease) both; }
+@keyframes enter { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .enter { animation: none; } }
+
+/* ---- Shared pieces ------------------------------------------------------ */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 40px; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 26px; color: var(--text-strong); letter-spacing: -0.02em; }
+.watching { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: var(--text-caption); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 4px var(--success-tint); }
+.honest { font-size: var(--text-caption); color: var(--text-subtle); }
+.btn-ink { background: var(--ink); color: var(--ink-fg); padding: 16px 30px; border-radius: var(--radius-pill);
+  font-weight: 650; font-size: 21px; box-shadow: var(--shadow-raised); transition: background .15s; display: inline-flex; gap: 10px; align-items: center; }
+.btn-ink:hover { background: var(--ink-hover); }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 14px; border-radius: var(--radius-pill); font-size: var(--text-caption); font-weight: 600; }
+.pill.success { background: var(--success-tint); color: var(--success-fg); }
+.pill.danger { background: var(--danger-tint); color: var(--danger-fg); }
+.pill.neutral { background: var(--neutral-tint); color: var(--neutral-fg); }
+.pill.accent { background: var(--accent-tint); color: var(--accent-hover); }
+.pill.warn { background: var(--warn-tint); color: var(--warn-fg); }
+details > summary { list-style: none; cursor: pointer; color: var(--text-muted); font-size: var(--text-caption); display: inline-flex; gap: 6px; align-items: center; }
+details > summary::before { content: '›'; display: inline-block; transition: transform .2s var(--ease); font-size: 20px; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary::-webkit-details-marker { display: none; }
+.evidence { margin-top: 12px; background: var(--surface-sunken); border-radius: var(--radius-md); padding: 16px 18px; white-space: pre-wrap; color: var(--text); }
+.del { color: var(--danger-fg); } .ins { color: var(--success-fg); }
+.banner { margin: 0 40px 8px; padding: 12px 20px; border-radius: var(--radius-md); background: var(--info-tint); color: var(--info-fg);
+  font-size: var(--text-caption); display: flex; gap: 12px; align-items: center; }
+.msg { display: grid; grid-template-columns: 12px 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid var(--border-subtle); }
+.msg:first-child { border-top: 0; }
+.msg .who { font-weight: 650; color: var(--text-strong); font-size: var(--text-caption); display: flex; gap: 10px; align-items: baseline; }
+.msg .bar { width: 4px; border-radius: 4px; justify-self: center; }
+.msg.reject .text { color: var(--danger-fg); }
+.reassure { display: flex; gap: 14px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--border-subtle); color: var(--text-muted); }
+.reassure:first-of-type { border-top: 0; }
+
+/* ---- Variant A: story column + agents rail ------------------------------ */
+.va { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr); gap: 28px; padding: 8px 40px 120px; }
+.va .story { padding: 40px 44px; }
+.va .headline { font-size: var(--text-display); line-height: var(--lh-display); max-width: 18ch; }
+.va .explain { margin-top: 14px; max-width: 46ch; color: var(--text); }
+.va .steps { margin-top: 36px; display: flex; flex-direction: column; }
+.va .step { display: grid; grid-template-columns: 34px 150px 1fr; gap: 18px; padding: 18px 0; border-top: 1px solid var(--border-subtle); align-items: start; }
+.va .step .mark { width: 26px; height: 26px; border-radius: 50%; margin-top: 4px; display: grid; place-items: center; font-size: 15px; font-weight: 700; }
+.va .step .name { font-family: var(--font-display); font-weight: 700; font-size: var(--text-step); line-height: var(--lh-step); color: var(--text-strong); }
+.va .step .what { font-size: var(--text-step); line-height: var(--lh-step); color: var(--text-strong); }
+.va .step .when { font-size: var(--text-caption); color: var(--text-subtle); margin-top: 2px; }
+.va .step.done .mark { background: var(--success-tint); color: var(--success-fg); }
+.va .step.now .mark { background: var(--accent); color: var(--accent-fg); box-shadow: 0 0 0 6px var(--accent-tint); }
+.va .step.later { opacity: .38; }
+.va .step.later .mark { border: 2px solid var(--border); }
+.va .step.bad .mark { background: var(--danger-tint); color: var(--danger-fg); }
+.va .rail { padding: 28px 28px; align-self: start; }
+.va .rail h3, .va .strip h3 { font-family: var(--font-display); font-size: var(--text-caption); letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.va .strip { grid-column: 1 / -1; padding: 20px 44px; }
+.va .quiet { padding: 120px 44px; text-align: left; }
+
+/* ---- Variant B: one focal stage ---------------------------------------- */
+.vb { padding: 8px 40px 120px; display: flex; flex-direction: column; align-items: center; }
+.vb .track { display: flex; gap: 10px; align-items: center; margin: 18px 0 40px; }
+.vb .tick { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 150px; color: var(--text-subtle); font-size: var(--text-caption); font-weight: 600; }
+.vb .tick .ball { width: 16px; height: 16px; border-radius: 50%; background: var(--border); }
+.vb .tick.done { color: var(--success-fg); } .vb .tick.done .ball { background: var(--success); }
+.vb .tick.now { color: var(--accent-hover); } .vb .tick.now .ball { background: var(--accent); box-shadow: 0 0 0 7px var(--accent-tint); }
+.vb .tick.bad { color: var(--danger-fg); } .vb .tick.bad .ball { background: var(--danger); }
+.vb .line { width: 40px; height: 2px; background: var(--border); margin-top: -26px; }
+.vb .stage { width: min(1100px, 100%); padding: 64px 72px; text-align: center; }
+.vb .kicker { font-size: var(--text-caption); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-hover); }
+.vb .big { font-size: var(--text-mega); line-height: var(--lh-mega); margin: 18px auto 0; max-width: 16ch; }
+.vb .sub { margin: 22px auto 0; max-width: 44ch; font-size: 22px; line-height: 34px; color: var(--text); }
+.vb .proof { display: flex; gap: 18px; justify-content: center; margin-top: 34px; flex-wrap: wrap; }
+.vb .fact { background: var(--surface-sunken); border-radius: var(--radius-md); padding: 14px 22px; text-align: left; }
+.vb .fact b { display: block; font-family: var(--font-display); font-size: 30px; line-height: 36px; color: var(--text-strong); }
+.vb .subtitle { width: min(1100px, 100%); margin-top: 26px; display: flex; gap: 16px; align-items: baseline; padding: 0 12px; }
+.vb .subtitle .who { font-weight: 700; color: var(--text-strong); white-space: nowrap; }
+.vb .history { width: min(1100px, 100%); margin-top: 22px; }
+
+/* ---- Variant C: evidence board ----------------------------------------- */
+.vc { padding: 8px 40px 120px; }
+.vc .ribbon { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 22px; }
+.vc .seg { padding: 14px 18px; border-radius: var(--radius-md); background: var(--surface-flat); color: var(--text-subtle); }
+.vc .seg b { display: block; font-family: var(--font-display); font-size: 21px; color: inherit; }
+.vc .seg.done { background: var(--success-tint); color: var(--success-fg); }
+.vc .seg.now { background: var(--accent); color: var(--accent-fg); }
+.vc .seg.bad { background: var(--danger-tint); color: var(--danger-fg); }
+.vc .cols { display: grid; grid-template-columns: 1fr 1.25fr 0.9fr; gap: 22px; align-items: start; }
+.vc .col { padding: 26px 26px; }
+.vc .col h3 { font-family: var(--font-display); font-size: 22px; color: var(--text-strong); margin-bottom: 4px; }
+.vc .col .lede { color: var(--text-muted); font-size: var(--text-caption); margin-bottom: 14px; }
+.vc pre { margin: 0; background: var(--surface-sunken); border-radius: var(--radius-md); padding: 16px 18px; overflow: auto; }
+.vc .hl { background: var(--warn-tint); display: block; margin: 0 -18px; padding: 0 18px; }
+.vc .hlok { background: var(--success-tint); display: block; margin: 0 -18px; padding: 0 18px; }
+.vc .test { margin-top: 14px; display: flex; gap: 12px; align-items: center; }
+.vc .cta { margin-top: 22px; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 24px 30px; }
+.vc .cta .say { font-family: var(--font-display); font-size: 30px; line-height: 38px; color: var(--text-strong); }
+
+
+/* ---- Variant D: council hybrid. A's story + rail, B's focus on the current
+   step, one line of real evidence inline (C), actor + Relay made visible. ---- */
+.vd { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(380px, 1fr); gap: 28px; padding: 4px 48px 110px; align-items: start; }
+.vd .story { padding: 40px 48px 32px; }
+.vd .headline { font-size: 48px; line-height: 54px; max-width: 24ch; }
+.vd .explain { margin-top: 12px; max-width: 58ch; font-size: 20px; line-height: 31px; }
+.vd .steps { margin-top: 26px; }
+.vd .row { display: grid; grid-template-columns: 30px 120px 1fr; gap: 14px; align-items: baseline; padding: 9px 0; font-size: 21px; line-height: 30px; }
+.vd .row .nm { font-family: var(--font-display); font-weight: 700; color: var(--text-strong); }
+.vd .row.done .ic { color: var(--success-fg); font-weight: 800; }
+.vd .row.done .tx { color: var(--text); }
+.vd .row.later { color: var(--text-subtle); }
+.vd .row.later .nm { color: var(--text-subtle); font-weight: 600; }
+.vd .row.later .ic { color: var(--text-subtle); }
+.vd .row.badline .ic, .vd .row.badline .nm { color: var(--danger-fg); }
+.vd .now { margin: 12px 0 12px; padding: 24px 28px 26px; border-radius: var(--radius-lg); background: var(--surface-sunken); border-left: 6px solid var(--ink); }
+.vd .now.bad { border-left-color: var(--danger); background: var(--danger-tint); }
+.vd .now .kick { font-size: var(--text-caption); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); display: flex; gap: 12px; }
+.vd .now.bad .kick { color: var(--danger-fg); }
+.vd .now .say { font-family: var(--font-display); font-weight: 700; color: var(--text-strong); font-size: 36px; line-height: 44px; letter-spacing: -0.02em; margin-top: 8px; max-width: 30ch; }
+.vd .now .proof { margin-top: 14px; display: inline-flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.vd .now .proof code { font-family: var(--font-mono); font-size: 18px; line-height: 26px; background: var(--surface-raised); padding: 6px 12px; border-radius: var(--radius-sm); color: var(--text-strong); }
+.vd .cta { margin-top: 20px; background: var(--accent); color: var(--accent-fg); height: 64px; padding: 0 34px; border-radius: var(--radius-pill);
+  font-size: 24px; font-weight: 700; display: inline-flex; gap: 12px; align-items: center; box-shadow: var(--shadow-raised); text-decoration: none; }
+.vd .cta:hover { background: var(--accent-hover); }
+.vd .evid { margin-top: 18px; }
+.vd .side { display: flex; flex-direction: column; gap: 22px; }
+.vd .rail { padding: 26px 28px; }
+.vd .rail .hd { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.vd .rail .hd b { font-family: var(--font-display); font-size: 22px; color: var(--text-strong); }
+.vd .m { padding: 14px 0; border-top: 1px solid var(--border-subtle); }
+.vd .m:first-of-type { border-top: 0; }
+.vd .m .who { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; font-size: 19px; }
+.vd .m .who b { color: var(--text-strong); }
+.vd .m .to { color: var(--text-muted); font-size: var(--text-caption); }
+.vd .m .tm { color: var(--text-subtle); font-size: var(--text-caption); margin-left: auto; font-family: var(--font-mono); }
+.vd .m .tx { margin-top: 4px; font-size: 20px; line-height: 30px; color: var(--text); }
+.vd .m.no { background: var(--danger-tint); margin: 0 -14px; padding: 14px; border-radius: var(--radius-md); border-top: 0; }
+.vd .m.no .tx { color: var(--danger-fg); }
+.vd .actor { padding: 20px 28px; }
+.vd .actor .t { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--text-strong); display: flex; gap: 10px; align-items: center; }
+.vd .actor .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin-top: 10px; font-size: var(--text-caption); line-height: 26px; }
+.vd .actor .kv span:nth-child(odd) { color: var(--text-muted); }
+.vd .actor .kv span:nth-child(even) { font-family: var(--font-mono); color: var(--text-strong); font-size: 17px; }
+.vd .also { padding: 18px 28px; }
+.vd .also .r { display: flex; gap: 12px; align-items: baseline; padding: 8px 0; font-size: 19px; line-height: 28px; }
+.vd .ok { color: var(--success-fg); font-weight: 800; }
+.vd .quiet { padding: 110px 56px; }
+.vd .quiet .q { font-size: 72px; line-height: 76px; }
+.vd .quiet .w { margin-top: 18px; font-size: 24px; line-height: 34px; color: var(--text-muted); }
+
+
+/* ---- Variant E: the case file. Paper, rules, proofreader's marks. -------- */
+.ve { --paper: oklch(0.968 0.011 86); --paper-2: oklch(0.948 0.013 84); --rule: oklch(0.82 0.012 78); --rule-soft: oklch(0.9 0.01 82);
+  --ink-e: oklch(0.2 0.015 60); --ink-2: oklch(0.42 0.014 66); --ink-3: oklch(0.53 0.013 70);
+  --pen: oklch(0.54 0.19 27); --pen-tint: oklch(0.93 0.04 27); --marker: oklch(0.92 0.12 98); --go: oklch(0.47 0.1 195);
+  background: var(--paper); min-height: 100vh; color: var(--ink-e); padding: 0 64px 120px; position: relative; }
+.ve::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .35; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.ve .mast { display: grid; grid-template-columns: auto 1fr auto; align-items: end; gap: 32px; padding: 26px 0 14px; border-bottom: 3px double var(--ink-e); }
+.ve .word { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 40px; letter-spacing: -0.035em; font-stretch: 78%; font-variation-settings: 'wdth' 78; }
+.ve .meta { font-family: var(--font-mono); font-size: 16px; line-height: 22px; color: var(--ink-2); }
+.ve .ticker { display: flex; gap: 22px; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--rule); font-size: 18px; color: var(--ink-2); }
+.ve .ticker.restart { background: var(--marker); color: var(--ink-e); padding: 12px 16px; margin: 0 -16px; font-weight: 600; font-size: 20px; border-bottom: 0; }
+.ve .ticker .live::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--go); margin-right: 10px; vertical-align: 1px; }
+.ve mark { background: linear-gradient(transparent 12%, var(--marker) 12%, var(--marker) 88%, transparent 88%); color: var(--ink-e); padding: 0 4px; }
+.ve .grid { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(400px, 1fr); gap: 0 56px; margin-top: 30px; }
+.ve .col-r { border-left: 1px solid var(--rule); padding-left: 40px; }
+.ve .h { font-family: var(--font-display); font-weight: 750; font-size: 58px; line-height: 60px; letter-spacing: -0.035em; font-variation-settings: 'wdth' 84; max-width: 26ch; text-wrap: balance; }
+.ve .dek { font-size: 22px; line-height: 33px; color: var(--ink-2); max-width: 54ch; margin-top: 16px; }
+.ve .markup.wrong { --mk: var(--pen); }
+.ve .markup { margin-top: 26px; display: flex; align-items: baseline; gap: 22px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 22px; }
+.ve .markup .old { position: relative; color: var(--ink-3); }
+.ve .markup .old::after { content: ''; position: absolute; left: -4px; right: -4px; top: 52%; height: 3px; background: var(--mk, var(--ink-2)); transform: rotate(-2deg); border-radius: 2px; }
+.ve .markup .caret { color: var(--mk, var(--ink-2)); font-family: var(--font-sans); font-weight: 700; font-size: 28px; }
+.ve .markup .new { color: var(--mk, var(--ink-e)); border-bottom: 2px solid var(--mk, var(--ink-e)); padding-bottom: 2px; }
+.ve .ledger { margin-top: 30px; border-top: 1px solid var(--ink-e); }
+.ve .ln { display: grid; grid-template-columns: 110px 120px 1fr; gap: 20px; align-items: baseline; padding: 11px 0; border-bottom: 1px solid var(--rule-soft); font-size: 21px; line-height: 30px; }
+.ve .ln .t { font-family: var(--font-mono); font-size: 16px; color: var(--ink-3); }
+.ve .ln .k { font-family: var(--font-mono); font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); }
+.ve .ln.later { color: var(--ink-3); } .ve .ln.later .k { color: var(--ink-3); }
+.ve .ln.bad .k, .ve .ln.bad .t { color: var(--pen); }
+.ve .cur { display: grid; grid-template-columns: 110px 120px 1fr; gap: 20px; padding: 22px 0 26px; border-bottom: 1px solid var(--rule-soft); position: relative; }
+.ve .cur::before { content: ''; position: absolute; left: -24px; top: 22px; bottom: 26px; width: 5px; background: var(--ink-e); }
+.ve .cur.bad::before { background: var(--pen); }
+.ve .cur .t { font-family: var(--font-mono); font-size: 16px; color: var(--ink-2); padding-top: 8px; }
+.ve .cur .k { font-family: var(--font-mono); font-size: 15px; text-transform: uppercase; letter-spacing: .08em; padding-top: 9px; }
+.ve .cur.bad .k, .ve .cur.bad .t { color: var(--pen); }
+.ve .cur .say { font-family: var(--font-display); font-weight: 700; font-size: 32px; line-height: 40px; letter-spacing: -0.02em; max-width: 30ch; }
+.ve .sum { display: flex; align-items: center; gap: 22px; margin-top: 14px; font-family: var(--font-display); font-variation-settings: 'wdth' 76; font-weight: 800; letter-spacing: -0.03em; }
+.ve .sum .n { font-size: 104px; line-height: 100px; }
+.ve .sum .op { font-size: 84px; line-height: 84px; color: var(--ink-3); font-weight: 300; font-variation-settings: 'wdth' 100; }
+.ve .sum.wrong .n, .ve .sum.wrong .op { color: var(--pen); }
+.ve .sum.small .n { font-size: 84px; line-height: 84px; } .ve .sum.small .op { font-size: 64px; line-height: 64px; }
+.ve .sum.wrong .res { position: relative; }
+.ve .sum.wrong .res::after { content: ''; position: absolute; left: -8px; right: -8px; top: 48%; height: 7px; background: var(--pen); transform: rotate(-28deg); border-radius: 4px; }
+.ve .sum .fix { font-family: var(--font-sans); font-style: italic; font-weight: 700; color: var(--pen); font-size: 84px; transform: rotate(-6deg) translateY(-18px); font-variation-settings: normal; }
+.ve .gloss { font-family: var(--font-mono); font-size: 17px; color: var(--ink-2); margin-top: 6px; }
+.ve .gloss b { color: var(--ink-e); font-weight: 600; }
+.ve .gloss .no { color: var(--pen); font-weight: 600; }
+.ve .slab { margin-top: 18px; background: var(--ink-e); color: var(--paper); display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 26px 32px; text-decoration: none; transition: background .15s; }
+.ve .slab:hover { background: oklch(0.28 0.016 62); }
+.ve .slab .l { font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 36px; letter-spacing: -0.02em; }
+.ve .slab .l small { display: block; font-family: var(--font-mono); font-size: 16px; font-weight: 400; letter-spacing: 0; color: oklch(0.8 0.01 80); margin-top: 4px; }
+.ve .slab .go { background: var(--go); color: white; font-weight: 700; font-size: 22px; padding: 16px 26px; white-space: nowrap; }
+.ve .evid { margin-top: 18px; }
+.ve .evid summary { font-family: var(--font-mono); font-size: 16px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; }
+.ve .evid .evidence { background: var(--paper-2); border-radius: 0; border-left: 3px solid var(--rule); }
+.ve .rhE { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 10px; border-bottom: 1px solid var(--ink-e); }
+.ve .rhE b { font-family: var(--font-display); font-size: 30px; letter-spacing: -0.02em; font-variation-settings: 'wdth' 84; }
+.ve .rhE span { color: var(--ink-3); font-size: 18px; }
+.ve .rh { font-family: var(--font-mono); font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--ink-e); }
+.ve .line { display: grid; grid-template-columns: 1fr; justify-items: start; padding: 14px 0; border-bottom: 1px solid var(--rule-soft); }
+.ve .line .sp { justify-self: stretch; display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-mono); font-size: 15px; letter-spacing: .1em; text-transform: uppercase; }
+.ve .line .sp b { font-weight: 600; color: var(--ink-e); }
+.ve .line .sp i { font-style: normal; color: var(--ink-3); letter-spacing: 0; }
+.ve .line .txt { font-size: 21px; line-height: 31px; margin-top: 4px; padding-left: 22px; text-indent: -22px; }
+.ve .line .txt::before { content: '— '; color: var(--ink-3); }
+.ve .line.struck .txt { color: var(--ink-3); }
+.ve .line.struck .sp b::after { content: ' · sent back'; color: var(--pen); font-weight: 600; }
+.ve .line.no .sp b, .ve .line.no .txt { color: var(--pen); }
+.ve .line .stamp { display: inline-block; width: max-content; margin-top: 10px; margin-left: 22px; font-family: var(--font-mono); font-size: 26px; line-height: 34px; border-width: 3px !important; padding: 4px 16px !important; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  border: 2px solid currentColor; padding: 2px 10px; transform: rotate(-2deg); }
+.ve .line.no .stamp { color: var(--pen); } .ve .line.yes .stamp { color: var(--go); }
+.ve .notes { margin-top: 34px; padding-top: 12px; border-top: 1px solid var(--ink-e); font-size: 18px; line-height: 27px; color: var(--ink-2); display: grid; grid-template-columns: 1fr 1fr; gap: 6px 40px; }
+.ve .notes sup { font-family: var(--font-mono); color: var(--ink-e); font-weight: 600; margin-right: 6px; }
+.ve .quietE { padding: 90px 0 0; }
+.ve .specimen { margin-top: 44px; max-width: 900px; }
+.ve .specimen pre { font-size: 30px; line-height: 44px; padding: 26px 0 10px; margin: 0; color: var(--ink-e); }
+.ve .specimen .ty { color: var(--ink-3); font-style: italic; }
+.ve .quietE .h { font-size: 120px; line-height: 112px; }
+.ve .quietE .dek { font-size: 26px; line-height: 38px; }
+
+
+/* ---- Variant F: Portus language. Cobalt, paper, ink borders, hard shadows,
+   coloured step cards, lime for the one action. ------------------------- */
+.vf { --cobalt: #3b35e8; --cobalt-deep: #2a24b8; --paper: #fff8ec; --paper-deep: #f0e6d2; --paper-sunken: #f3ecdd;
+  --ink-f: #121319; --ink-soft: #3d4350; --ink-muted: #5b6270; --on-cobalt-soft: #d6d3ff;
+  --lime: #d7f75b; --lime-deep: #aacb2b; --lilac: #c7b8ff; --lilac-deep: #9e8af2; --butter: #ffd65a; --butter-deep: #e6b32e;
+  --mint: #8fe3bf; --mint-deep: #5cc797; --pink: #ffa6d9; --pink-deep: #f276bb; --sky: #8dd0fa; --sky-deep: #5baee6;
+  --danger-f: #ad3530; --danger-tint-f: #fbe2df; --positive: #1f7049; --positive-tint: #dcf2e6;
+  --hard-4: 4px 4px 0 var(--ink-f); --hard-6: 6px 6px 0 var(--ink-f); --hard-10: 10px 10px 0 var(--ink-f);
+  font-family: 'Geist', var(--font-sans); background: var(--cobalt); color: var(--paper); min-height: 100vh; padding: 0 56px 110px; }
+.vf .nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0 10px; }
+.vf .logo { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 800; font-size: 30px; letter-spacing: -0.03em; color: var(--paper); }
+.vf .mark { width: 40px; height: 40px; border-radius: 10px; background: var(--lime); border: 2px solid var(--ink-f); display: grid; place-items: center; color: var(--ink-f); font-size: 24px; font-weight: 900; }
+.vf .navr { display: flex; align-items: center; gap: 20px; color: var(--on-cobalt-soft); font-size: 18px; }
+.vf .btn { border: 2px solid var(--ink-f); border-radius: 14px; box-shadow: var(--hard-4); padding: 10px 18px; font-weight: 600; font-size: 18px; color: var(--ink-f); background: var(--paper); transition: transform .12s, box-shadow .12s; }
+.vf .btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink-f); }
+.vf .chip { display: inline-flex; align-items: center; gap: 10px; background: var(--cobalt-deep); color: var(--paper); border-radius: 999px; padding: 8px 16px; font-size: 18px; }
+.vf .chip .d { width: 10px; height: 10px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px rgba(215,247,91,.25); }
+.vf .chip.restart { background: var(--lime); color: var(--ink-f); border: 2px solid var(--ink-f); box-shadow: var(--hard-4); font-weight: 600; }
+.vf .grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px; margin-top: 18px; align-items: start; }
+.vf .h { font-family: var(--font-display); font-weight: 800; font-size: 68px; line-height: 66px; letter-spacing: -0.045em; color: var(--paper); text-wrap: balance; margin-top: 18px; }
+.vf .dek { font-size: 21px; line-height: 31px; color: var(--on-cobalt-soft); margin-top: 16px; max-width: 46ch; }
+.vf .stack { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
+.vf .card { border: 2px solid var(--ink-f); border-radius: 16px; color: var(--ink-f); background: var(--paper); }
+.vf .step { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; padding: 9px 18px; box-shadow: 0 5px 0 var(--edge, var(--paper-deep)), 0 5px 0 2px var(--ink-f); }
+.vf .step .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; font-weight: 800; border: 2px solid var(--ink-f); background: var(--paper); }
+.vf .step .nm { font-weight: 650; font-size: 21px; line-height: 28px; }
+.vf .step .sub { font-size: 17px; line-height: 24px; color: var(--ink-soft); }
+.vf .step .tm { font-family: var(--font-mono); font-size: 15px; color: var(--ink-muted); }
+.vf .step.done { background: var(--tone); --edge: var(--tone-deep); }
+.vf .step.later { background: var(--paper-sunken); opacity: .75; box-shadow: none; }
+.vf .step.later .nm { color: var(--ink-muted); }
+.vf .step.now { background: var(--paper); transform: rotate(-1.2deg); box-shadow: var(--hard-10); padding: 18px 22px; }
+.vf .step.now .nm { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 34px; letter-spacing: -0.02em; }
+.vf .step.bad { background: var(--pink); --edge: var(--pink-deep); transform: rotate(-1.2deg); box-shadow: var(--hard-10); padding: 18px 22px; }
+.vf .step.bad .nm { font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 34px; }
+.vf .ok { color: var(--positive); font-weight: 600; }
+.vf .no { color: var(--danger-f); font-weight: 600; }
+.vf .act { margin-top: 26px; display: flex; gap: 16px; align-items: center; }
+.vf .lime { background: var(--lime); border: 2px solid var(--ink-f); border-radius: 16px; box-shadow: var(--hard-6); color: var(--ink-f); font-weight: 700; font-size: 26px; padding: 18px 30px; text-decoration: none; display: inline-flex; gap: 12px; align-items: center; transition: transform .12s, box-shadow .12s; }
+.vf .lime:hover { transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--ink-f); }
+.vf .act .note { color: var(--on-cobalt-soft); font-size: 18px; line-height: 26px; }
+.vf .win { position: relative; background: var(--lilac); border: 3px solid var(--ink-f); border-radius: 28px; box-shadow: var(--hard-10); padding: 22px; margin-top: 18px; }
+.vf .spark { position: absolute; top: -26px; right: -22px; width: 64px; height: 64px; background: var(--lime); border: 2px solid var(--ink-f); border-radius: 16px; box-shadow: var(--hard-4); display: grid; place-items: center; font-size: 30px; color: var(--ink-f); transform: rotate(8deg); }
+.vf .proof { padding: 18px 26px 20px; }
+.vf .proof .lbl { font-size: 17px; color: var(--ink-muted); font-weight: 600; }
+.vf .sum { display: flex; align-items: center; gap: 18px; font-family: var(--font-display); font-weight: 800; letter-spacing: -0.04em; color: var(--ink-f); margin-top: 2px; }
+.vf .sum .n { font-size: 92px; line-height: 92px; }
+.vf .sum .op { font-size: 64px; color: var(--ink-muted); font-weight: 500; }
+.vf .sum.wrong .n, .vf .sum.wrong .op { color: var(--danger-f); }
+.vf .sum.wrong .res { position: relative; }
+.vf .sum.wrong .res::after { content: ''; position: absolute; left: -8px; right: -8px; top: 48%; height: 7px; background: var(--danger-f); transform: rotate(-26deg); border-radius: 4px; }
+.vf .sum .fix { font-family: var(--font-sans); font-style: italic; color: var(--danger-f); font-size: 72px; transform: rotate(-6deg) translateY(-14px); }
+.vf .proof .gl { font-size: 18px; line-height: 27px; color: var(--ink-soft); margin-top: 6px; }
+.vf .chat { margin-top: 16px; padding: 18px 22px 8px; }
+.vf .chat .hd { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px; }
+.vf .chat .hd b { font-family: var(--font-display); font-weight: 800; font-size: 26px; letter-spacing: -0.02em; }
+.vf .chat .hd span { color: var(--ink-muted); font-size: 17px; }
+.vf .msg { display: grid; grid-template-columns: 42px 1fr; gap: 12px; padding: 10px 0; border-top: 1.5px solid var(--paper-deep); border-radius: 0; }
+.vf .av { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--ink-f); display: grid; place-items: center; font-weight: 800; font-size: 17px; }
+.vf .msg .who { font-size: 17px; color: var(--ink-muted); display: flex; gap: 10px; align-items: baseline; }
+.vf .msg .who b { color: var(--ink-f); font-weight: 650; }
+.vf .msg .who .t { margin-left: auto; font-family: var(--font-mono); font-size: 15px; }
+.vf .msg .tx { font-size: 19px; line-height: 28px; color: var(--ink-f); }
+.vf .msg.gone .tx { color: var(--ink-muted); }
+.vf .msg.no .tx { color: var(--danger-f); }
+.vf .tag { display: inline-block; font-size: 15px; font-weight: 700; padding: 2px 10px; border-radius: 8px; border: 2px solid var(--ink-f); }
+.vf .tag.no { background: var(--pink); color: var(--ink-f); } .vf .tag.yes { background: var(--mint); color: var(--ink-f); } .vf .tag.back { background: var(--paper-sunken); color: var(--ink-muted); border-color: var(--ink-muted); }
+.vf .foot { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
+.vf .foot .card { padding: 10px 16px; font-size: 18px; line-height: 26px; box-shadow: var(--hard-4); }
+.vf details summary { color: var(--on-cobalt-soft); font-size: 17px; }
+.vf .evidence { background: var(--paper); color: var(--ink-f); border: 2px solid var(--ink-f); }
+.vf .spec { padding: 26px 30px; }
+.vf .spec pre { font-family: var(--font-mono); font-size: 30px; line-height: 44px; margin: 10px 0 6px; color: var(--ink-f); }
+.vf .spec .ty { color: var(--ink-muted); font-style: italic; }
+
+/* ---- Prototype chrome (not part of the design) ------------------------- */
+.proto-bar { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 50; display: flex; gap: 6px; align-items: center;
+  background: #111; color: #fff; border-radius: 999px; padding: 6px 8px; box-shadow: 0 10px 30px rgba(0,0,0,.35); font: 13px/1.2 ui-monospace, monospace; }
+.proto-bar button { color: #fff; padding: 8px 12px; border-radius: 999px; }
+.proto-bar button:hover { background: #333; }
+.proto-bar .lbl { padding: 0 8px; white-space: nowrap; }
+.proto-bar .state { color: #9f9; padding: 0 10px; border-left: 1px solid #444; white-space: nowrap; }
+.presenter { position: fixed; right: 18px; top: 84px; z-index: 40; display: none; flex-direction: column; gap: 6px; padding: 12px;
+  background: var(--surface-raised); border-radius: var(--radius-md); box-shadow: var(--shadow-raised); font-size: var(--text-caption); min-width: 260px; }
+.presenter.open { display: flex; }
+.presenter button { text-align: left; padding: 8px 12px; border-radius: var(--radius-sm); }
+.presenter button:hover { background: var(--surface-sunken); }
+.presenter-toggle { padding: 8px 14px; border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--text-muted); font-size: var(--text-caption); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ---------- Stub data, shaped like contracts/case.ts and relay.ts ---------- */
+const T0 = new Date(); T0.setSeconds(T0.getSeconds() - 40);
+const at = (s) => { const d = new Date(T0.getTime() + s * 1000); return d.toTimeString().slice(0, 8); };
+
+// Stage ladder for the stub case. "Next step" walks it.
+const STAGES = [
+  'quiet', 'noticed', 'checked', 'patch1', 'rejected', 'patch2', 'proved', 'waiting', 'approved',
+];
+const ui = { stage: 0, restarted: false, duplicate: false, unrelated: false, presenter: false };
+
+function caseAt(stage) {
+  const s = STAGES.indexOf(stage);
+  const msgs = [];
+  if (s >= 2) msgs.push({ from: 'smith-observer', role: 'observer', at: at(6), text: 'The supplier changed how it reports stock. getStock reads that field, so I opened a repair.' });
+  if (s >= 3) msgs.push({ from: 'smith-repair', role: 'repair', at: at(14), text: 'Attempt 1: stock you can sell = on hand minus reserved. Your test passes.' });
+  if (s >= 4) msgs.push({ from: 'smith-verifier', role: 'verifier', at: at(19), reject: true, text: 'When more is reserved than on hand, it returns −2. Stock can\'t be negative.' });
+  if (s >= 5) msgs.push({ from: 'smith-repair', role: 'repair', at: at(27), text: 'Attempt 2: same, but never below zero.' });
+  if (s >= 6) msgs.push({ from: 'smith-verifier', role: 'verifier', at: at(33), text: 'Accepted. Your test and 3 of 3 hidden checks pass.' });
+  return {
+    caseId: 'agent-smith-demo.supplier.get-inventory.stock',
+    status: ['detected', 'detected', 'investigating', 'investigating', 'investigating', 'investigating', 'repaired', 'awaiting_approval', 'approved'][s],
+    headline: s >= 6 ? 'Your supplier changed how it reports stock. Here is a tested fix.' :
+              s >= 4 ? 'Your supplier changed how it reports stock. The first fix was wrong, so we tried again.' :
+              'Your supplier changed how it reports stock. getStock would return the wrong number.',
+    explanation: 'Stock used to be one number. Now the supplier sends what is on hand and what is already reserved. The stock you can sell is on hand minus reserved, and never below zero.',
+    change: { provider: 'supplier', endpoint: 'GET /v1/inventory/{sku}', changeKind: 'breaking', fieldPath: 'stock',
+      shapeDiff: { removed: ['stock'], added: ['inventory', 'inventory.on_hand', 'inventory.reserved'], retyped: [] }, summary: 'stock replaced by inventory', sourceRef: '/changelog' },
+    signals: [{ eventId: 'probe-1', source: 'probe', at: at(0) }].concat(ui.duplicate ? [{ eventId: 'probe-2', source: 'probe', at: at(36) }] : []),
+    verdict: s >= 2 ? { result: 'affected', evidence: ['demo-app/src/supplier.ts:15 reads stock'] } : null,
+    callSite: s >= 2 ? { path: 'src/supplier.ts', line: 15, fieldsRead: ['stock'] } : null,
+    attempt: s >= 5 ? 2 : s >= 3 ? 1 : 0,
+    before: s >= 2 ? { commit: '4f1c2ab', command: 'pnpm test', exitCode: 1, logRef: '' } : null,
+    after: s >= 6 ? { commit: '9e07d13', command: 'pnpm test', exitCode: 0, logRef: '' } : null,
+    regression: s >= 4 ? { commit: s >= 6 ? '9e07d13' : '7b2a9f0', command: 'pnpm test:hidden', exitCode: s >= 6 ? 0 : 1, logRef: '' } : null,
+    verifier: s >= 6 ? { decision: 'accept', reason: '3 of 3 hidden checks pass', at: at(33) } : s >= 4 ? { decision: 'reject', reason: 'reserved above on hand: expected 0, got −2', at: at(19) } : null,
+    pr: s >= 7 ? { number: 1, url: 'https://github.com/0x1/agent-smith-demo/pull/1' } : null,
+    approval: s >= 8 ? { state: 'approved', by: 'Ahmed', at: at(70) } : { state: 'pending', by: '', at: '' },
+    messages: msgs,
+  };
+}
+
+const UNRELATED = { summary: 'The supplier added a promo field.', reason: "Your app doesn't read it, so there's nothing to do.", at: at(48) };
+
+// Five human steps, derived from the case.
+function steps(c, stage) {
+  const s = STAGES.indexOf(stage);
+  const st = (n) => s > n ? 'done' : s === n ? 'now' : 'later';
+  return [
+    { key: 'noticed', name: 'Noticed', state: s >= 1 ? (s === 1 ? 'now' : 'done') : 'later', when: at(0),
+      what: 'The supplier stopped sending stock and now sends on hand and reserved.',
+      detail: `GET /v1/inventory/WIDGET-1\n<span class="del">- "stock": 2</span>\n<span class="ins">+ "inventory": { "on_hand": 7, "reserved": 5 }</span>` },
+    { key: 'checked', name: 'Checked', state: s >= 2 ? (s === 2 ? 'now' : 'done') : 'later', when: at(6),
+      what: 'getStock reads that field, so your app is affected. Its test now fails.',
+      detail: `src/supplier.ts:15   return body.stock   <span class="del">← field no longer sent</span>\n\n$ pnpm test   (commit 4f1c2ab)\n<span class="del">✗ getStock returns available stock: expected 2, got undefined</span>` },
+    { key: 'fixed', name: 'Fixed', state: s >= 3 && s <= 5 ? (s === 4 ? 'bad' : 'now') : s > 5 ? 'done' : 'later', when: s >= 5 ? at(27) : at(14),
+      what: s === 4 ? 'The first fix passed your test but went below zero. The verifier sent it back.' :
+            s >= 5 ? 'Stock you can sell is now on hand minus reserved, never below zero.' : 'Working out stock from on hand and reserved…',
+      detail: `<span class="del">- return body.stock</span>\n<span class="ins">+ const { on_hand, reserved } = body.inventory</span>\n<span class="ins">+ return Math.max(0, on_hand - reserved)</span>` },
+    { key: 'proved', name: 'Proved', state: s >= 6 ? (s === 6 ? 'now' : 'done') : 'later', when: at(33),
+      what: 'getStock now returns 2, the right number. Your test and 3 of 3 hidden checks pass.',
+      detail: `$ pnpm test   (commit 9e07d13)   4.2 s\n<span class="ins">✓ getStock returns available stock (2)</span>\n\n$ pnpm test:hidden   (verifier)\n<span class="ins">✓ available stock   ✓ WIDGET-2 → 4   ✓ WIDGET-3 (3 on hand, 5 reserved) → 0</span>` },
+    { key: 'you', name: 'You', state: s >= 7 ? (s === 7 ? 'now' : 'done') : 'later', when: s >= 8 ? at(70) : at(40),
+      what: s >= 8 ? 'Ahmed approved the fix on GitHub. Nothing was deployed.' : 'A tested fix is waiting for your review.',
+      detail: 'Pull request #1 in 0x1/agent-smith-demo · base 4f1c2ab → head 9e07d13' },
+  ];
+}
+
+/* ---------- Shared bits ---------- */
+const esc = (x) => x;
+function topbar() {
+  return `<div class="topbar">
+    <div style="display:flex;gap:28px;align-items:baseline">
+      <div class="brand">Agent Smith</div>
+      <div class="honest">Controlled demo · mock supplier · no production</div>
+    </div>
+    <div style="display:flex;gap:18px;align-items:center">
+      <div class="watching"><span class="dot"></span>Watching 1 endpoint · checked <span id="ago">3</span>&nbsp;s ago</div>
+      <button class="presenter-toggle" onclick="togglePresenter()">Presenter ▾</button>
+    </div>
+  </div>
+  ${ui.restarted ? `<div class="banner enter">↻ <span>Restarted at ${at(52)} (process 48211 → 48390). The case picked up where it left off; checks resumed.</span></div>` : ''}`;
+}
+function agentColor(role) { return `var(--agent-${role})`; }
+function messagesHtml(c) {
+  if (!c.messages.length) return `<p class="subtle" style="font-size:var(--text-caption)">The agents will talk here when something changes.</p>`;
+  return c.messages.map((m) => `<div class="msg enter ${m.reject ? 'reject' : ''}">
+      <span class="bar" style="background:${m.reject ? 'var(--danger)' : agentColor(m.role)}"></span>
+      <div><div class="who">${m.from.replace('smith-', '')}${m.reject ? ' <span class="pill danger">✕ rejected</span>' : ''} <span class="subtle" style="font-weight:400">${m.at}</span></div>
+      <div class="text">${m.text}</div></div></div>`).join('');
+}
+function reassureHtml() {
+  const rows = [];
+  if (ui.unrelated) rows.push(`<div class="reassure enter"><span class="pill neutral">✓ Not affected</span><span><b style="color:var(--text-strong)">${UNRELATED.summary}</b> ${UNRELATED.reason}</span><span class="subtle" style="margin-left:auto">${UNRELATED.at}</span></div>`);
+  if (ui.duplicate) rows.push(`<div class="reassure enter"><span class="pill neutral">＝ Same change</span><span>Seen again at ${at(36)}. Added to this case, not a new one.</span></div>`);
+  return rows.join('');
+}
+function reviewButton(c) {
+  if (c.status === 'awaiting_approval') return `<button class="btn-ink" onclick="window.open('#','_self')">Review the fix →</button>`;
+  if (c.status === 'approved') return `<span class="pill success" style="font-size:19px;padding:10px 20px">✓ Approved by ${c.approval.by} · not deployed</span>`;
+  return '';
+}
+
+/* ---------- Variant A: story column + agents rail ---------- */
+function VariantA() {
+  const stage = STAGES[ui.stage]; const c = caseAt(stage);
+  if (stage === 'quiet') return topbar() + `<div class="va"><div class="card quiet enter">
+      <div class="display" style="font-size:var(--text-display);line-height:var(--lh-display)">All quiet.</div>
+      <p class="muted" style="margin-top:14px;font-size:22px">Watching 2 supplier endpoints your app uses. We'll tell you the moment one changes.</p>
+      ${reassureHtml() ? `<div style="margin-top:36px">${reassureHtml()}</div>` : ''}
+    </div><div class="card rail"><h3>The agents</h3>${messagesHtml(c)}</div></div>`;
+  const marks = { done: '✓', now: '●', later: '', bad: '✕' };
+  return topbar() + `<div class="va">
+    <div class="card story enter">
+      <div class="display headline">${c.headline}</div>
+      <p class="explain">${c.explanation}</p>
+      <div class="steps">${steps(c, stage).map((x) => `<div class="step ${x.state}">
+        <span class="mark">${marks[x.state]}</span>
+        <div><div class="name">${x.name}</div>${x.state !== 'later' ? `<div class="when mono">${x.when}</div>` : ''}</div>
+        <div><div class="what">${x.state === 'later' ? '' : x.what}</div>
+          ${x.key === 'you' && x.state !== 'later' ? `<div style="margin-top:16px">${reviewButton(c)}</div>` : ''}
+          ${x.state !== 'later' ? `<details style="margin-top:8px"><summary>Show details</summary><div class="evidence mono">${x.detail}</div></details>` : ''}
+        </div></div>`).join('')}</div>
+    </div>
+    <div class="card rail"><h3>The agents</h3>${messagesHtml(c)}</div>
+    ${reassureHtml() ? `<div class="card strip"><h3>Also checked</h3>${reassureHtml()}</div>` : ''}
+  </div>`;
+}
+
+/* ---------- Variant B: one focal stage ---------- */
+function VariantB() {
+  const stage = STAGES[ui.stage]; const c = caseAt(stage); const st = steps(c, stage);
+  const current = st.find((x) => x.state === 'now' || x.state === 'bad') || (stage === 'approved' ? st[4] : null);
+  const track = `<div class="track">${st.map((x, i) => `${i ? '<span class="line"></span>' : ''}<div class="tick ${x.state}"><span class="ball"></span>${x.name}</div>`).join('')}</div>`;
+  const last = c.messages[c.messages.length - 1];
+  const subtitle = last ? `<div class="subtitle enter"><span class="who" style="color:${last.reject ? 'var(--danger-fg)' : agentColor(last.role)}">${last.from.replace('smith-', '')}:</span><span class="${last.reject ? 'del' : ''}">“${last.text}”</span></div>` : '';
+  if (!current) return topbar() + `<div class="vb">${track}<div class="card stage enter">
+      <div class="kicker">Watching</div><div class="display big">All quiet.</div>
+      <p class="sub">Two supplier endpoints your app uses are being checked every few seconds.</p></div>
+      <div class="history">${reassureHtml()}</div></div>`;
+  const facts = {
+    noticed: [['Field removed', 'stock'], ['Field added', 'inventory']],
+    checked: [['Affected', 'getStock'], ['Your test', 'fails']],
+    fixed: stage === 'rejected' ? [['Attempt 1', 'returned −2'], ['Verifier', 'rejected']] : [['Attempt', String(c.attempt)], ['Change', 'on hand − reserved']],
+    proved: [['Before', '7'], ['After', '2'], ['Hidden checks', '3 / 3']],
+    you: [['Pull request', '#1'], ['Deployed', 'no']],
+  }[current.key];
+  return topbar() + `<div class="vb">${track}
+    <div class="card stage enter" key="${stage}">
+      <div class="kicker" style="${current.state === 'bad' ? 'color:var(--danger-fg)' : ''}">${current.name} · ${current.when}</div>
+      <div class="display big" style="font-size:${current.key === 'noticed' || current.key === 'checked' ? '64px' : 'var(--text-mega)'}">${current.what}</div>
+      <div class="proof">${facts.map(([k, v]) => `<div class="fact"><span class="muted" style="font-size:var(--text-caption)">${k}</span><b>${v}</b></div>`).join('')}</div>
+      ${current.key === 'you' ? `<div style="margin-top:34px">${reviewButton(c)}</div>` : ''}
+      <details style="margin-top:28px;text-align:left"><summary>Show details</summary><div class="evidence mono">${current.detail}</div></details>
+    </div>
+    ${subtitle}
+    <div class="history">${reassureHtml()}</div>
+  </div>`;
+}
+
+/* ---------- Variant C: evidence board ---------- */
+function VariantC() {
+  const stage = STAGES[ui.stage]; const c = caseAt(stage); const st = steps(c, stage); const s = ui.stage;
+  const ribbon = `<div class="ribbon">${st.map((x) => `<div class="seg ${x.state}"><b>${x.name}</b><span style="font-size:var(--text-caption)">${x.state === 'later' ? '—' : x.when}</span></div>`).join('')}</div>`;
+  const supplier = s >= 1 ? `<pre class="mono">GET /v1/inventory/WIDGET-1
+{
+  "sku": "WIDGET-1",
+<span class="del">- "stock": 2</span>
+<span class="ins">+ "inventory": {
++   "on_hand": 7,
++   "reserved": 5
++ }</span>
+}</pre><p class="muted" style="margin-top:12px;font-size:var(--text-caption)">Migration note: available stock is on hand minus reserved.</p>`
+    : `<pre class="mono">GET /v1/inventory/WIDGET-1
+{ "sku": "WIDGET-1", "stock": 2 }</pre><p class="muted" style="margin-top:12px;font-size:var(--text-caption)">Same shape as the last check.</p>`;
+  const code = s < 2 ? `<pre class="mono">// src/supplier.ts
+export async function getStock(sku) {
+  const body = await get(\`/v1/inventory/\${sku}\`)
+  return body.stock
+}</pre>` : s < 5 ? `<pre class="mono">// src/supplier.ts
+export async function getStock(sku) {
+  const body = await get(\`/v1/inventory/\${sku}\`)
+<span class="hl">  return body.stock        ← no longer sent</span>
+}</pre>` : `<pre class="mono">// src/supplier.ts
+export async function getStock(sku) {
+  const body = await get(\`/v1/inventory/\${sku}\`)
+<span class="del">- return body.stock</span>
+<span class="hlok">+ const { on_hand, reserved } = body.inventory
++ return Math.max(0, on_hand - reserved)</span>
+}</pre>`;
+  const test = s < 2 ? `<span class="pill neutral">pnpm test · passing</span>` :
+    s < 3 ? `<span class="pill danger">✕ pnpm test · expected 2, got undefined</span>` : s < 6 ? `<span class="pill success">✓ pnpm test · 2</span>${s >= 4 ? '<span class="pill danger">✕ hidden · expected 0, got −2</span>' : ''}` :
+    `<span class="pill success">✓ pnpm test · 2</span><span class="pill success">✓ hidden 3/3</span>`;
+  const say = s === 0 ? 'All quiet. Watching 2 endpoints.' : s < 7 ? c.headline : s === 7 ? 'A tested fix is ready for you.' : 'Approved by Ahmed. Nothing was deployed.';
+  return topbar() + `<div class="vc">${ribbon}
+    <div class="cols">
+      <div class="card col enter"><h3>What the supplier sends</h3><div class="lede">Checked every 5 s · last change ${s >= 1 ? at(0) : '—'}</div>${supplier}</div>
+      <div class="card col enter"><h3>Your code</h3><div class="lede">${s >= 2 ? 'getStock reads the changed field' : 'getStock reads stock'}</div>${code}<div class="test">${test}</div></div>
+      <div class="card col enter"><h3>The agents</h3><div class="lede">Agent Relay · ${caseAt(stage).messages.length} messages</div>${messagesHtml(c)}</div>
+    </div>
+    <div class="card cta enter"><div class="say">${say}</div>${reviewButton(c)}</div>
+    ${reassureHtml() ? `<div class="card" style="margin-top:22px;padding:18px 30px">${reassureHtml()}</div>` : ''}
+  </div>`;
+}
+
+
+/* ---------- Variant D: council hybrid ---------- */
+let probes = 233;
+const PEOPLE = { observer: 'Watcher', repair: 'Fixer', verifier: 'Verifier' };
+const TO = { observer: 'Fixer', repair: 'Verifier', verifier: 'Fixer' };
+function actorCard(c, full) {
+  const pid = ui.restarted ? '48390' : '48211';
+  if (!full) return `<div class="card actor enter" style="padding:16px 28px"><div class="t" style="font-size:18px;font-weight:600"><span class="dot"></span>
+    <span>Watcher · Terse actor · <span class="mono" id="checksD">${probes}</span> checks · state saved <span class="mono">${at(40 + ui.stage)}</span></span></div></div>`;
+  return `<div class="card actor enter"><div class="t"><span class="dot"></span>Watcher · Terse actor</div>
+    <div class="kv"><span>Watching</span><span>GET /v1/inventory/{sku}</span>
+    <span>Last check</span><span><span id="agoD">3</span> s ago · every 5 s</span>
+    <span>Checks so far</span><span id="checksD">${probes}</span>
+    <span>State saved</span><span>${at(40 + ui.stage)}</span>
+    <span>Process</span><span>${pid}</span></div></div>`;
+}
+function railD(c) {
+  const body = c.messages.length ? c.messages.map((m) => `<div class="m enter ${m.reject ? 'no' : ''}">
+      <div class="who"><b>${PEOPLE[m.role]}</b><span class="to">→ ${TO[m.role]}</span>
+        ${m.role === 'verifier' ? (m.reject ? '<span class="pill danger">✕ Not yet</span>' : '<span class="pill success">✓ Accepted</span>') : ''}
+        <span class="tm">${m.at}</span></div>
+      <div class="tx">${m.text}</div></div>`).join('')
+    : `<p class="subtle" style="font-size:19px">The agents talk here when something changes.</p>`;
+  return `<div class="card rail"><div class="hd"><b>Agent Relay</b><span class="mono subtle">#agent-smith-repairs</span></div>${body}</div>`;
+}
+function alsoD() {
+  const r = [];
+  if (ui.unrelated) r.push(`<div class="r enter"><span class="ok">✓</span><span><b style="color:var(--text-strong)">Supplier added a promo field.</b> Your app doesn't read it. Nothing to do.</span></div>`);
+  if (ui.duplicate) r.push(`<div class="r enter"><span class="ok">＝</span><span>Same change seen again at ${at(36)}. Added to this case, not a new one.</span></div>`);
+  return r.length ? `<div class="card also"><div class="kick" style="font-size:var(--text-caption);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)">Also checked</div>${r.join('')}</div>` : '';
+}
+function proofLine(key, stage) {
+  return {
+    noticed: '<code>- "stock": 2</code><code>+ "inventory": { "on_hand": 7, "reserved": 5 }</code>',
+    checked: '<code>src/supplier.ts:15  return body.stock</code><span class="pill danger">✕ pnpm test · expected 2, got undefined</span>',
+    fixed: stage === 'rejected' ? '<span class="pill success">✓ pnpm test · 2</span><span class="pill danger">✕ hidden check · expected 0, got −2</span>'
+                                : '<code>return Math.max(0, on_hand - reserved)</code>',
+    proved: '<span class="pill success">✓ pnpm test · 2 · 4.2 s</span><span class="pill success">✓ hidden checks · 3 of 3</span>',
+    you: '<span class="pill success">✓ Your test</span><span class="pill success">✓ 3 of 3 hidden checks</span>',
+  }[key];
+}
+function VariantD() {
+  const stage = STAGES[ui.stage]; const c = caseAt(stage);
+  if (stage === 'quiet') return topbarD() + `<div class="vd"><div class="card quiet enter">
+      <div class="display q">All quiet.</div>
+      <p class="w">Watching your supplier's inventory endpoint. Last checked <span id="agoQ">3</span> s ago. We'll tell you the moment it changes.</p>
+    </div><div class="side">${actorCard(c, true)}${alsoD()}</div></div>`;
+  const st = steps(c, stage);
+  const curIdx = st.findIndex((x) => x.state === 'now' || x.state === 'bad');
+  const rows = st.filter((x) => !(stage === 'approved' && x.key === 'you')).map((x, i) => {
+    if (i === curIdx) return `<div class="now enter ${x.state === 'bad' ? 'bad' : ''}">
+        <div class="kick"><span>${x.state === 'bad' ? '✕' : '●'} ${x.name}</span><span class="mono" style="font-weight:400">${x.when}</span></div>
+        <div class="say">${x.what}</div>
+        <div class="proof">${proofLine(x.key, stage)}</div>
+        ${x.key === 'you' && c.status === 'awaiting_approval' ? `<div><a class="cta" href="${c.pr ? c.pr.url : '#'}" target="_blank" rel="noreferrer">Review the fix →</a></div>` : ''}
+      </div>`;
+    const ic = x.state === 'done' ? '✓' : x.state === 'bad' ? '✕' : '○';
+    const sentence = x.state === 'done' ? x.what : '';
+    return `<div class="row ${x.state}"><span class="ic">${ic}</span><span class="nm">${x.name}</span><span class="tx">${sentence}</span></div>`;
+  }).join('');
+  const approved = stage === 'approved' ? `<div class="now enter"><div class="kick"><span>✓ You</span><span class="mono" style="font-weight:400">${at(70)}</span></div>
+      <div class="say">Ahmed approved the fix on GitHub. Nothing was deployed.</div><div class="proof">${proofLine('you')}</div></div>` : '';
+  return topbarD() + `<div class="vd">
+    <div class="card story enter">
+      <div class="display headline">${c.headline}</div>
+      <p class="explain">${c.explanation}</p>
+      <div class="steps">${rows}${approved}</div>
+      <details class="evid"><summary>Show the evidence</summary><div class="evidence mono">${st.filter((x) => x.state !== 'later').map((x) => `<b>${x.name}</b>\n${x.detail}`).join('\n\n')}</div></details>
+    </div>
+    <div class="side">${railD(c)}${actorCard(c, false)}${alsoD()}</div>
+  </div>`;
+}
+function topbarD() {
+  return `<div class="topbar">
+    <div style="display:flex;gap:28px;align-items:baseline">
+      <div class="brand">Agent Smith</div>
+      <div class="honest" style="color:var(--text-muted)">Controlled demo · mock supplier · nothing deploys</div>
+    </div>
+    <button class="presenter-toggle" onclick="togglePresenter()">Presenter ▾</button>
+  </div>
+  ${ui.restarted ? `<div class="banner enter" style="margin:0 48px 14px;font-size:19px">↻ <span>Restarted at ${at(52)} · process 48211 → 48390 · checks 231 → 234. The case came back exactly where it was.</span></div>` : ''}`;
+}
+
+
+/* ---------- Variant E: the case file ---------- */
+function mastE(c) {
+  const pid = ui.restarted ? '48390' : '48211';
+  const rest = ui.restarted ? `<mark>restarted ${at(52)} · pid 48211 → 48390 · state intact</mark>` : `pid ${pid}`;
+  return `<div class="mast"><div class="word">Agent Smith</div>
+      <div class="meta" style="font-family:var(--font-sans);font-size:18px">${ui.stage ? 'Case 001 · your supplier’s inventory' : 'No open cases'}</div>
+      <div class="meta" style="text-align:right">Controlled demo · mock supplier · nothing deploys <button class="presenter-toggle" style="margin-left:14px;text-transform:none;letter-spacing:0" onclick="togglePresenter()">Presenter ▾</button></div></div>
+    ${ui.restarted ? `<div class="ticker restart enter"><span>↻ Restarted the watcher (Terse durable actor) at ${at(52)} · pid 48211 → 48390 · state intact · <span id="checksE">${probes}</span> checks, still counting</span></div>`
+      : `<div class="ticker"><span class="live"><b style="color:var(--ink-e)">Watcher</b> (Terse durable actor) · checked <span id="agoE">3</span> s ago · <span id="checksE">${probes}</span> checks · state saved ${at(40 + ui.stage)}</span></div>`}`;
+}
+function proofE(key, stage) {
+  if (key === 'fixed' && stage === 'rejected') return `<div class="sum wrong"><span class="n">3</span><span class="op">−</span><span class="n">5</span><span class="op">=</span><span class="n res">−2</span><span class="fix">0</span></div>
+      <div class="gloss">WIDGET-3 · 3 on hand, 5 reserved · <span class="no">you can't sell negative stock</span> · your test still passed</div>`;
+  if (key === 'proved' || key === 'you' || (key === 'fixed' && stage === 'patch2')) return `<div class="sum ${key === 'you' ? 'small' : ''}"><span class="n">7</span><span class="op">−</span><span class="n">5</span><span class="op">=</span><span class="n">2</span></div>
+      <div class="gloss"><b>on hand − reserved = what you can sell</b> · ✓ your test · ✓ 3 of 3 hidden checks · never below 0</div>`;
+  if (key === 'checked') return `<div class="gloss" style="margin-top:12px;font-size:19px"><b>src/supplier.ts:15</b>  return body.stock   <span class="no">✕ pnpm test · expected 2, got undefined</span></div>`;
+  if (key === 'noticed') return `<div class="gloss" style="margin-top:12px;font-size:19px">first seen ${at(0)} by the watcher · migration note at /changelog</div>`;
+  return `<div class="gloss" style="margin-top:12px;font-size:19px">attempt ${caseAt(stage).attempt} in an isolated sandbox</div>`;
+}
+function VariantE() {
+  const stage = STAGES[ui.stage]; const c = caseAt(stage);
+  const notes = [];
+  if (ui.unrelated) notes.push(`<div><sup>1</sup>The supplier also added a <b>promo</b> field. Your app doesn't read it, so there's nothing to do.</div>`);
+  if (ui.duplicate) notes.push(`<div><sup>${notes.length + 1}</sup>The same change was seen again at ${at(36)}. It was added to this case, not opened as a new one.</div>`);
+  const notesHtml = notes.length ? `<div class="notes">${notes.join('')}</div>` : '';
+  if (stage === 'quiet') return `<div class="ve">${mastE(c)}<div class="quietE"><div class="h">All quiet.</div>
+      <p class="dek">The watcher is checking your supplier's inventory endpoint every five seconds. The moment its shape changes, the case opens here.</p>
+      <div class="specimen"><div class="rh"><span>What the supplier sends now</span><span>GET /v1/inventory/{sku}</span></div>
+        <pre class="mono">{ "sku": <span class="ty">string</span>, "stock": <span class="ty">number</span> }</pre>
+        <div class="gloss">same shape for <b id="checksQ">${probes}</b> checks · your app reads <b>stock</b> in getStock</div></div>${notesHtml}</div></div>`;
+  const slab = c.status === 'awaiting_approval' ? `<a class="slab enter" href="${c.pr.url}" target="_blank" rel="noreferrer"><span class="l">Read the change before it merges.<small>pull request #1 · 0x1/agent-smith-demo</small></span><span class="go">Review the fix →</span></a>` : '';
+  const st = steps(c, stage);
+  const curIdx = st.findIndex((x) => x.state === 'now' || x.state === 'bad');
+  const ledger = st.filter((x) => !(stage === 'approved' && x.key === 'you')).map((x, i) => {
+    if (i === curIdx) return `<div class="cur enter ${x.state === 'bad' ? 'bad' : ''}"><span class="t">${x.when}</span><span class="k">${x.state === 'bad' ? '✕ ' : ''}${x.name}</span>
+        <div><div class="say">${x.what}</div>${proofE(x.key, stage)}${x.key === 'you' && c.status === 'awaiting_approval' ? slab : ''}</div></div>`;
+    return `<div class="ln ${x.state}"><span class="t">${x.state === 'later' ? '' : x.when}</span><span class="k">${x.state === 'done' ? '✓ ' : ''}${x.name}</span><span>${x.state === 'done' ? x.what : ''}</span></div>`;
+  }).join('');
+  const approved = stage === 'approved' ? `<div class="cur enter"><span class="t">${at(70)}</span><span class="k">✓ You</span><div><div class="say">${c.approval.by} approved the fix on GitHub. Nothing was deployed.</div>${proofE('you', stage)}</div></div>` : '';
+  const rejectedSeen = ui.stage >= 4;
+  const transcript = c.messages.map((m, i) => {
+    const struck = rejectedSeen && m.role === 'repair' && m.text.startsWith('Attempt 1');
+    const no = m.reject; const yes = m.role === 'verifier' && !m.reject;
+    return `<div class="line enter ${struck ? 'struck' : ''} ${no ? 'no' : ''} ${yes ? 'yes' : ''}">
+      <div class="sp"><b>${PEOPLE[m.role]} → ${TO[m.role]}</b><i>${m.at}</i></div>
+      <div class="txt">${m.text}</div>${no ? '<span class="stamp">Sent back</span>' : yes ? '<span class="stamp">Accepted</span>' : ''}</div>`;
+  }).join('') || `<p style="color:var(--ink-3);font-size:19px;padding-top:14px">The agents' conversation appears here as it happens.</p>`;
+  return `<div class="ve">${mastE(c)}<div class="grid">
+    <div>
+      <div class="h enter">${c.headline}</div>
+      <div class="markup ${ui.stage < 6 ? 'wrong' : ''}"><span class="old">"stock": 2</span><span class="caret">→</span><span class="new">"inventory": { "on_hand": 7, "reserved": 5 }</span></div>
+      <div class="gloss" style="margin-top:8px">was 2 to sell · now 7 on hand, 5 reserved · still 2 to sell</div>
+      <div class="ledger">${ledger}${approved}</div>
+      <details class="evid"><summary>The evidence</summary><div class="evidence mono">${st.filter((x) => x.state !== 'later').map((x) => `<b>${x.name}</b>\n${x.detail}`).join('\n\n')}</div></details>
+      ${notesHtml}
+    </div>
+    <div class="col-r"><div class="rhE"><b>Agent Relay</b><span>the agents, talking</span></div>${transcript}</div>
+  </div></div>`;
+}
+
+
+/* ---------- Variant F: Portus language ---------- */
+const TONES = { noticed: ['var(--sky)', 'var(--sky-deep)'], checked: ['var(--lilac)', 'var(--lilac-deep)'], fixed: ['var(--mint)', 'var(--mint-deep)'],
+  proved: ['var(--butter)', 'var(--butter-deep)'], you: ['var(--lime)', 'var(--lime-deep)'] };
+const ICONS = { noticed: '◎', checked: '⌕', fixed: '✎', proved: '✓', you: '☺' };
+const AV = { observer: ['W', 'var(--sky)'], repair: ['F', 'var(--mint)'], verifier: ['V', 'var(--butter)'] };
+function navF() {
+  return `<div class="nav"><div class="logo"><span class="mark">✱</span>Agent Smith</div>
+    <div class="navr"><span>Controlled demo · mock supplier · nothing deploys</span><button class="btn" onclick="togglePresenter()">Presenter ▾</button></div></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">${ui.restarted
+      ? `<span class="chip restart enter">↻ Restarted the watcher at ${at(52)} · pid 48211 → 48390 · state intact · <span id="checksF">${probes}</span> checks</span>`
+      : `<span class="chip"><span class="d"></span>Watcher · Terse durable actor · checked <span id="agoF">3</span> s ago · <span id="checksF">${probes}</span> checks</span>`}</div>`;
+}
+function proofF(stage) {
+  const s = STAGES.indexOf(stage);
+  if (s === 4) return `<div class="card proof enter"><div class="lbl">Hidden check · WIDGET-3 · 3 on hand, 5 reserved</div>
+      <div class="sum wrong"><span class="n">3</span><span class="op">−</span><span class="n">5</span><span class="op">=</span><span class="n res">−2</span><span class="fix">0</span></div>
+      <div class="gl"><span class="no">You can't sell negative stock.</span> The first fix passed your test but failed this one.</div></div>`;
+  if (s >= 5) return `<div class="card proof enter"><div class="lbl">What you can sell · WIDGET-1</div>
+      <div class="sum"><span class="n">7</span><span class="op">−</span><span class="n">5</span><span class="op">=</span><span class="n">2</span></div>
+      <div class="gl">on hand − reserved, never below 0 · <span class="ok">✓ your test</span> · <span class="ok">✓ 3 of 3 hidden checks</span></div></div>`;
+  if (s >= 2) return `<div class="card proof enter"><div class="lbl">getStock · src/supplier.ts:15</div>
+      <div class="sum wrong"><span class="n" style="font-size:64px">expected 2, got undefined</span></div>
+      <div class="gl">It still reads <b>stock</b>, which the supplier no longer sends.</div></div>`;
+  return `<div class="card proof enter"><div class="lbl">The supplier's response changed</div>
+      <div class="gl" style="font-family:var(--font-mono);font-size:22px;line-height:36px;color:var(--ink-f)"><span class="no" style="text-decoration:line-through">"stock": 2</span><br>"inventory": { "on_hand": 7, "reserved": 5 }</div>
+      <div class="gl">was 2 to sell · now 7 on hand, 5 reserved · still 2 to sell</div></div>`;
+}
+function chatF(c) {
+  const rejected = ui.stage >= 4;
+  const body = c.messages.map((m) => {
+    const gone = rejected && m.role === 'repair' && m.text.startsWith('Attempt 1');
+    const [l, bg] = AV[m.role];
+    const tag = m.role === 'verifier' ? (m.reject ? '<span class="tag no">✕ Sent back</span>' : '<span class="tag yes">✓ Accepted</span>') : gone ? '<span class="tag back">sent back</span>' : '';
+    return `<div class="msg enter ${gone ? 'gone' : ''} ${m.reject ? 'no' : ''}"><span class="av" style="background:${bg}">${l}</span>
+      <div><div class="who"><b>${PEOPLE[m.role]}</b> → ${TO[m.role]} ${tag}<span class="t">${m.at}</span></div><div class="tx">${m.text}</div></div></div>`;
+  }).join('') || `<p style="color:var(--ink-muted);font-size:19px;padding:10px 0">The agents' conversation appears here as it happens.</p>`;
+  return `<div class="card chat"><div class="hd"><b>Agent Relay</b><span>the agents, talking</span></div>${body}</div>`;
+}
+function VariantF() {
+  const stage = STAGES[ui.stage]; const c = caseAt(stage);
+  const foot = [];
+  if (ui.unrelated) foot.push(`<div class="card enter"><span class="ok">✓</span> The supplier also added a <b>promo</b> field. Your app doesn't read it. Nothing to do.</div>`);
+  if (ui.duplicate) foot.push(`<div class="card enter">＝ Same change seen again at ${at(36)}. Added to this case.</div>`);
+  if (stage === 'quiet') return `<div class="vf">${navF()}<div class="grid"><div>
+      <div class="h" style="font-size:132px;line-height:120px">All quiet.</div>
+      <p class="dek" style="font-size:24px;line-height:36px">The watcher checks your supplier's inventory endpoint every five seconds. When its shape changes, the case opens here.</p>
+      <div class="foot">${foot.join('')}</div></div>
+      <div class="win"><span class="spark">✱</span><div class="card spec"><div style="font-size:18px;color:var(--ink-muted);font-weight:600">What the supplier sends now · GET /v1/inventory/{sku}</div>
+        <pre>{ "sku": <span class="ty">string</span>,\n  "stock": <span class="ty">number</span> }</pre>
+        <div style="font-size:19px;color:var(--ink-soft)">Same shape for <b id="checksQF">${probes}</b> checks. Your app reads <b>stock</b> in getStock.</div></div></div></div></div>`;
+  const st = steps(c, stage).filter((x) => !(stage === 'approved' && x.key === 'you'));
+  const stack = st.map((x) => {
+    const [tone, deep] = TONES[x.key];
+    const big = x.state === 'now' || x.state === 'bad';
+    return `<div class="card step ${x.state} enter" style="--tone:${tone};--tone-deep:${deep}">
+      <span class="ic" style="background:${x.state === 'later' ? 'var(--paper)' : tone}">${x.state === 'bad' ? '✕' : ICONS[x.key]}</span>
+      <div style="min-width:0"><div class="nm">${big ? x.what : x.name}</div>${x.state === 'done' ? `<div class="sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${x.what}</div>` : big ? `<div class="sub">${x.name}</div>` : ''}</div>
+      <span class="tm">${x.state === 'later' ? '' : x.when}</span></div>`;
+  }).join('') + (stage === 'approved' ? `<div class="card step now enter"><span class="ic" style="background:var(--lime)">✓</span><div><div class="nm">Approved by ${c.approval.by} · nothing deployed</div><div class="sub">You</div></div><span class="tm">${at(70)}</span></div>` : '');
+  const act = c.status === 'awaiting_approval' ? `<div class="act enter"><a class="lime" href="${c.pr.url}" target="_blank" rel="noreferrer">Review the fix →</a><span class="note">Pull request #1 in 0x1/agent-smith-demo.<br>Nothing merges until you approve.</span></div>` : '';
+  return `<div class="vf">${navF()}<div class="grid">
+    <div><div class="h enter">${c.headline}</div><div class="stack">${stack}</div>${act}
+      <details style="margin-top:18px"><summary>Show the evidence</summary><div class="evidence mono">${steps(c, stage).filter((x) => x.state !== 'later').map((x) => `<b>${x.name}</b>\n${x.detail}`).join('\n\n')}</div></details>
+      <div class="foot">${foot.join('')}</div></div>
+    <div class="win"><span class="spark">✱</span>${proofF(stage)}${chatF(c)}</div>
+  </div></div>`;
+}
+
+/* ---------- Presenter menu (stub actions) ---------- */
+function presenterHtml() {
+  return `<div class="presenter ${ui.presenter ? 'open' : ''}">
+    <b style="color:var(--text-strong);padding:4px 12px">Presenter</b>
+    <button onclick="ui.stage = Math.max(ui.stage,1); render()">Switch supplier to v2</button>
+    <button onclick="next()">Next step (Space)</button>
+    <button onclick="ui.unrelated = true; render()">Add an unrelated change</button>
+    <button onclick="ui.duplicate = true; render()">Send the same change again</button>
+    <button onclick="ui.restarted = true; render()">Restart the actors (kill -9)</button>
+    <button onclick="Object.assign(ui,{stage:0,restarted:false,duplicate:false,unrelated:false}); render()">Reset</button>
+    <button onclick="document.documentElement.classList.toggle('dark')">Toggle dark</button>
+  </div>`;
+}
+function togglePresenter() { ui.presenter = !ui.presenter; render(); }
+function next() { ui.stage = Math.min(ui.stage + 1, STAGES.length - 1); render(); }
+
+/* ---------- Switcher (prototype only) ---------- */
+const VARIANTS = { F: ['Portus language', VariantF], E: ['Case file', VariantE], D: ['Council hybrid', VariantD], A: ['Story + agents rail', VariantA], B: ['One focal stage', VariantB], C: ['Evidence board', VariantC] };
+const params = new URLSearchParams(location.search);
+let variant = VARIANTS[params.get('variant')] ? params.get('variant') : 'F';
+if (params.get('stage')) ui.stage = Math.max(0, STAGES.indexOf(params.get('stage')));
+for (const k of ['restarted', 'duplicate', 'unrelated', 'presenter']) if (params.get(k) === '1') ui[k] = true;
+if (params.get('theme') === 'dark') document.documentElement.classList.add('dark');
+
+function setVariant(v) { variant = v; params.set('variant', v); history.replaceState(null, '', '?' + params); render(); }
+function cycle(d) { const keys = Object.keys(VARIANTS); setVariant(keys[(keys.indexOf(variant) + d + keys.length) % keys.length]); }
+function render() {
+  const c = caseAt(STAGES[ui.stage]);
+  document.getElementById('app').innerHTML = VARIANTS[variant][1]() + presenterHtml() + `
+    <div class="proto-bar">
+      <button onclick="cycle(-1)" aria-label="Previous variant">◀</button>
+      <span class="lbl">${variant} (${VARIANTS[variant][0]})</span>
+      <button onclick="cycle(1)" aria-label="Next variant">▶</button>
+      <span class="state">stage ${STAGES[ui.stage]} · status ${c.status} · attempt ${c.attempt} · signals ${c.signals.length}</span>
+      <button onclick="next()">next ⏵</button>
+    </div>`;
+}
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest('input,textarea,[contenteditable]')) return;
+  if (e.key === 'ArrowLeft') cycle(-1);
+  if (e.key === 'ArrowRight') cycle(1);
+  if (e.key === ' ') { e.preventDefault(); next(); }
+});
+let ago = 3; setInterval(() => { ago = ago >= 5 ? 0 : ago + 1; if (ago === 0) { probes++; for (const id of ['checksD','checksE','checksQ','checksF','checksQF']) { const k = document.getElementById(id); if (k) k.textContent = probes; } } for (const id of ['ago','agoD','agoQ','agoE','agoF']) { const el = document.getElementById(id); if (el) el.textContent = ago; } }, 1000); // stub: live build shows now - lastProbeAt
+render();
+</script>
+</body>
+</html>
