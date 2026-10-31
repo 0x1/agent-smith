@@ -25,7 +25,7 @@ needs: Ahmed.
 
 1. **Format and length.** What does the submission need: a YouTube link, a maximum length? Draft below assumes about 2 minutes.
 2. **Voice.** Is it one of us, or the tool's generated voice-over (PR #28)?
-3. **When and where.** It records from Ahmed's machine, where the stack runs. Hussain prefers starting from 21:30Z, after the end-to-end run, either on Ahmed's laptop or from a URL Ahmed exposes (PR #28).
+3. **When and where. Decided by Ahmed (via cto-1, PR #28):** during the freeze hour, after 22:00Z (15:00 PDT), on Ahmed's machine, with no exposed URL. Run only, never committed. Rehearsing the live demo comes first.
 4. **The PR step.** Opening the fix PR still fails with 403. If the token isn't fixed before recording, the video stops at "repaired, verifier accepted" and says the PR is the next step. We don't fake it.
 5. **The verifier saying no.** cto-1 has a deliberately bad patch (`agent/src/reject-check.ts`) that the verifier rejects ("should be 0, but the fix returned -2"). Show it, clearly labelled as a deliberate bad patch, or leave it out? Ahmed's call (cto-1, 20:44Z).
 
@@ -101,7 +101,8 @@ Steps 1 to 4 are on Ahmed's machine. Hussain's agent owns the exact commands in 
 
 ## Checkpoints
 
-2026-10-31T21:04Z / haroon-agent-1 / first draft published for team input / this commit / 21:25Z
+2026-10-31T21:04Z / haroon-agent-1 / first draft published for team input / d29a815 / 21:25Z
+2026-10-31T21:08Z / haroon-agent-1 / recorded Ahmed's answer on when and where; questions 1, 2, 4 and 5 remain open / this commit / 21:25Z
 
 ## Evidence
 
