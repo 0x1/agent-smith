@@ -24,7 +24,7 @@ Done means Ahmed, Hussain and Haroon have each said "yes" or given changes under
 1. **Length: 2 minutes.** The submission form's exact fields are still for Ahmed to check.
 2. **Voice: the tool's default local voice.**
 3. **When and where. Decided by Ahmed (via cto-1, PR #28):** during the freeze hour, after 22:00Z (15:00 PDT), on Ahmed's machine, with no exposed URL. Run only, never committed. Rehearsing the live demo comes first.
-4. **The PR step works.** The token is fixed, and the first automatic fix PR is `agent-smith-demo` #2. Close the PR from the recording run; never merge it.
+4. **The PR step works, through Ahmed's general login.** The limited token is still read-only. Ahmed offered his general login as a fallback, and that's how `agent-smith-demo` #2 opened (cto-1, PR #39). Close the PR from the recording run; never merge it.
 5. **Labelled bad patch: yes, if the main run is stable by 22:00Z.** It's said out loud and labelled on screen as deliberate, and it runs through the real verifier as its own Relay exchange. If it isn't stable, skip the 1:22 beat and the script still fits.
 6. **Approval on stage:** Haroon or Hussain clicks Approve, because Ahmed can't approve PRs opened under his login. Ahmed hasn't yet said which of them.
 
@@ -46,7 +46,7 @@ Done means Ahmed, Hussain and Haroon have each said "yes" or given changes under
 7. **Proved.** The same command, `SUPPLIER_VERSION=v2 pnpm test`, fails before and passes after. 7 − 5 = 2 is shown from the real run, and the verifier's hidden checks pass (2 of 2).
 8. **You decide.** A PR for a human. Nothing merges or deploys by itself.
 9. **Terse durability.** `kill -9` the actor server. The case and the watcher's state survive. Pending alarms don't, so `rearm` in `demo/restart-proof.sh` restarts the checks, and we say so.
-10. **Speed.** About 29 seconds from the change to a verified fix, with nobody starting it (cto-1's run, 20:58Z). Use the time measured in the recorded run, not this number.
+10. **Speed.** cto-1 has measured 27 to 29 seconds from the change to a verified fix, with nobody starting it. Say only the time measured in the recorded run.
 
 ## Honesty rules
 
@@ -70,8 +70,8 @@ Timings are targets. "Screen" is what's visible, and "Voice" is the voice-over.
 | 0:48 | Footnote cards from the same v2 flip: `warehouse` removed and `restock_eta` added, each "not affected", with the reason. | "The same update also removed a warehouse code and added a restock date. The app reads neither, so Agent Smith checks them, shows why, and sets them aside. No noise." |
 | 0:56 | "Fixed" card and the Relay conversation: fixer, then verifier. | "A repair agent writes a fix in a sandbox. A separate verifier, over Agent Relay, owns the tests. The fixer can't touch them." |
 | 1:10 | "Proved" card: 7 − 5 = 2. Same command, red then green. Hidden checks 2 of 2. | "Same test command, failing before and passing after. Seven on hand, five reserved: two to sell. And the verifier's hidden checks pass too, including never selling stock we don't have." |
-| 1:22 | *Only if stable by 22:00Z.* Labelled on screen as a deliberate bad patch. The verifier sends back a patch without the clamp: 3 − 5 = −2, struck through. | "To show the verifier really checks, here's a deliberately bad patch. It forgets that stock can't go below zero, so the verifier sends it back." |
-| 1:30 | "You" card. A teammate (not Ahmed) clicks Approve on the PR, and the case reads "approved by …". Nothing merges. | "Then it stops and hands you a tested PR. A person approves. Nothing merges or deploys by itself." |
+| 1:22 | *Only if stable by 22:00Z.* Labelled on screen as a deliberate bad patch. In the Relay conversation, the verifier sends back a patch without the clamp, and the numbers are in its text: "should be 0, but the fix returned -2". The case's proof block doesn't change, because the bad patch never touches the case. | "To show the verifier really checks, here's a deliberately bad patch. It forgets that stock can't go below zero, so the verifier sends it back." |
+| 1:30 | "You" card. A teammate (not Ahmed) clicks Approve on the PR, and the case reads "approved by …". Nothing merges. **Verify before recording:** this needs PR #36 merged and a test approval on `agent-smith-demo` #2. If it isn't verified, show the PR's Approve click only. | "Then it stops and hands you a tested PR. A person approves. Nothing merges or deploys by itself." |
 | 1:40 | `kill -9` the actor server (`demo/restart-proof.sh`). On the case view, the watcher chip turns to "Restarted · new process · state intact". The web recorder can't show a terminal. | "Every case lives in a Terse durable actor. Kill the server, and nothing is lost: the case and the watcher's memory survive, the watcher is re-armed, and it carries on counting." |
 | 1:52 | End card: "Agent Smith". Built on Terse Durable Actors and Agent Relay. Team names. | "Your app stays up to date with the APIs it depends on. Agent Smith." |
 
@@ -108,6 +108,8 @@ Steps 1 to 4 are on Ahmed's machine. Hussain's agent owns the exact commands in 
 - 2026-10-31T21:04Z: first draft. Haroon would like all three of us to agree on the content before the video is made, and then Hussain's tool makes it.
 
 ## Checkpoints
+
+2026-10-31T21:21Z / haroon-agent-1 / fixed the three points from cto-1's check (PR #39): the PR step runs through Ahmed's login and the token is still read-only; the 1:22 rejection shows in Relay text, not the proof block; and 1:30 must be verified before recording / this commit / none
 
 2026-10-31T21:18Z / haroon-agent-1 / **script marked final** with Ahmed's decisions (ca416aa): 2 minutes, default voice, the labelled bad patch beat only if stable at 22:00Z, approval by Haroon or Hussain. hussain-claude-1 can build `beats.json` from the script table now / this commit / none
 
