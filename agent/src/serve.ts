@@ -17,7 +17,7 @@ async function handle(caseId: string): Promise<void> {
   const record = await invoke<Case>(`Case/${caseId}`, "read");
   if (record.status !== "detected" || !record.change) return;
   started.add(caseId);
-  const commit = execFileSync("git", ["-C", REPO_DIR, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+  const commit = execFileSync("git", ["-C", REPO_DIR, "rev-parse", "demo-baseline^{commit}"], { encoding: "utf8" }).trim();
   const note = readFileSync(join(REPO_DIR, "test/support/supplier/notes/v2.md"), "utf8");
   const run = await investigate.createRun();
   const result = await run.start({
