@@ -1,7 +1,7 @@
 import { describe as group, expect, test } from "bun:test"
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
-import { buildChange, classify, describe, diffShapes, flatten } from "../src/shape.ts"
+import { buildChange, classify, describe, diffShapes, flatten, splitDiff } from "../src/shape.ts"
 
 // The mock supplier's own fixtures, so these tests follow the demo's real responses.
 const fixture = (v: string) =>
@@ -28,8 +28,8 @@ group("flatten", () => {
             inventory: "object",
             "inventory.on_hand": "number",
             "inventory.reserved": "number",
-            warehouse: "string",
             updated_at: "string",
+            restock_eta: "string",
         })
     })
 })
@@ -55,8 +55,9 @@ group("classify", () => {
 })
 
 group("supplier versions", () => {
-    test("v1 to v2 matches the agreed Change", () => {
-        const d = diffShapes(flatten(fixture("v1")), flatten(fixture("v2")))
+    // v2 builds on v1.1 (supplier-mock bf43518), so v1.1 -> v2 is the stock change alone.
+    test("v1.1 to v2 matches the agreed Change", () => {
+        const d = diffShapes(flatten(fixture("v1.1")), flatten(fixture("v2")))
         expect(d).toEqual({ removed: ["stock"], added: ["inventory", "inventory.on_hand", "inventory.reserved"], retyped: [] })
         const change = buildChange(d, meta)!
         expect(change.changeKind).toBe("breaking")
@@ -74,5 +75,40 @@ group("supplier versions", () => {
         const d = diffShapes(flatten(fixture("v1")), flatten(fixture("v2")))
         const text = Object.values(describe(d)).join(" ")
         for (const path of [...d.removed, ...d.added]) expect(text).not.toContain(path)
+    })
+})
+
+group("splitDiff (one case per field)", () => {
+    const cases = (from: string, to: string) => {
+        const after = flatten(fixture(to))
+        return splitDiff(diffShapes(flatten(fixture(from)), after), after).map((g) => buildChange(g, meta)!)
+    }
+
+    test("v1 to v2 opens stock (with inventory as its replacement), warehouse and restock_eta", () => {
+        const out = cases("v1", "v2")
+        expect(out.map((c) => [c.changeKind, c.fieldPath, c.shapeDiff])).toEqual([
+            ["breaking", "stock", { removed: ["stock"], added: ["inventory", "inventory.on_hand", "inventory.reserved"], retyped: [] }],
+            ["breaking", "warehouse", { removed: ["warehouse"], added: [], retyped: [] }],
+            ["added", "restock_eta", { removed: [], added: ["restock_eta"], retyped: [] }],
+        ])
+    })
+
+    test("v1 to v1.1 is a breaking case on warehouse and an added case on restock_eta", () => {
+        const out = cases("v1", "v1.1")
+        expect(out.map((c) => [c.changeKind, c.fieldPath, c.shapeDiff])).toEqual([
+            ["breaking", "warehouse", { removed: ["warehouse"], added: [], retyped: [] }],
+            ["added", "restock_eta", { removed: [], added: ["restock_eta"], retyped: [] }],
+        ])
+    })
+
+    test("only a nested object added is its own added case", () => {
+        const after = { a: "string", b: "object", "b.c": "number" }
+        expect(splitDiff(diffShapes({ a: "string" }, after), after)).toEqual([{ removed: [], added: ["b", "b.c"], retyped: [] }])
+    })
+
+    test("a retyped child stays with its own field", () => {
+        const before = { a: "object", "a.x": "number" }
+        const after = { a: "object", "a.x": "string", "a.y": "number" }
+        expect(splitDiff(diffShapes(before, after), after)).toEqual([{ removed: [], added: ["a.y"], retyped: ["a.x"] }])
     })
 })

@@ -56,6 +56,25 @@ export function primaryPath(d: ShapeDiff): string {
     return [...pool].sort((a, b) => a.split(".").length - b.split(".").length || a.localeCompare(b))[0]
 }
 
+const rootOf = (path: string) => path.split(/[.[]/)[0]
+const under = (paths: string[], root: string) => paths.filter((p) => rootOf(p) === root)
+
+// Splits one difference into one ShapeDiff per case:
+// - each removed or retyped top-level field gets its own breaking case;
+// - a new nested object that arrives together with a removal is read as its
+//   replacement and joins the first breaking case (v2: `inventory` replaces `stock`);
+// - every other new top-level field gets its own added case (v1.1: `restock_eta`).
+export function splitDiff(d: ShapeDiff, after: Shape): ShapeDiff[] {
+    const brokenRoots = [...new Set([...d.removed, ...d.retyped].map(rootOf))].sort()
+    const addedRoots = [...new Set(d.added.map(rootOf))].filter((r) => !brokenRoots.includes(r)).sort()
+    const groups = brokenRoots.map((r) => ({ removed: under(d.removed, r), added: under(d.added, r), retyped: under(d.retyped, r) }))
+    for (const r of addedRoots) {
+        if (groups.length > 0 && after[r] === "object") groups[0].added = [...groups[0].added, ...under(d.added, r)].sort()
+        else groups.push({ removed: [], added: under(d.added, r), retyped: [] })
+    }
+    return groups
+}
+
 function summarize(d: ShapeDiff): string {
     const parts: string[] = []
     if (d.removed.length) parts.push(`${d.removed.join(", ")} removed`)
